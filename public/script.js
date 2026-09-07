@@ -7302,6 +7302,8 @@ function showToast(message, type) {
    userRpFavouritesRowId tracks that row so toggleFavourite() knows
    whether to PUT (row exists) or POST (first favourite ever). */
 async function loadUserRpActions() {
+  userRpActions = [];
+  if (!currentUser) return;
   try {
     var result = await api('/api/user-content/rp_action');
     userRpActions = (result && Array.isArray(result.items))
@@ -7325,6 +7327,7 @@ async function loadUserRpActions() {
     userRpFavourites = [];
     userRpFavouritesRowId = null;
   }
+  if (!currentUser) { userRpCategories = []; return; }
   try {
     var cats = JSON.parse(localStorage.getItem('uhs_rp_cats') || '[]');
     userRpCategories = cats;
@@ -7333,6 +7336,8 @@ async function loadUserRpActions() {
 
 /* Load TTS actions from the server */
 async function loadUserTtsActions() {
+  userTtsActions = [];
+  if (!currentUser) return;
   try {
     var result = await api('/api/user-content/tts_action');
     userTtsActions = (result && Array.isArray(result.items))
@@ -7350,6 +7355,7 @@ function openAddRpAction() {
   var modal = document.getElementById('rpActionModal');
   if (!modal) return;
   modal.style.display = 'flex';
+  modal.setAttribute('aria-hidden', 'false');
   document.getElementById('rpActionName').value = '';
   document.getElementById('rpActionCommand').value = '';
   document.getElementById('rpActionEmote').value = '';
@@ -7622,6 +7628,7 @@ function openAddTtsAction() {
   var modal = document.getElementById('ttsModal');
   if (!modal) return;
   modal.style.display = 'flex';
+  modal.setAttribute('aria-hidden', 'false');
   document.getElementById('ttsName').value = '';
   document.getElementById('ttsCommand').value = '';
   document.getElementById('ttsCategory').value = '';
@@ -7753,7 +7760,10 @@ function fallbackCopy(text) {
 /* Close modal */
 function closeModal(id) {
   var el = document.getElementById(id);
-  if (el) el.style.display = 'none';
+  if (el) {
+    el.style.display = 'none';
+    el.setAttribute('aria-hidden', 'true');
+  }
 }
 
 /* Render RP actions on dashboard */
@@ -10135,6 +10145,7 @@ var docCache = [];
 var docFolderCache = [];
 
 async function renderDocWorkspace() {
+  if (!currentUser) { docCache = []; docFolderCache = []; renderDocFolderList(); renderDocGrid(); return; }
   try {
     var res = await api('/api/documents/uploaded');
     if (res && res.documents) {
