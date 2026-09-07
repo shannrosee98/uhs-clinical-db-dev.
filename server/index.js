@@ -45,7 +45,9 @@ const isLocalDatabase =
   /localhost|127\.0\.0\.1/.test(process.env.DATABASE_URL || '');
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString: (
+    process.env.DATABASE_URL || ''
+  ).replace(/(\?|&)sslmode=[^&]*(&|$)/gi, '$1').replace(/[?&]$/, ''),
   ssl: isLocalDatabase ? false : { rejectUnauthorized: false }
 });
 
@@ -2772,6 +2774,116 @@ app.delete('/api/folders/:id', admin, async (req, res) => {
   }
 });
 
+/* =========================================================
+   DOCUMENT WORKSPACE — upload / fetch all / serve
+   These complement the section-based routes above
+   (GET/POST /api/documents/:section).
+========================================================= */
+
+/* GET /api/documents/uploaded — fetch all documents and folders for workspace */
+app.get('/api/documents/uploaded', async (req, res) => {
+  try {
+    const docs = await pool.query(
+      'SELECT id, name, section, folder_id, description, tags, created_at, uploaded_by FROM document_files ORDER BY created_at DESC'
+    );
+    const folders = await pool.query(
+      'SELECT id, name, parent_id, sort_order FROM document_folders ORDER BY sort_order ASC, name ASC'
+    );
+    res.json({ ok: true, documents: docs.rows, folders: folders.rows });
+  } catch (error) {
+    console.error('Get uploaded documents error:', error);
+    res.status(500).json({ error: 'Failed to fetch documents' });
+  }
+});
+
+/* POST /api/documents/uploaded — upload a document to the workspace (no specific section) */
+app.post('/api/documents/uploaded', auth, async (req, res) => {
+  try {
+    const { name, data, folder_id, description, tags } = req.body;
+    if (!name || !data) {
+      return res.status(400).json({ error: 'Missing name or data' });
+    }
+    if (typeof data !== 'string') {
+      return res.status(400).json({ error: 'Data must be a base64 string' });
+    }
+    if (data.length > 20 * 1024 * 1024) {
+      return res.status(400).json({ error: 'File too large (max ~15MB)' });
+    }
+
+    let objectKey = null;
+    let storedData = data;
+
+    if (s3 && R2_BUCKET) {
+      try {
+        objectKey = `documents/${crypto.randomUUID()}-${safeFileName(name)}`;
+        await s3.send(new PutObjectCommand({
+          Bucket: R2_BUCKET,
+          Key: objectKey,
+          Body: Buffer.from(data, 'base64'),
+          ContentType: getDocMimeType(name)
+        }));
+        storedData = null;
+      } catch (r2Error) {
+        console.error('R2 upload failed, falling back to database storage:', r2Error);
+        objectKey = null;
+        storedData = data;
+      }
+    }
+
+    const q = await pool.query(
+      `INSERT INTO document_files (section, name, data, object_key, folder_id, description, tags, uploaded_by)
+       VALUES ('uploaded', $1, $2, $3, $4, $5, $6, $7)
+       RETURNING id`,
+      [name, storedData, objectKey, folder_id || null, description || '', tags || '', req.user?.id || null]
+    );
+    res.json({ ok: true, id: q.rows[0].id });
+  } catch (error) {
+    console.error('Upload workspace document error:', error);
+    res.status(500).json({ error: 'Failed to upload document' });
+  }
+});
+
+/* GET /api/serve-doc/by-id/:id — serve document content for preview/download */
+app.get('/api/serve-doc/by-id/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    if (!/^\d+$/.test(id)) {
+      return res.status(400).json({ error: 'Invalid document ID' });
+    }
+    const q = await pool.query('SELECT name, data, object_key FROM document_files WHERE id = $1', [id]);
+    if (!q.rows.length) {
+      return res.status(404).json({ error: 'Document not found' });
+    }
+    const doc = q.rows[0];
+
+    if (doc.object_key && s3 && R2_BUCKET) {
+      try {
+        const cmd = new GetObjectCommand({ Bucket: R2_BUCKET, Key: doc.object_key });
+        const response = await s3.send(cmd);
+        const mimeType = getDocMimeType(doc.name);
+        res.setHeader('Content-Type', mimeType);
+        res.setHeader('Content-Disposition', `inline; filename="${safeFileName(doc.name)}"`);
+        response.Body.pipe(res);
+        return;
+      } catch (r2Error) {
+        console.error('R2 fetch failed, falling back to database:', r2Error);
+      }
+    }
+
+    if (!doc.data) {
+      return res.status(404).json({ error: 'Document data not available' });
+    }
+
+    const buffer = Buffer.from(doc.data, 'base64');
+    const mimeType = getDocMimeType(doc.name);
+    res.setHeader('Content-Type', mimeType);
+    res.setHeader('Content-Disposition', `inline; filename="${safeFileName(doc.name)}"`);
+    res.send(buffer);
+  } catch (error) {
+    console.error('Serve document error:', error);
+    res.status(500).json({ error: 'Failed to serve document' });
+  }
+});
 /* =========================================================
    STATIC WEBSITE
 ========================================================= */

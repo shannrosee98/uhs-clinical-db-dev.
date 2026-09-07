@@ -1866,6 +1866,197 @@
 
       
 
+<section id="rp" class="section">
+  <div class="section-head">
+    <div class="tag">/me RP TOOLKIT</div>
+    <h2>🎭 RP Actions, SBAR, PCR &amp; Scene Builder</h2>
+    <p>Manage your /me actions, build scene sequences, generate SBAR handovers and patient care records.</p>
+  </div>
+
+  <div class="profile-tabs rp-tab-bar" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px">
+    <button class="rptab active" onclick="showRpTab('library')">🎭 Library</button>
+    <button class="rptab" onclick="showRpTab('tts')">🎤 /tts</button>
+    <button class="rptab" onclick="showRpTab('builder')">🔨 Scene Builder</button>
+    <button class="rptab" onclick="showRpTab('sbar')">📋 SBAR</button>
+    <button class="rptab" onclick="showRpTab('pcr')">📄 PCR</button>
+    <button class="rptab" onclick="showRpTab('questions')">❓ Questions</button>
+  </div>
+
+  <!-- ========== LIBRARY TAB ========== -->
+  <div id="rp-library" class="rp-tab-panel">
+    <div class="admin-toolbar" style="flex-wrap:wrap;gap:8px">
+      <input id="rpLibrarySearch" type="search" placeholder="Search actions..." style="flex:1;min-width:180px;background:#0f2029;border:1px solid #29434f;border-radius:8px;color:#eaf2f4;padding:10px 14px;font-size:14px;outline:none" oninput="renderUserRpActions()">
+      <button class="primary" onclick="openAddRpAction()">+ Add /me</button>
+      <button class="secondary" onclick="document.getElementById('rpImportFileLib').click()">📥 Import</button>
+      <input type="file" id="rpImportFileLib" accept=".json" style="display:none" onchange="importRpProfile(this)">
+      <button class="danger-small" onclick="resetRpLibrary()">Reset All</button>
+    </div>
+    <div id="userRpActionsList" class="rp-list">
+      <div class="empty-state"><div class="empty-icon">📝</div><h3>Loading...</h3></div>
+    </div>
+  </div>
+
+  <!-- ========== TTS TAB ========== -->
+  <div id="rp-tts" class="rp-tab-panel" style="display:none">
+    <div class="admin-toolbar" style="flex-wrap:wrap;gap:8px">
+      <input id="rpTtsSearch" type="search" placeholder="Search questions..." style="flex:1;min-width:180px;background:#0f2029;border:1px solid #29434f;border-radius:8px;color:#eaf2f4;padding:10px 14px;font-size:14px;outline:none" oninput="renderUserTtsActions()">
+      <button class="primary" onclick="openAddTtsAction()">+ Add /tts Question</button>
+    </div>
+    <div id="userTtsActionsList" class="rp-list">
+      <div class="empty-state"><div class="empty-icon">🎤</div><h3>Loading...</h3></div>
+    </div>
+  </div>
+
+  <!-- ========== BUILDER TAB ========== -->
+  <div id="rp-builder" class="rp-tab-panel" style="display:none">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div>
+        <div class="tag">SCENE SEQUENCE</div>
+        <h3>Building scene</h3>
+        <div id="sceneBuilderList" class="scene-builder-list" style="min-height:80px;background:#0b1821;border:1px solid #203542;border-radius:10px;padding:12px">
+          <p class="muted" style="padding:12px;text-align:center">Add actions from your library below to build a scene.</p>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button class="primary" onclick="copyScene()">📋 Copy All</button>
+          <button class="secondary" onclick="clearScene()">🗑 Clear</button>
+        </div>
+      </div>
+      <div>
+        <div class="tag">QUICK ADD</div>
+        <h3>Your RP library</h3>
+        <div id="sceneQuickAddList" style="display:flex;flex-wrap:wrap;gap:6px;min-height:60px;background:#0b1821;border:1px solid #203542;border-radius:10px;padding:12px">
+          <p class="muted" style="font-size:12px">Add actions to your library first.</p>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:16px;padding:16px;background:#0b1821;border:1px solid #203542;border-radius:10px">
+      <div class="tag">SAVED SCENES</div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px">
+        <input id="sceneBuilderName" type="text" placeholder="Scene name..." style="flex:1;min-width:150px;background:#0f2029;border:1px solid #29434f;border-radius:8px;color:#eaf2f4;padding:10px 14px;font-size:14px;outline:none">
+        <button class="primary" onclick="saveScene()">💾 Save Scene</button>
+        <button class="secondary" onclick="exportRpProfile()">📤 Export Profile</button>
+      </div>
+      <div id="savedScenesContainer" style="margin-top:12px">
+        <p class="muted" style="font-size:12px">No saved scenes yet.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SBAR TAB ========== -->
+  <div id="rp-sbar" class="rp-tab-panel" style="display:none">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div>
+        <div class="tag">PATIENT INFO</div>
+        <label style="display:block;margin:8px 0">Name <input id="sbarName" style="width:100%"></label>
+        <label style="display:block;margin:8px 0">Age <input id="sbarAge" style="width:100%"></label>
+        <label style="display:block;margin:8px 0">Chief complaint <input id="sbarComplaint" style="width:100%"></label>
+
+        <div class="tag" style="margin-top:14px">S — SITUATION</div>
+        <label style="display:block;margin:8px 0"><textarea id="sbarSituation" rows="2" placeholder="What is happening?" style="width:100%"></textarea></label>
+
+        <div class="tag" style="margin-top:14px">B — BACKGROUND</div>
+        <label style="display:block;margin:8px 0"><textarea id="sbarBackground" rows="2" placeholder="Relevant history / context?" style="width:100%"></textarea></label>
+
+        <div class="tag" style="margin-top:14px">A — ASSESSMENT</div>
+        <label style="display:block;margin:8px 0"><textarea id="sbarAssessment" rows="2" placeholder="What you found?" style="width:100%"></textarea></label>
+        <label style="display:block;margin:8px 0">Treatment given <input id="sbarTreatment" style="width:100%"></label>
+        <label style="display:block;margin:8px 0">Response <input id="sbarResponse" style="width:100%"></label>
+
+        <div class="tag" style="margin-top:14px">R — RECOMMENDATION</div>
+        <label style="display:block;margin:8px 0"><textarea id="sbarRecommendation" rows="2" placeholder="What do you need?" style="width:100%"></textarea></label>
+        <label style="display:block;margin:8px 0">Destination <input id="sbarDestination" style="width:100%"></label>
+      </div>
+      <div>
+        <div class="tag">GENERATED HANDOVER</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0">
+          <button class="primary" onclick="generateSbar()">Generate Handover</button>
+          <button class="secondary" onclick="copySbar()">📋 Copy</button>
+          <button class="secondary" onclick="clearSbar()">🗑 Clear</button>
+        </div>
+        <pre id="sbarOutput" style="background:#0b1821;border:1px solid #203542;border-radius:10px;padding:16px;min-height:200px;white-space:pre-wrap;color:#c3d0d5;font-size:13px">Fill in the fields and click "Generate Handover".</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== PCR TAB ========== -->
+  <div id="rp-pcr" class="rp-tab-panel" style="display:none">
+    <div class="tag">PATIENT CARE RECORD</div>
+    <p>Complete the form and generate a formatted RP patient care record.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div id="pcrForm">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <label>Date/Time <input id="pcr_date" type="text" placeholder="DD/MM/YYYY HH:MM"></label>
+          <label>Type <input id="pcr_type" placeholder="e.g. Emergency, Routine"></label>
+          <label>Location <input id="pcr_location" placeholder="e.g. Scene"></label>
+          <label>Name <input id="pcr_name" placeholder="Patient name"></label>
+          <label>Age <input id="pcr_age" placeholder="Age"></label>
+          <label>Gender <input id="pcr_gender" placeholder="M/F/Other"></label>
+          <label style="grid-column:1/-1">Complaint <input id="pcr_complaint" placeholder="Chief complaint" style="width:100%"></label>
+          <label style="grid-column:1/-1">History <textarea id="pcr_history" rows="2" style="width:100%"></textarea></label>
+          <label>Allergies <input id="pcr_allergies" placeholder="Known allergies"></label>
+          <label>Medications <input id="pcr_meds" placeholder="Current meds"></label>
+        </div>
+
+        <div class="tag" style="margin-top:14px">OBSERVATIONS</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+          <label>BP <input id="pcr_bp" placeholder="120/80"></label>
+          <label>HR <input id="pcr_hr" placeholder="bpm"></label>
+          <label>RR <input id="pcr_rr" placeholder="/min"></label>
+          <label>SpO2 <input id="pcr_spo2" placeholder="%"></label>
+          <label>Temp <input id="pcr_temp" placeholder="°C"></label>
+          <label>GCS <input id="pcr_gcs" placeholder="15"></label>
+          <label>Pain <input id="pcr_pain" placeholder="0-10"></label>
+        </div>
+
+        <div class="tag" style="margin-top:14px">ABCDE</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <label>Airway <input id="pcr_airway" placeholder="Patent / Compromised"></label>
+          <label>Breathing <input id="pcr_breathing" placeholder="Normal / Abnormal"></label>
+          <label>Circulation <input id="pcr_circulation" placeholder="Normal / Shock"></label>
+          <label>Disability <input id="pcr_disability" placeholder="AVPU / GCS"></label>
+          <label style="grid-column:1/-1">Exposure <input id="pcr_exposure" placeholder="Findings" style="width:100%"></label>
+        </div>
+
+        <div class="tag" style="margin-top:14px">TREATMENT</div>
+        <label style="display:block;margin:6px 0">Treatment given <input id="pcr_treatment" style="width:100%"></label>
+        <label style="display:block;margin:6px 0">Meds given <input id="pcr_medsGiven" style="width:100%"></label>
+        <label style="display:block;margin:6px 0">Procedures <input id="pcr_procedures" style="width:100%"></label>
+        <label style="display:block;margin:6px 0">Response <input id="pcr_response" style="width:100%"></label>
+        <label style="display:block;margin:6px 0">Disposition <input id="pcr_disposition" style="width:100%"></label>
+        <label style="display:block;margin:6px 0">Handover <input id="pcr_handover" style="width:100%"></label>
+        <label style="display:block;margin:6px 0">Clinician <input id="pcr_clinician" style="width:100%"></label>
+
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button class="primary" onclick="generatePcr()">Generate PCR</button>
+          <button class="secondary" onclick="copyPcr()">📋 Copy</button>
+          <button class="secondary" onclick="clearPcr()">🗑 Clear</button>
+        </div>
+      </div>
+      <div>
+        <div class="tag">GENERATED PCR</div>
+        <pre id="pcrOutput" style="background:#0b1821;border:1px solid #203542;border-radius:10px;padding:16px;min-height:300px;white-space:pre-wrap;color:#c3d0d5;font-size:13px">Fill in the form and click "Generate PCR".</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== QUESTIONS TAB ========== -->
+  <div id="rp-questions" class="rp-tab-panel" style="display:none">
+    <div class="section-head" style="border:0;padding:0">
+      <div class="tag">PATIENT QUESTIONS</div>
+      <h3>Quick reference questions</h3>
+      <p>Common RP patient assessment questions.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px">
+      <article class="info"><h4>🧠 Consciousness</h4><p>What happened? / Are you okay? / Can you hear me? / What's your name?</p></article>
+      <article class="info"><h4>Breathing</h4><p>Are you struggling to breathe? / When did it start? / Do you have any chest pain?</p></article>
+      <article class="info"><h4>💔 Chest Pain</h4><p>On a scale of 1-10? / Where is it? / Does it radiate? / When did it start?</p></article>
+      <article class="info"><h4>🩸 Bleeding</h4><p>Where is the bleeding? / How did it happen? / Are you on blood thinners?</p></article>
+      <article class="info"><h4>🤕 Pain</h4><p>Where does it hurt? / On a scale of 1-10? / What makes it better or worse?</p></article>
+      <article class="info"><h4>💊 Medical History</h4><p>Do you have any medical conditions? / Are you on any medication? / Allergies?</p></article>
+    </div>
+  </div>
+</section>
+
 <section id="documents" class="section">
   <div class="section-head">
     <div class="tag">DOCUMENT WORKSPACE</div>

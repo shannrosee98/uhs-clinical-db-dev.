@@ -363,6 +363,9 @@ function showSection(id) {
   if (id === 'documents') {
     renderDocWorkspace();
   }
+  if (id === 'rp') {
+    initRpSystem();
+  }
   if (id === 'surgeries') {
     initialiseSurgeries();
   }
@@ -7528,17 +7531,28 @@ async function renderUserRpActions() {
   var container = document.getElementById('userRpActionsList');
   if (!container) return;
   await loadUserRpActions();
+  var searchInput = document.getElementById('rpLibrarySearch');
+  var query = searchInput ? searchInput.value.toLowerCase().trim() : '';
   if (userRpActions.length === 0) {
-    container.innerHTML = '<div class="empty-state"><div class="empty-icon">\uD83D\uDCDD</div><h3>No custom RP actions yet</h3><p>Click \"+ Add /me" to create your first action.</p></div>';
+    container.innerHTML = '<div class="empty-state"><div class="empty-icon">\uD83D\uDCDD</div><h3>No custom RP actions yet</h3><p>Click "+ Add /me" to create your first action.</p></div>';
     return;
   }
   var html = '';
   var categories = {};
   userRpActions.forEach(function(a, i) {
+    if (query && (a.name || '').toLowerCase().indexOf(query) < 0 && (a.command || '').toLowerCase().indexOf(query) < 0 && (a.category || '').toLowerCase().indexOf(query) < 0) {
+      return;
+    }
     var cat = a.category || 'General';
     if (!categories[cat]) categories[cat] = [];
     categories[cat].push({ action: a, index: i });
   });
+  var totalFiltered = 0;
+  for (var k in categories) { totalFiltered += categories[k].length; }
+  if (totalFiltered === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-icon">\uD83D\uDD0D</div><h3>No matching actions</h3><p>Try a different search term.</p></div>';
+    return;
+  }
   Object.keys(categories).sort().forEach(function(cat) {
     html += '<div class="rp-category-header"><h3>' + escapeHtml(cat) + '</h3><span>' + categories[cat].length + ' actions</span></div>';
     categories[cat].forEach(function(item) {
@@ -7572,18 +7586,22 @@ async function renderUserRpActions() {
   });
   container.innerHTML = html;
 }
-
 /* Render TTS actions */
 async function renderUserTtsActions() {
   var container = document.getElementById('userTtsActionsList');
   if (!container) return;
   await loadUserTtsActions();
+  var searchInput = document.getElementById('rpTtsSearch');
+  var query = searchInput ? searchInput.value.toLowerCase().trim() : '';
   if (userTtsActions.length === 0) {
-    container.innerHTML = '<div class="empty-state"><div class="empty-icon">\uD83D\uDCE3</div><h3>No /tts questions yet</h3><p>Click \"+ Add /tts" to create your first question.</p></div>';
+    container.innerHTML = '<div class="empty-state"><div class="empty-icon">\uD83D\uDCE3</div><h3>No /tts questions yet</h3><p>Click "+ Add /tts" to create your first question.</p></div>';
     return;
   }
   var html = '';
   userTtsActions.forEach(function(a, i) {
+    if (query && (a.name || '').toLowerCase().indexOf(query) < 0 && (a.command || '').toLowerCase().indexOf(query) < 0) {
+      return;
+    }
     html += '<div class="tts-card">';
     html += '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px">';
     html += '<strong>' + escapeHtml(a.name) + '</strong>';
@@ -7599,7 +7617,6 @@ async function renderUserTtsActions() {
   });
   container.innerHTML = html;
 }
-
 /* TTS CRUD */
 function openAddTtsAction() {
   var modal = document.getElementById('ttsModal');
@@ -7764,6 +7781,7 @@ async function initRpSystem() {
   await renderUserRpActions();
   await renderUserTtsActions();
   await renderDashboardRpActions();
+  renderDashboardFavourites();
 }
 
 window.openAddRpAction = openAddRpAction;

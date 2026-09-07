@@ -533,3 +533,16 @@ button:focus-visible{outline:2px solid #41b6e6;outline-offset:2px}
 .admin-panel{display:none}
 .admin-panel.active{display:block}.surgery-panel{display:none}.surgery-panel.active{display:block}.surgeon{background:#10222c;color:#9fb2bc;border:1px solid #29434f;padding:9px 14px;border-radius:8px;cursor:pointer;font-weight:800;font-size:12px;transition:background .15s,color .15s}.surgeon:hover{background:#18313c;color:#fff}.surgeon.active{background:#003087;color:#fff;border-color:#41b6e6}.surgery-context-btn{background:#10222c;color:#9fb2bc;border:1px solid #29434f;padding:7px 12px;border-radius:8px;cursor:pointer;font-weight:800;font-size:12px;transition:background .15s,color .15s}.surgery-context-btn:hover{background:#18313c;color:#fff}.surgery-context-btn.active{background:#003087;color:#fff;border-color:#41b6e6}
 .edit-drag-handle{cursor:grab;color:#5a7080;font-size:13px;text-align:center;line-height:1;padding:2px 0;user-select:none}.edit-item-wrap{cursor:default}.edit-item-wrap.dragging{opacity:.4}.edit-item-wrap.drag-over{background:rgba(65,182,230,.15);border-top:2px solid #41b6e6}.edit-item-wrap:active .edit-drag-handle{cursor:grabbing}
+/* --- RP Actions section tab panels --- */
+.rp-tab-panel{display:block;min-height:200px}
+.rp-list{display:grid;gap:10px;margin-top:16px;min-height:100px}
+.fav-list{display:grid;gap:10px;min-height:60px}
+.tts-card{background:#0c1922;border:1px solid #203542;border-radius:11px;padding:14px;margin:8px 0}
+.tts-card .tts-command{color:#41b6e6;font-weight:600;font-size:14px;padding:6px 0;font-family:monospace}
+.tts-card strong{font-size:15px;color:#eaf2f4}
+
+/* --- RP tab panel heading --- */
+.rp-tab-panel .section-head{border:0;margin:0 0 8px;padding:0}
+
+/* --- Dashboard favourites in RP section --- */
+#dashboardFavourites{display:grid;gap:8px;min-height:60px}
