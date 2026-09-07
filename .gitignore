@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-error.log*
+package-lock.json
+
+# Environment variables / secrets
+.env
+.env.*
+!.env.example
+
+# Logs & OS junk
+*.log
+.DS_Store
+Thumbs.db
+
+# Render / build output (leave local .env.example if you add one)
+dist/
+build/
