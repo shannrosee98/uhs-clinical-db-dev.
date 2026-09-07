@@ -10253,6 +10253,7 @@ async function handleDocUpload(input) {
 }
 
 async function showCreateFolderModal() {
+  if (!currentUser || currentUser.role !== 'admin') { showToast('Only admins can create folders', 'error'); return; }
   var container = document.getElementById('newFolderParent');
   if (container) {
     var html = '<option value="">Root (no parent)</option>';
@@ -10261,7 +10262,10 @@ async function showCreateFolderModal() {
     });
     container.innerHTML = html;
   }
-  document.getElementById('createFolderModal').style.display = 'flex';
+  var modal = document.getElementById('createFolderModal');
+  modal.style.display = 'flex';
+  modal.setAttribute('aria-hidden', 'false');
+  document.getElementById('newFolderName').focus();
 }
 
 async function createDocFolder() {
@@ -10285,7 +10289,9 @@ function previewDoc(id) {
   var doc = docCache.find(function(d) { return d.id === id; });
   if (!doc) {
     container.innerHTML = '<p>Document not found.</p>';
-    document.getElementById('docPreviewModal').style.display = 'flex';
+    var m = document.getElementById('docPreviewModal');
+    m.style.display = 'flex';
+    m.setAttribute('aria-hidden', 'false');
     return;
   }
   var ext = (doc.name || '').split('.').pop().toLowerCase();
@@ -10297,7 +10303,9 @@ function previewDoc(id) {
   } else {
     container.innerHTML = '<div style="text-align:center;padding:40px"><span style="font-size:64px">📄</span><h3>' + escapeHtml(doc.name) + '</h3><p style="color:#7a95a3">Preview not available for this file type.</p><a href="' + viewUrl + '" download="' + escapeHtml(doc.name) + '" class="primary" style="display:inline-block;margin-top:12px;padding:10px 20px;border-radius:8px;background:#005eb8;color:#fff;text-decoration:none">⬇ Download</a></div>';
   }
-  document.getElementById('docPreviewModal').style.display = 'flex';
+  var modal = document.getElementById('docPreviewModal');
+  modal.style.display = 'flex';
+  modal.setAttribute('aria-hidden', 'false');
 }
 
 async function openDocEditMeta(id) {
@@ -10320,7 +10328,9 @@ async function openDocEditMeta(id) {
     });
     sel.innerHTML = html;
   }
-  document.getElementById('docEditMetaModal').style.display = 'flex';
+  var modal = document.getElementById('docEditMetaModal');
+  modal.style.display = 'flex';
+  modal.setAttribute('aria-hidden', 'false');
 }
 
 async function saveDocMeta() {
