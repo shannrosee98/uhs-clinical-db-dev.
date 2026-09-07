@@ -1695,6 +1695,174 @@
   <div id="surgeryRPList"></div></div>
 </section>
 
+      <section id="rp" class="section">
+        <div class="section-head">
+          <div class="tag">/ME RP ACTIONS</div>
+          <h2>Your personal RP library</h2>
+          <p>Build, organise and reuse your own /me actions, /tts questions, scene playlists, and handover generators. Nothing here is real clinical guidance — for FiveM roleplay use only.</p>
+        </div>
+
+        <div class="scenario-tabs">
+          <button class="rptab active" onclick="showRpTab('library')">📚 Library</button>
+          <button class="rptab" onclick="showRpTab('tts')">📢 /tts</button>
+          <button class="rptab" onclick="showRpTab('builder')">🎬 Scene Builder</button>
+          <button class="rptab" onclick="showRpTab('sbar')">📋 SBAR</button>
+          <button class="rptab" onclick="showRpTab('pcr')">📝 PCR</button>
+          <button class="rptab" onclick="showRpTab('questions')">❓ Questions</button>
+        </div>
+
+        <div id="rp-library" style="display:block">
+          <div class="admin-toolbar" style="flex-wrap:wrap;gap:8px">
+            <button class="primary" onclick="openAddRpAction()">+ Add /me</button>
+            <button class="secondary" onclick="exportRpProfile()">⬇ Export</button>
+            <button class="secondary" onclick="document.getElementById('rpImportInput').click()">⬆ Import</button>
+            <input type="file" id="rpImportInput" accept=".json" style="display:none" onchange="importRpProfile(this)">
+            <button class="secondary" onclick="resetRpLibrary()">🗑 Reset Library</button>
+          </div>
+          <div id="userRpActionsList"></div>
+        </div>
+
+        <div id="rp-tts" style="display:none">
+          <div class="admin-toolbar">
+            <button class="primary" onclick="openAddTtsAction()">+ Add /tts</button>
+          </div>
+          <div id="userTtsActionsList"></div>
+        </div>
+
+        <div id="rp-builder" style="display:none">
+          <div class="scene-checklist">
+            <div class="tag">QUICK ADD FROM LIBRARY</div>
+            <h4>Tap an action to add it to your scene</h4>
+            <div id="sceneQuickAddList" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px"></div>
+          </div>
+
+          <div class="scene-checklist" style="margin-top:16px">
+            <div class="tag">CURRENT SCENE DRAFT</div>
+            <h4>Your scene, in order</h4>
+            <div id="sceneBuilderList" style="margin-top:8px"></div>
+            <div class="admin-toolbar" style="margin-top:10px">
+              <input id="sceneBuilderName" placeholder="Name this scene (e.g. RTC — multi-casualty)" style="flex:1;min-width:200px;background:#0f2029;border:1px solid #29434f;border-radius:8px;color:#eaf2f4;padding:10px 14px;font-size:14px;outline:none">
+              <button class="primary" onclick="saveScene()">💾 Save Scene</button>
+              <button class="secondary" onclick="copyScene()">Copy All</button>
+            </div>
+          </div>
+
+          <div class="scene-checklist" style="margin-top:16px">
+            <div class="tag">SAVED SCENES</div>
+            <h4>Load a previously saved scene</h4>
+            <div id="savedScenesContainer" style="margin-top:8px"></div>
+          </div>
+        </div>
+
+        <div id="rp-sbar" style="display:none">
+          <div class="scene-checklist">
+            <div class="tag">SBAR HANDOVER GENERATOR</div>
+            <h4>Fill in what's relevant, leave the rest blank</h4>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+              <label>Patient name<input id="sbarName" placeholder="e.g. John Smith"></label>
+              <label>Age<input id="sbarAge" placeholder="e.g. 42"></label>
+            </div>
+            <label style="display:block;margin-top:10px">Chief complaint<input id="sbarComplaint" placeholder="e.g. chest pain"></label>
+            <label style="display:block;margin-top:10px">S — Situation<textarea id="sbarSituation" rows="2" style="width:100%;background:#0f2029;border:1px solid #29434f;border-radius:8px;color:#eaf2f4;padding:10px;font-size:14px;outline:none;resize:vertical"></textarea></label>
+            <label style="display:block;margin-top:10px">B — Background<textarea id="sbarBackground" rows="2" style="width:100%;background:#0f2029;border:1px solid #29434f;border-radius:8px;color:#eaf2f4;padding:10px;font-size:14px;outline:none;resize:vertical"></textarea></label>
+            <label style="display:block;margin-top:10px">A — Assessment<textarea id="sbarAssessment" rows="2" style="width:100%;background:#0f2029;border:1px solid #29434f;border-radius:8px;color:#eaf2f4;padding:10px;font-size:14px;outline:none;resize:vertical"></textarea></label>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+              <label>Treatment given<input id="sbarTreatment" placeholder="e.g. GTN, aspirin"></label>
+              <label>Response<input id="sbarResponse" placeholder="e.g. pain improved to 3/10"></label>
+            </div>
+            <label style="display:block;margin-top:10px">R — Recommendation<textarea id="sbarRecommendation" rows="2" style="width:100%;background:#0f2029;border:1px solid #29434f;border-radius:8px;color:#eaf2f4;padding:10px;font-size:14px;outline:none;resize:vertical"></textarea></label>
+            <label style="display:block;margin-top:10px">Destination<input id="sbarDestination" placeholder="e.g. Resus, Cubicle 4"></label>
+            <div class="admin-toolbar" style="margin-top:12px">
+              <button class="primary" onclick="generateSbar()">Generate Handover</button>
+              <button class="secondary" onclick="copySbar()">Copy</button>
+              <button class="secondary" onclick="clearSbar()">Clear</button>
+            </div>
+            <pre id="sbarOutput" style="margin-top:12px;white-space:pre-wrap;background:#0a151e;border:1px solid #29434f;border-radius:8px;padding:14px;font-size:13px;color:#c9d6da">Fill in the fields above and click "Generate Handover" to create your SBAR.</pre>
+          </div>
+        </div>
+
+        <div id="rp-pcr" style="display:none">
+          <div class="scene-checklist" id="pcrForm">
+            <div class="tag">PATIENT CARE RECORD GENERATOR</div>
+            <h4>Fill in what's relevant, leave the rest blank</h4>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px">
+              <label>Date/time<input id="pcr_date" placeholder="e.g. 07/09 14:30"></label>
+              <label>Type<input id="pcr_type" placeholder="e.g. 999 emergency"></label>
+              <label>Location<input id="pcr_location" placeholder="e.g. scene / ambulance / ED"></label>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px">
+              <label>Patient name<input id="pcr_name"></label>
+              <label>Age<input id="pcr_age"></label>
+              <label>Gender<input id="pcr_gender"></label>
+            </div>
+            <label style="display:block;margin-top:10px">Presenting complaint<input id="pcr_complaint"></label>
+            <label style="display:block;margin-top:10px">History<input id="pcr_history"></label>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+              <label>Allergies<input id="pcr_allergies"></label>
+              <label>Medications<input id="pcr_meds"></label>
+            </div>
+
+            <h4 style="margin-top:16px">Observations</h4>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+              <label>BP<input id="pcr_bp" placeholder="120/80"></label>
+              <label>HR<input id="pcr_hr"></label>
+              <label>RR<input id="pcr_rr"></label>
+              <label>SpO2<input id="pcr_spo2"></label>
+              <label>Temp<input id="pcr_temp"></label>
+              <label>GCS<input id="pcr_gcs" placeholder="15"></label>
+              <label>Pain<input id="pcr_pain" placeholder="0-10"></label>
+            </div>
+
+            <h4 style="margin-top:16px">ABCDE</h4>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <label>Airway<input id="pcr_airway"></label>
+              <label>Breathing<input id="pcr_breathing"></label>
+              <label>Circulation<input id="pcr_circulation"></label>
+              <label>Disability<input id="pcr_disability"></label>
+            </div>
+            <label style="display:block;margin-top:10px">Exposure<input id="pcr_exposure"></label>
+
+            <h4 style="margin-top:16px">Treatment &amp; outcome</h4>
+            <label style="display:block">Treatment<input id="pcr_treatment"></label>
+            <label style="display:block;margin-top:10px">Medications given<input id="pcr_medsGiven"></label>
+            <label style="display:block;margin-top:10px">Procedures performed<input id="pcr_procedures"></label>
+            <label style="display:block;margin-top:10px">Response to treatment<input id="pcr_response"></label>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+              <label>Disposition<input id="pcr_disposition" placeholder="e.g. conveyed to ED"></label>
+              <label>Handover to<input id="pcr_handover"></label>
+            </div>
+            <label style="display:block;margin-top:10px">Clinician<input id="pcr_clinician"></label>
+
+            <div class="admin-toolbar" style="margin-top:12px">
+              <button class="primary" onclick="generatePcr()">Generate PCR</button>
+              <button class="secondary" onclick="copyPcr()">Copy</button>
+              <button class="secondary" onclick="clearPcr()">Clear</button>
+            </div>
+            <pre id="pcrOutput" style="margin-top:12px;white-space:pre-wrap;background:#0a151e;border:1px solid #29434f;border-radius:8px;padding:14px;font-size:13px;color:#c9d6da">Fill in the form above and click Generate.</pre>
+          </div>
+        </div>
+
+        <div id="rp-questions" style="display:none">
+          <div class="scene-checklist">
+            <div class="tag">GOOD RP QUESTIONS TO ASK A PATIENT</div>
+            <h4>General prompts to keep a scene realistic</h4>
+            <ul style="line-height:2;color:#c9d6da;padding-left:20px">
+              <li>/tts Can you tell me your name and date of birth?</li>
+              <li>/tts What happened, in your own words?</li>
+              <li>/tts Where does it hurt, and can you rate the pain out of 10?</li>
+              <li>/tts Do you have any allergies I should know about?</li>
+              <li>/tts Are you on any regular medications?</li>
+              <li>/tts Do you have any past medical history I should know about?</li>
+              <li>/tts Is there anyone we should contact for you?</li>
+              <li>/tts Can you squeeze my hands / wiggle your toes for me?</li>
+              <li>/tts Do you feel short of breath at all?</li>
+              <li>/tts On a scale of 1 to 10, how would you rate your anxiety right now?</li>
+            </ul>
+            <p class="muted" style="margin-top:10px">Add your own frequently-used questions to your personal /tts library in the tab above so they're one click away.</p>
+          </div>
+        </div>
+      </section>
+
 
       
 
