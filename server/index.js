@@ -2865,6 +2865,19 @@ app.post('/api/cms/versions/:contentKey/restore/:version', admin, async (req, re
 
 /* ---- CMS PAGE SECTIONS ---- */
 
+/* GET /api/cms-sections — list all sections (across pages) */
+app.get('/api/cms-sections', admin, async (req, res) => {
+  try {
+    const q = await pool.query(
+      'SELECT s.*, p.name AS page_name FROM cms_page_sections s LEFT JOIN cms_pages p ON p.id = s.page_id WHERE s.deleted_at IS NULL ORDER BY s.order_index ASC'
+    );
+    res.json({ ok: true, sections: q.rows });
+  } catch (error) {
+    console.error('CMS all sections list error:', error);
+    res.status(500).json({ error: 'Failed to list sections' });
+  }
+});
+
 app.get('/api/cms-sections/:pageId', admin, async (req, res) => {
   try {
     const q = await pool.query('SELECT * FROM cms_page_sections WHERE page_id=$1 AND deleted_at IS NULL ORDER BY order_index ASC', [req.params.pageId]);
@@ -2974,9 +2987,9 @@ app.post('/api/cms-blocks', admin, async (req, res) => {
 
 app.put('/api/cms-blocks/:id', admin, async (req, res) => {
   try {
-    const { title, content, block_type, category, parent_id } = req.body;
-    await pool.query('UPDATE cms_content_blocks SET title=COALESCE($1,title), content=COALESCE($2,content), block_type=COALESCE($3,block_type), category=COALESCE($4,category), parent_id=$5, updated_by=$6, updated_at=NOW() WHERE id=$7',
-      [title??null, content?JSON.stringify(content):null, block_type||null, category??null, parent_id!==undefined?parent_id:null, req.user.id, req.params.id]);
+    const { title, content, block_type, category, parent_id, section_id, page_id } = req.body;
+    await pool.query('UPDATE cms_content_blocks SET title=COALESCE($1,title), content=COALESCE($2,content), block_type=COALESCE($3,block_type), category=COALESCE($4,category), parent_id=$5, section_id=$6, page_id=$7, updated_by=$8, updated_at=NOW() WHERE id=$9',
+      [title??null, content?JSON.stringify(content):null, block_type||null, category??null, parent_id!==undefined?parent_id:null, section_id||null, page_id||null, req.user.id, req.params.id]);
     const q = await pool.query('SELECT * FROM cms_content_blocks WHERE id=$1', [req.params.id]);
     res.json({ ok: true, block: q.rows[0] });
   } catch (error) {

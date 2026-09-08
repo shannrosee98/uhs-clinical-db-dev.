@@ -2698,7 +2698,8 @@
       <button class="admintab" onclick="showAdminTab('equipment')">💰 Equipment</button>
       <button class="admintab" onclick="showAdminTab('documents')">📄 Documents</button>
       <button class="admintab" onclick="showAdminTab('backup')">📥 Backup</button>
-      <button class="admintab" onclick="showAdminTab('cms')">⚙️ CMS Manager</button>
+      <button class="admintab" onclick="showAdminTab('foundation')"> Foundation</button>
+      <button class="admintab" onclick="showAdminTab('cms')"> CMS Manager</button>
     </div>
 
     <!-- Dashboard -->
@@ -2710,6 +2711,7 @@
         <div class="dash-card" onclick="showAdminTab('medications')"><span class="dash-icon">💊</span><h3>Medications</h3><p>Update medication information</p></div>
         <div class="dash-card" onclick="showAdminTab('equipment')"><span class="dash-icon">💰</span><h3>Equipment</h3><p>Manage equipment library</p></div>
         <div class="dash-card" onclick="showAdminTab('documents')"><span class="dash-icon">📄</span><h3>Documents</h3><p>Uploaded PDFs and files</p></div>
+        <div class="dash-card" onclick="showAdminTab('foundation')"><span class="dash-icon">\u25a0</span><h3>Foundation</h3><p>Pages, navigation &amp; categories</p></div>
         <div class="dash-card" onclick="showAdminTab('backup')"><span class="dash-icon">📥</span><h3>Backup</h3><p>Export/import site data</p></div>
       </div>
     </div>
@@ -2791,7 +2793,32 @@
     </div>
 
     <!-- Backup -->
-    <div id="adminBackupTab" class="admin-panel" style="display:none">
+    <div id="adminFoundationTab" class="admin-panel" style="display:none">
+      <div class="section-head">
+        <h2>Foundation CMS</h2>
+        <p>Manage Pages, Page Sections, Content Blocks, Navigation, Categories and Content Versions.</p>
+      </div>
+      <div class="admin-toolbar" style="margin-bottom:14px">
+        <select id="cms2TypeSelect" onchange="cms2List()" style="background:#0f2029;border:1px solid #29434f;border-radius:8px;color:#eaf2f4;padding:10px 14px;font-size:14px;flex:1;min-width:220px"></select>
+        <button class="primary" onclick="cms2OpenEditor(null)">+ Add</button>
+        <button class="secondary" onclick="cms2List()">Refresh</button>
+      </div>
+      <div id="cms2List" class="staff-list">
+        <p class="muted">Select a type to manage items.</p>
+      </div>
+      <div id="cms2Editor" style="display:none;background:#0c1922;border:1px solid #203542;border-radius:12px;padding:18px;margin-top:16px">
+        <div class="section-head" style="border:0;margin:0 0 12px">
+          <h3 id="cms2EditorTitle" style="margin:0;font-size:17px">Edit Item</h3>
+        </div>
+        <div id="cms2Form"></div>
+        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+          <button class="primary" onclick="cms2Save()">Save Item</button>
+          <button class="secondary" onclick="cms2CloseEditor()">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+        <div id="adminBackupTab" class="admin-panel" style="display:none">
       <div class="section-head"><h2>📥 Backup & Restore</h2><p>Export or import site data for backup purposes.</p></div>
       <div class="two-col">
         <article class="info">
@@ -3008,6 +3035,7 @@
   </div>
   <script src="script.js"></script>
   <script src="cms.js"></script>
+  <script src="cms2.js"></script>
 <div id="rpActionModal" class="modal" aria-hidden="true">
   <div class="modal-card">
     <button type="button" class="modal-close" onclick="closeModal('rpActionModal')">&times;</button>

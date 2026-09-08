@@ -8480,8 +8480,8 @@ window.toggleMobileMenu = toggleMobileMenu;
 ========================================================= */
 
 function showAdminTab(tab) {
-  var tabs = ['dashboard', 'staff', 'content', 'rp', 'medications', 'equipment', 'documents', 'backup', 'cms'];
-  var prefixes = ['adminDashTab', 'adminStaffTab', 'adminContentTab', 'adminRpTab', 'adminMedsTab', 'adminEquipTab', 'adminDocsTab', 'adminBackupTab', 'adminCmsTab'];
+  var tabs = ['dashboard', 'staff', 'content', 'rp', 'medications', 'equipment', 'documents', 'foundation', 'backup', 'cms'];
+  var prefixes = ['adminDashTab', 'adminStaffTab', 'adminContentTab', 'adminRpTab', 'adminMedsTab', 'adminEquipTab', 'adminDocsTab', 'adminFoundationTab', 'adminBackupTab', 'adminCmsTab'];
   tabs.forEach(function(t, i) {
     var panel = document.getElementById(prefixes[i]);
     if (panel) panel.style.display = t === tab ? 'block' : 'none';
@@ -8491,6 +8491,7 @@ function showAdminTab(tab) {
     btn.classList.toggle('active', onclick.indexOf("'" + tab + "'") >= 0 || onclick.indexOf('"' + tab + '"') >= 0);
   });
   if (tab === 'cms') cmsInit();
+  if (tab === 'foundation') cms2Init();
   if (tab === 'documents') loadAdminDocuments();
   if (tab === 'rp') renderAdminRpActions();
 }
