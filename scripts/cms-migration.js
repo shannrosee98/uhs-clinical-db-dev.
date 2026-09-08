@@ -12,6 +12,8 @@
 import 'dotenv/config';
 import pg from 'pg';
 import crypto from 'node:crypto';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const { Pool } = pg;
 const args = new Set(process.argv.slice(2));
@@ -35,11 +37,6 @@ if (!process.env.DATABASE_URL) {
   console.error('DATABASE_URL is required.');
   process.exit(2);
 }
-
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.DATABASE_SSL === 'false' ? false : { rejectUnauthorized: false }
-});
 
 const TYPE_TO_BLOCK = {
   medication: 'medication',
@@ -87,7 +84,7 @@ async function tableExists(client, name) {
   return q.rows[0].exists;
 }
 
-async function audit(client) {
+export async function audit(client) {
   const tables = [
     'editable_content',
     'cms_pages',
@@ -177,7 +174,7 @@ async function audit(client) {
   };
 }
 
-async function migrateRows(client, report) {
+export async function migrateRows(client, report, { createDraftPage: shouldCreateDraftPage = true } = {}) {
   const rows = (await client.query(`
     SELECT content_key, content_type, content, item_name, is_published,
            order_index, category
@@ -193,16 +190,35 @@ async function migrateRows(client, report) {
 
   let draftPageId = null;
   const sectionByType = new Map();
-  if (createDraftPage) {
-    draftPageId = crypto.randomUUID();
-    const slug = `legacy-content-migration-${Date.now()}`;
-    await client.query(
-      `INSERT INTO cms_pages
-       (id,name,slug,description,icon,order_index,status,visibility,template,created_by)
-       VALUES ($1,$2,$3,$4,$5,COALESCE((SELECT MAX(order_index)+1 FROM cms_pages),0),'draft','admin','standard',NULL)`,
-      [draftPageId, 'Legacy Content Migration', slug,
-       'Draft container for content migrated from editable_content. Review before publishing.', '🗃️']
+  if (shouldCreateDraftPage) {
+    const existingPage = await client.query(
+      `SELECT id FROM cms_pages
+       WHERE slug='legacy-content-migration'
+       ORDER BY CASE WHEN deleted_at IS NULL THEN 0 ELSE 1 END,
+                created_at ASC LIMIT 1`
     );
+    if (existingPage.rows.length) {
+      draftPageId = existingPage.rows[0].id;
+      await client.query(
+        `UPDATE cms_pages
+         SET name='Legacy Content Migration',
+             description='Draft container for content migrated from editable_content. Review before publishing.',
+             status='draft', visibility='admin', deleted_at=NULL, updated_at=NOW()
+         WHERE id=$1`,
+        [draftPageId]
+      );
+    } else {
+      draftPageId = crypto.randomUUID();
+      await client.query(
+        `INSERT INTO cms_pages
+         (id,name,slug,description,icon,order_index,status,visibility,template,created_by)
+         VALUES ($1,$2,'legacy-content-migration',$3,$4,
+                 COALESCE((SELECT MAX(order_index)+1 FROM cms_pages),0),
+                 'draft','admin','standard',NULL)`,
+        [draftPageId, 'Legacy Content Migration',
+         'Draft container for content migrated from editable_content. Review before publishing.', '🗃️']
+      );
+    }
   }
 
   const result = { blocks: 0, navigation: 0, categories: 0, versions: 0, sections: 0 };
@@ -222,8 +238,12 @@ async function migrateRows(client, report) {
       const label = row.content?.label || title;
       const url = row.content?.url || (row.content?.section ? `/${row.content.section}` : null);
       const existing = await client.query(
-        `SELECT id FROM cms_navigation WHERE label=$1 AND url IS NOT DISTINCT FROM $2 AND deleted_at IS NULL LIMIT 1`,
-        [label, url]
+        `SELECT id FROM cms_navigation
+         WHERE deleted_at IS NULL
+           AND metadata->>'source_table'='editable_content'
+           AND metadata->>'source_key'=$1
+         LIMIT 1`,
+        [row.content_key]
       );
       if (!existing.rows.length) {
         await client.query(
@@ -239,30 +259,50 @@ async function migrateRows(client, report) {
       let sectionId = null;
       if (draftPageId) {
         if (!sectionByType.has(row.content_type)) {
-          sectionId = crypto.randomUUID();
-          sectionByType.set(row.content_type, sectionId);
-          await client.query(
-            `INSERT INTO cms_page_sections
-             (id,page_id,title,description,content,section_type,order_index,status,visibility)
-             VALUES ($1,$2,$3,$4,$5,'content',$6,'draft','admin')`,
-            [sectionId, draftPageId, row.content_type, `Migrated ${row.content_type} content`, JSON.stringify({ source_type: row.content_type, source_published: row.is_published === true }),
-             sectionByType.size - 1]
+          const existingSection = await client.query(
+            `SELECT id FROM cms_page_sections
+             WHERE page_id=$1 AND title=$2 AND deleted_at IS NULL
+             ORDER BY order_index ASC, created_at ASC LIMIT 1`,
+            [draftPageId, row.content_type]
           );
-          result.sections++;
+          if (existingSection.rows.length) {
+            sectionId = existingSection.rows[0].id;
+            await client.query(
+              `UPDATE cms_page_sections
+               SET status='draft', visibility='admin', updated_at=NOW()
+               WHERE id=$1`,
+              [sectionId]
+            );
+          } else {
+            sectionId = crypto.randomUUID();
+            await client.query(
+              `INSERT INTO cms_page_sections
+               (id,page_id,title,description,content,section_type,order_index,status,visibility)
+               VALUES ($1,$2,$3,$4,$5,'content',$6,'draft','admin')`,
+              [sectionId, draftPageId, row.content_type, `Migrated ${row.content_type} content`,
+               JSON.stringify({ source_type: row.content_type, source_published: row.is_published === true }),
+               sectionByType.size]
+            );
+            result.sections++;
+          }
+          sectionByType.set(row.content_type, sectionId);
         } else {
           sectionId = sectionByType.get(row.content_type);
         }
       }
 
       const existing = await client.query(
-        `SELECT id FROM cms_content_blocks WHERE block_key=$1 AND block_type=$2 AND deleted_at IS NULL`,
+        `SELECT id FROM cms_content_blocks
+         WHERE block_key=$1 AND block_type=$2
+         ORDER BY CASE WHEN deleted_at IS NULL THEN 0 ELSE 1 END,
+                  created_at ASC LIMIT 1`,
         [sourceKey, blockType]
       );
       if (existing.rows.length) {
         await client.query(
           `UPDATE cms_content_blocks
            SET title=$1, content=$2, category=$3, section_id=$4, page_id=$5,
-               updated_at=NOW()
+               status='draft', visibility='admin', deleted_at=NULL, updated_at=NOW()
            WHERE id=$6`,
           [title, JSON.stringify(content), category, sectionId, draftPageId, existing.rows[0].id]
         );
@@ -292,17 +332,53 @@ async function migrateRows(client, report) {
     if (category) {
       const catName = String(category).trim();
       const catSlug = slugify(catName);
+      const categoryType = CATEGORY_TYPE[row.content_type] || row.content_type;
       const existingCat = await client.query(
-        `SELECT id FROM cms_categories WHERE slug=$1 AND content_type=$2 AND deleted_at IS NULL LIMIT 1`,
-        [catSlug, CATEGORY_TYPE[row.content_type] || row.content_type]
+        `SELECT id, metadata
+         FROM cms_categories
+         WHERE slug=$1
+           AND content_type=$2
+         ORDER BY CASE WHEN deleted_at IS NULL THEN 0 ELSE 1 END,
+                  created_at ASC LIMIT 1`,
+        [catSlug, categoryType]
       );
-      if (!existingCat.rows.length) {
+      const migrationMeta = {
+        source_table: 'editable_content',
+        source_type: row.content_type,
+        source_keys: [row.content_key],
+        source_published: row.is_published === true
+      };
+
+      if (existingCat.rows.length) {
+        const existingMeta = existingCat.rows[0].metadata || {};
+        const existingKeys = Array.isArray(existingMeta.source_keys)
+          ? existingMeta.source_keys
+          : (existingMeta.source_key ? [existingMeta.source_key] : []);
+        const sourceKeys = [...new Set([...existingKeys, row.content_key])];
+        const mergedMeta = {
+          ...existingMeta,
+          source_table: 'editable_content',
+          source_type: existingMeta.source_type || row.content_type,
+          source_keys: sourceKeys,
+          source_published: existingMeta.source_published === true || row.is_published === true
+        };
+        await client.query(
+          `UPDATE cms_categories
+           SET name=$1,
+               description=COALESCE(description,'Migrated from editable_content'),
+               metadata=$2,
+               status='draft', visibility='admin', deleted_at=NULL,
+               updated_at=NOW()
+           WHERE id=$3`,
+          [catName, JSON.stringify(mergedMeta), existingCat.rows[0].id]
+        );
+      } else {
         await client.query(
           `INSERT INTO cms_categories
            (id,name,slug,description,content_type,order_index,status,visibility,metadata)
            VALUES ($1,$2,$3,$4,$5,0,'draft','admin',$6)`,
-          [crypto.randomUUID(), catName, catSlug, 'Migrated from editable_content', CATEGORY_TYPE[row.content_type] || row.content_type,
-           JSON.stringify({ source_table: 'editable_content', source_key: row.content_key, source_type: row.content_type, source_published: row.is_published === true })]
+          [crypto.randomUUID(), catName, catSlug, 'Migrated from editable_content', categoryType,
+           JSON.stringify(migrationMeta)]
         );
         result.categories++;
       }
@@ -312,6 +388,56 @@ async function migrateRows(client, report) {
   return { ...report, migration_result: result, draft_page_id: draftPageId };
 }
 
+
+
+export async function runLegacyMigration({ pool, createDraftPage = true } = {}) {
+  const ownPool = !pool;
+  if (!pool) {
+    if (!process.env.DATABASE_URL) throw new Error('DATABASE_URL is required.');
+    pool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+      ssl: process.env.DATABASE_SSL === 'false' ? false : { rejectUnauthorized: false }
+    });
+  }
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const report = await audit(client);
+    const result = await migrateRows(client, report, { createDraftPage });
+    await client.query('COMMIT');
+    return result;
+  } catch (error) {
+    try { await client.query('ROLLBACK'); } catch {}
+    throw error;
+  } finally {
+    client.release();
+    if (ownPool) await pool.end();
+  }
+}
+
+export async function runLegacyPromotion({ pool } = {}) {
+  const ownPool = !pool;
+  if (!pool) {
+    if (!process.env.DATABASE_URL) throw new Error('DATABASE_URL is required.');
+    pool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+      ssl: process.env.DATABASE_SSL === 'false' ? false : { rejectUnauthorized: false }
+    });
+  }
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const result = await promoteMigrated(client);
+    await client.query('COMMIT');
+    return result;
+  } catch (error) {
+    try { await client.query('ROLLBACK'); } catch {}
+    throw error;
+  } finally {
+    client.release();
+    if (ownPool) await pool.end();
+  }
+}
 
 async function promoteMigrated(client) {
   const blocks = await client.query(`
@@ -357,28 +483,41 @@ async function promoteMigrated(client) {
   return report;
 }
 
-const client = await pool.connect();
-try {
-  await client.query('BEGIN');
-  const report = await audit(client);
 
-  if (migrate) {
-    const migrated = await migrateRows(client, report);
-    await client.query('COMMIT');
-    console.log(JSON.stringify(migrated, null, 2));
-  } else if (promote) {
-    const promoted = await promoteMigrated(client);
-    await client.query('COMMIT');
-    console.log(JSON.stringify(promoted, null, 2));
-  } else {
-    await client.query('ROLLBACK');
-    console.log(JSON.stringify(report, null, 2));
+const isMain =
+  process.argv[1] &&
+  path.resolve(process.argv[1]) ===
+  path.resolve(fileURLToPath(import.meta.url));
+
+if (isMain) {
+  if (!process.env.DATABASE_URL) {
+    console.error('DATABASE_URL is required.');
+    process.exit(2);
   }
-} catch (error) {
-  try { await client.query('ROLLBACK'); } catch {}
-  console.error(error.stack || error.message || error);
-  process.exitCode = 1;
-} finally {
-  client.release();
-  await pool.end();
+  const cliPool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: process.env.DATABASE_SSL === 'false' ? false : { rejectUnauthorized: false }
+  });
+  try {
+    if (migrate) {
+      const report = await runLegacyMigration({ pool: cliPool, createDraftPage });
+      console.log(JSON.stringify(report, null, 2));
+    } else if (promote) {
+      const report = await runLegacyPromotion({ pool: cliPool });
+      console.log(JSON.stringify(report, null, 2));
+    } else {
+      const client = await cliPool.connect();
+      try {
+        const report = await audit(client);
+        console.log(JSON.stringify(report, null, 2));
+      } finally {
+        client.release();
+      }
+    }
+  } catch (error) {
+    console.error(error.stack || error.message || error);
+    process.exitCode = 1;
+  } finally {
+    await cliPool.end();
+  }
 }

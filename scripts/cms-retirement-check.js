@@ -85,42 +85,55 @@ export async function runRetirementCheck({ pool, frontendSource } = {}) {
       `)).rows;
     }
 
-    let migratedBlocks = new Set();
-    let migratedNav = new Set();
+    const migratedBlocks = new Map();
+    const migratedNav = new Map();
 
     if (tables.cms_content_blocks) {
       const q = await client.query(`
-        SELECT content->'_migration'->>'source_type' AS source_type,
-               content->'_migration'->>'source_key' AS source_key
+        SELECT id,
+               content->'_migration'->>'source_type' AS source_type,
+               content->'_migration'->>'source_key' AS source_key,
+               status, visibility
         FROM cms_content_blocks
         WHERE deleted_at IS NULL
           AND content ? '_migration'
           AND content->'_migration'->>'source_table' = 'editable_content'
       `);
-      migratedBlocks = new Set(
-        q.rows.map(r => `${r.source_type}:${r.source_key}`)
-      );
+      q.rows.forEach(r => migratedBlocks.set(`${r.source_type}:${r.source_key}`, r));
     }
 
     if (tables.cms_navigation) {
       const q = await client.query(`
-        SELECT metadata->>'source_type' AS source_type,
-               metadata->>'source_key' AS source_key
+        SELECT id,
+               metadata->>'source_type' AS source_type,
+               metadata->>'source_key' AS source_key,
+               status, visibility
         FROM cms_navigation
         WHERE deleted_at IS NULL
           AND metadata->>'source_table' = 'editable_content'
       `);
-      migratedNav = new Set(
-        q.rows.map(r => `${r.source_type}:${r.source_key}`)
-      );
+      q.rows.forEach(r => migratedNav.set(`${r.source_type}:${r.source_key}`, r));
     }
 
-    const missing = legacy.filter(row => {
+    const missing = [];
+    const unpublished = [];
+    for (const row of legacy) {
       const key = `${row.content_type}:${row.content_key}`;
-      return row.content_type === 'nav'
-        ? !migratedNav.has(key)
-        : !migratedBlocks.has(key);
-    });
+      const structured = row.content_type === 'nav'
+        ? migratedNav.get(key)
+        : migratedBlocks.get(key);
+      if (!structured) {
+        missing.push(row);
+      } else if (row.is_published === true &&
+                 !(structured.status === 'published' && structured.visibility === 'public')) {
+        unpublished.push({
+          content_type: row.content_type,
+          content_key: row.content_key,
+          structured_status: structured.status,
+          structured_visibility: structured.visibility
+        });
+      }
+    }
 
     const structuredPublished = {};
     for (const table of [
@@ -154,16 +167,23 @@ export async function runRetirementCheck({ pool, frontendSource } = {}) {
       );
     }
 
+    if (unpublished.length) {
+      failures.push(
+        `${unpublished.length} published legacy record(s) have a structured equivalent but are not published/public in the structured CMS.`
+      );
+    }
+
     const report = {
       phase: 5,
       generated_at: new Date().toISOString(),
       safe_to_retire_legacy_table:
-        failures.length === 0 && missing.length === 0,
+        failures.length === 0 && missing.length === 0 && unpublished.length === 0,
       tables,
       legacy: {
         total: legacy.length,
         published: legacy.filter(r => r.is_published).length,
-        missing_structured_equivalent: missing
+        missing_structured_equivalent: missing,
+        published_without_published_structured_equivalent: unpublished
       },
       structured_published: structuredPublished,
       checks: {

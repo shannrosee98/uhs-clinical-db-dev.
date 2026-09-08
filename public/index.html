@@ -2810,7 +2810,11 @@
             <h3 style="margin:0 0 4px">🔎 Legacy CMS Retirement Check</h3>
             <p class="muted" style="margin:0">Read-only production check. It verifies that legacy content has structured equivalents and that the public site no longer depends on the old CMS.</p>
           </div>
-          <button class="secondary" onclick="runCmsRetirementCheck()">Run Check</button>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+            <button class="secondary" onclick="runCmsRetirementCheck()">Run Check</button>
+            <button class="primary" onclick="runCmsLegacyMigration()">Migrate Legacy Content</button>
+            <button class="secondary" onclick="promoteCmsMigrated()">Publish Migrated Content</button>
+          </div>
         </div>
         <div id="cmsRetirementCheckResult" style="display:none;margin-top:12px"></div>
       </article>

@@ -96,3 +96,24 @@ The CLI command remains available for local/staging environments:
 ```bash
 npm run cms:retirement-check
 ```
+
+
+## Phase 5 Render Free browser migration
+
+Render Free instances do not provide Shell/SSH. The CMS Manager therefore exposes two
+authenticated, browser-run operations:
+
+1. **Migrate Legacy Content** — copies `editable_content` into the structured CMS as
+   draft pages/sections/blocks/navigation/categories. It never deletes or modifies
+   the source rows and is idempotent.
+2. **Publish Migrated Content** — publishes structured content blocks that were
+   explicitly published in the legacy CMS. Migrated navigation remains draft for
+   manual review.
+
+Run **Migrate Legacy Content** first, then **Run Check**. Only when the report shows
+no missing structured equivalents should you use **Publish Migrated Content** and
+review the result. The legacy table remains intact throughout this process.
+
+
+### Browser migration reliability fix
+The browser migration reuses categories by `(slug, content_type)` so multiple legacy records sharing a category cannot violate the structured CMS unique constraint. Migration remains transactional and non-destructive.

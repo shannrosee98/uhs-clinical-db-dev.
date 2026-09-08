@@ -24,6 +24,7 @@ import {
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { z } from 'zod';
 import { runRetirementCheck } from '../scripts/cms-retirement-check.js';
+import { runLegacyMigration, runLegacyPromotion } from '../scripts/cms-migration.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -906,6 +907,105 @@ app.get('/api/admin/cms-retirement-check', admin, async (req, res) => {
     console.error('CMS retirement check failed:', error);
     res.status(500).json({
       error: 'CMS retirement check failed',
+      message: error.message || 'Unknown error'
+    });
+  }
+});
+
+
+let cmsLegacyOperationInProgress = false;
+
+/* =========================================================
+   CMS LEGACY MIGRATION — authenticated, browser-run cutover tools.
+   These endpoints are intentionally separate from the read-only retirement
+   check so administrators can migrate from Render Free without Shell/SSH.
+   Source editable_content rows are never deleted or modified.
+========================================================= */
+app.post('/api/admin/cms-migrate-legacy', admin, async (req, res) => {
+  try {
+    const confirm = String(req.body?.confirm || '');
+    if (confirm !== 'MIGRATE_LEGACY_CONTENT') {
+      return res.status(400).json({
+        error: 'Confirmation required',
+        message: 'Send confirm=MIGRATE_LEGACY_CONTENT to start the migration.'
+      });
+    }
+
+    if (cmsLegacyOperationInProgress) {
+      return res.status(409).json({
+        error: 'Migration already running',
+        message: 'Another CMS migration operation is currently running. Please wait and try again.'
+      });
+    }
+    cmsLegacyOperationInProgress = true;
+    try {
+      const result = await runLegacyMigration({ pool, createDraftPage: true });
+      res.json({
+        ok: true,
+        message: 'Legacy content migrated into the structured CMS as draft content.',
+        result
+      });
+    } finally {
+      cmsLegacyOperationInProgress = false;
+    }
+  } catch (error) {
+    console.error('CMS legacy migration failed:', error);
+res.status(500).json({
+      error: 'CMS legacy migration failed',
+      message: error.message || 'Unknown error',
+      code: error.code || null,
+      constraint: error.constraint || null,
+      table: error.table || null,
+      detail: error.detail || null
+    });
+  }
+});
+
+app.post('/api/admin/cms-promote-migrated', admin, async (req, res) => {
+  try {
+    const confirm = String(req.body?.confirm || '');
+    if (confirm !== 'PUBLISH_MIGRATED_CONTENT') {
+      return res.status(400).json({
+        error: 'Confirmation required',
+        message: 'Send confirm=PUBLISH_MIGRATED_CONTENT to publish migrated content.'
+      });
+    }
+
+    if (cmsLegacyOperationInProgress) {
+      return res.status(409).json({
+        error: 'Migration/promotion already running',
+        message: 'Another CMS migration operation is currently running. Please wait and try again.'
+      });
+    }
+    cmsLegacyOperationInProgress = true;
+    try {
+      const frontendSource = fs.readFileSync(
+        path.join(__dirname, '../public/script.js'),
+        'utf8'
+      );
+      const readiness = await runRetirementCheck({ pool, frontendSource });
+      const missing = readiness.legacy?.missing_structured_equivalent || [];
+      if (missing.length) {
+        return res.status(409).json({
+          error: 'Migration incomplete',
+          message: `${missing.length} legacy record(s) still have no structured equivalent. Run Migrate Legacy Content first.`,
+          readiness
+        });
+      }
+
+      const result = await runLegacyPromotion({ pool });
+      res.json({
+        ok: true,
+        message: 'Migrated content that was published in the legacy CMS is now published in the structured CMS.',
+        result
+      });
+    } finally {
+      cmsLegacyOperationInProgress = false;
+    }
+  } catch (error) {
+    console.error('CMS migrated-content promotion failed:', error);
+    res.status(500).json({
+      error: 'CMS promotion failed',
       message: error.message || 'Unknown error'
     });
   }

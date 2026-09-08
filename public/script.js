@@ -30,7 +30,10 @@ async function api(url, options = {}) {
   } catch (_) {}
 
   if (!res.ok) {
-    throw new Error(data.error || `Request failed (${res.status})`);
+    var message = data.message || data.error || `Request failed (${res.status})`;
+    if (data.detail && data.detail !== message) message += ` — ${data.detail}`;
+    if (data.constraint && !message.includes(data.constraint)) message += ` [${data.constraint}]`;
+    throw new Error(message);
   }
 
   return data;
@@ -8601,6 +8604,93 @@ async function runCmsRetirementCheck() {
       '<strong>❌ Check failed</strong><p class="muted" style="margin:6px 0 0">' +
       escapeHtml(error && error.message ? error.message : 'Unable to run the check.') +
       '</p></div>';
+  }
+}
+
+
+async function runCmsLegacyMigration() {
+  var confirmed = confirm(
+    'This will copy all legacy editable_content records into the structured CMS as DRAFT content.\n\n' +
+    'Nothing in the legacy table will be deleted or modified.\n\n' +
+    'Continue?'
+  );
+  if (!confirmed) return;
+
+  var container = document.getElementById('cmsRetirementCheckResult');
+  if (container) {
+    container.style.display = 'block';
+    container.innerHTML = '<p class="muted">Migrating legacy content safely… Please do not close this page.</p>';
+  }
+
+  try {
+    var result = await api('/api/admin/cms-migrate-legacy', {
+      method: 'POST',
+      body: { confirm: 'MIGRATE_LEGACY_CONTENT' }
+    });
+    var r = result.result || {};
+    var mr = r.migration_result || {};
+    if (container) {
+      container.innerHTML =
+        '<div style="padding:14px;border:1px solid #315f46;border-radius:10px;background:#0f2029">' +
+        '<strong>✅ Legacy migration completed</strong>' +
+        '<p class="muted" style="margin:6px 0 10px">' + escapeHtml(result.message || '') + '</p>' +
+        '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px">' +
+        '<div class="info"><strong>Blocks</strong><br>' + Number(mr.blocks || 0) + '</div>' +
+        '<div class="info"><strong>Sections</strong><br>' + Number(mr.sections || 0) + '</div>' +
+        '<div class="info"><strong>Navigation</strong><br>' + Number(mr.navigation || 0) + '</div>' +
+        '<div class="info"><strong>Categories</strong><br>' + Number(mr.categories || 0) + '</div>' +
+        '<div class="info"><strong>Versions</strong><br>' + Number(mr.versions || 0) + '</div>' +
+        '</div></div>';
+    }
+    showToast('Legacy content migrated as drafts', 'success');
+    await runCmsRetirementCheck();
+    if (typeof cms2RefreshSources === 'function') await cms2RefreshSources();
+    if (typeof cms2List === 'function') await cms2List();
+  } catch (error) {
+    if (container) {
+      container.innerHTML =
+        '<div style="padding:12px;border:1px solid #663c3c;border-radius:10px;background:#201316">' +
+        '<strong>❌ Migration failed</strong><p class="muted" style="margin:6px 0 0">' +
+        escapeHtml(error && error.message ? error.message : 'Unable to migrate legacy content.') +
+        '</p></div>';
+    }
+    showToast('Migration failed: ' + (error && error.message ? error.message : ''), 'error');
+  }
+}
+
+async function promoteCmsMigrated() {
+  var confirmed = confirm(
+    'This will PUBLISH structured content that was published in the legacy CMS.\n\n' +
+    'It will not delete the legacy records. Migrated navigation remains draft for manual approval.\n\n' +
+    'Continue?'
+  );
+  if (!confirmed) return;
+
+  var container = document.getElementById('cmsRetirementCheckResult');
+  if (container) {
+    container.style.display = 'block';
+    container.innerHTML = '<p class="muted">Publishing migrated content…</p>';
+  }
+
+  try {
+    var result = await api('/api/admin/cms-promote-migrated', {
+      method: 'POST',
+      body: { confirm: 'PUBLISH_MIGRATED_CONTENT' }
+    });
+    var r = result.result || {};
+    showToast('Published ' + Number(r.published_blocks || 0) + ' migrated content blocks', 'success');
+    await runCmsRetirementCheck();
+    if (typeof cms2RefreshSources === 'function') await cms2RefreshSources();
+    if (typeof cms2List === 'function') await cms2List();
+  } catch (error) {
+    if (container) {
+      container.innerHTML =
+        '<div style="padding:12px;border:1px solid #663c3c;border-radius:10px;background:#201316">' +
+        '<strong>❌ Publish failed</strong><p class="muted" style="margin:6px 0 0">' +
+        escapeHtml(error && error.message ? error.message : 'Unable to publish migrated content.') +
+        '</p></div>';
+    }
+    showToast('Publish failed: ' + (error && error.message ? error.message : ''), 'error');
   }
 }
 
