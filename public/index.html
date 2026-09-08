@@ -167,7 +167,7 @@
   <div class="section-head">
     <div class="tag">EMERGENCY MODE</div>
     <h2>🚨 Emergency Scene Mode</h2>
-    <p>Fast-access emergency pathways. Select an emergency to see immediate priorities, assessments, and RP actions.</p>
+    <p>Fast-access emergency pathways — UK clinical practice for FiveM EMS roleplay. Select an emergency for immediate priorities, assessment steps, management, RP actions and handover.</p>
   </div>
   <div class="dash-grid" style="grid-template-columns:repeat(auto-fill,minmax(160px,1fr))">
     <div class="dash-card emergency-tile cardiac" onclick="activateEmergency('cardiac-arrest')" style="background:linear-gradient(135deg,#2a1018,#1a0a10);border-color:#4a1a2a"><span class="dash-icon" style="font-size:32px">🚨</span><h3>Cardiac Arrest</h3></div>
@@ -180,18 +180,35 @@
     <div class="dash-card" onclick="activateEmergency('haemorrhage')"><span class="dash-icon" style="font-size:32px">🩸</span><h3>Major Haemorrhage</h3></div>
     <div class="dash-card" onclick="activateEmergency('sepsis')"><span class="dash-icon" style="font-size:32px">🦠</span><h3>Sepsis</h3></div>
     <div class="dash-card" onclick="activateEmergency('overdose')"><span class="dash-icon" style="font-size:32px">💊</span><h3>Overdose</h3></div>
+    <div class="dash-card" onclick="activateEmergency('hypothermia')"><span class="dash-icon" style="font-size:32px">❄️</span><h3>Hypothermia</h3></div>
+    <div class="dash-card" onclick="activateEmergency('burns')"><span class="dash-icon" style="font-size:32px">🔥</span><h3>Burns</h3></div>
   </div>
   <div id="emergency-active" style="display:none">
-    <div class="section-head"><h2 id="emergency-title">Active Emergency</h2></div>
-    <div class="two-col">
-      <article class="info"><h3>Immediate Priorities</h3><div id="emergency-priorities"></div></article>
-      <article class="info"><h3>Assessment</h3><div id="emergency-assessment"></div></article>
+    <div class="section-head" style="border-bottom:none"><h2 id="emergency-title" style="font-size:26px">Active Emergency</h2></div>
+
+    <div class="emergency-layout" style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <article class="info"><h3>🚑 Immediate Priorities</h3><div id="emergency-priorities" class="emergency-list"></div></article>
+      <article class="info"><h3>🔍 Assessment</h3><div id="emergency-assessment" class="emergency-list"></div></article>
     </div>
-    <div class="two-col">
-      <article class="info"><h3>RP Actions</h3><div id="emergency-rp"></div></article>
-      <article class="info"><h3>Patient Questions</h3><div id="emergency-questions"></div></article>
+
+    <div class="emergency-layout" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:4px">
+      <article class="info" style="border-left:3px solid #005eb8"><h3>💊 Management &amp; Interventions</h3><div id="emergency-management" class="emergency-list"></div></article>
+      <article class="info" style="border-left:3px solid #a9313e"><h3>🚨 Red Flags</h3><div id="emergency-redflags" class="emergency-list"></div></article>
     </div>
-    <button class="secondary" onclick="deactivateEmergency()">🔙 Back to Emergency Mode</button>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:4px">
+      <article class="info"><h3>🎭 RP Actions</h3><div id="emergency-rp"></div></article>
+      <article class="info"><h3>💬 Patient Questions</h3><div id="emergency-questions"></div></article>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr;gap:14px;margin-top:4px">
+      <article class="info" style="border-left:3px solid #41b6e6"><h3>📋 Handover Summary</h3><div id="emergency-handover" style="color:#c3d0d5;font-family:monospace;font-size:13px;line-height:1.7;white-space:pre-wrap"></div></article>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap">
+      <button class="primary" onclick="copyEmergencyHandover()">📋 Copy Handover</button>
+      <button class="secondary" onclick="deactivateEmergency()">🔙 Back to Emergency List</button>
+    </div>
   </div>
 </section>
 
