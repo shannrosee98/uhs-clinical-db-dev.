@@ -182,6 +182,200 @@ async function ensureCoreSchema() {
       [id, name, description, JSON.stringify(permissions)]
     );
   }
+
+  /* =========================================================
+     PHASE 2 CMS FOUNDATION SCHEMA
+
+     Extends editable_content with soft delete, hierarchy,
+     ownership and visibility columns. Creates supporting CMS
+     tables for pages, sections, content blocks, navigation,
+     categories, and content version history.
+
+     All additions are additive with CREATE IF NOT EXISTS and
+     ADD COLUMN IF NOT EXISTS — existing data and routes are
+     completely unaffected.
+  ========================================================= */
+  await pool.query(`
+    ALTER TABLE editable_content
+    ADD COLUMN IF NOT EXISTS slug TEXT,
+    ADD COLUMN IF NOT EXISTS category TEXT,
+    ADD COLUMN IF NOT EXISTS visibility TEXT NOT NULL DEFAULT 'public',
+    ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'published',
+    ADD COLUMN IF NOT EXISTS parent_key TEXT,
+    ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ,
+    ADD COLUMN IF NOT EXISTS deleted_by UUID REFERENCES users(id),
+    ADD COLUMN IF NOT EXISTS created_by UUID REFERENCES users(id),
+    ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  `);
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS idx_editable_content_type_status
+    ON editable_content(content_type, status)
+  `);
+
+  /* CMS pages */
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS cms_pages (
+      id UUID PRIMARY KEY,
+      name TEXT NOT NULL,
+      slug TEXT UNIQUE NOT NULL,
+      description TEXT,
+      icon TEXT,
+      parent_id UUID REFERENCES cms_pages(id),
+      order_index INT NOT NULL DEFAULT 0,
+      status TEXT NOT NULL DEFAULT 'published',
+      visibility TEXT NOT NULL DEFAULT 'public',
+      template TEXT NOT NULL DEFAULT 'standard',
+      created_by UUID REFERENCES users(id),
+      updated_by UUID REFERENCES users(id),
+      deleted_at TIMESTAMPTZ,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `);
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS idx_cms_pages_parent
+    ON cms_pages(parent_id, order_index)
+  `);
+
+  /* CMS page sections */
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS cms_page_sections (
+      id UUID PRIMARY KEY,
+      page_id UUID NOT NULL REFERENCES cms_pages(id) ON DELETE CASCADE,
+      title TEXT,
+      description TEXT,
+      content JSONB,
+      section_type TEXT NOT NULL DEFAULT 'content',
+      order_index INT NOT NULL DEFAULT 0,
+      status TEXT NOT NULL DEFAULT 'published',
+      visibility TEXT NOT NULL DEFAULT 'public',
+      created_by UUID REFERENCES users(id),
+      updated_by UUID REFERENCES users(id),
+      deleted_at TIMESTAMPTZ,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `);
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS idx_cms_sections_page
+    ON cms_page_sections(page_id, order_index)
+  `);
+
+  /* CMS content blocks */
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS cms_content_blocks (
+      id UUID PRIMARY KEY,
+      block_key TEXT NOT NULL,
+      block_type TEXT NOT NULL DEFAULT 'text',
+      title TEXT,
+      content JSONB NOT NULL DEFAULT '{}'::jsonb,
+      section_id UUID REFERENCES cms_page_sections(id) ON DELETE CASCADE,
+      page_id UUID REFERENCES cms_pages(id) ON DELETE CASCADE,
+      parent_id UUID REFERENCES cms_content_blocks(id),
+      category TEXT,
+      order_index INT NOT NULL DEFAULT 0,
+      status TEXT NOT NULL DEFAULT 'published',
+      visibility TEXT NOT NULL DEFAULT 'public',
+      created_by UUID REFERENCES users(id),
+      updated_by UUID REFERENCES users(id),
+      deleted_at TIMESTAMPTZ,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      UNIQUE (block_key, block_type)
+    )
+  `);
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS idx_cms_blocks_section
+    ON cms_content_blocks(section_id, order_index)
+  `);
+
+  /* CMS navigation — hierarchical */
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS cms_navigation (
+      id UUID PRIMARY KEY,
+      label TEXT NOT NULL,
+      url TEXT,
+      icon TEXT,
+      page_id UUID REFERENCES cms_pages(id),
+      parent_id UUID REFERENCES cms_navigation(id),
+      order_index INT NOT NULL DEFAULT 0,
+      target TEXT NOT NULL DEFAULT '_self',
+      is_external BOOLEAN NOT NULL DEFAULT false,
+      role_required TEXT,
+      status TEXT NOT NULL DEFAULT 'published',
+      visibility TEXT NOT NULL DEFAULT 'public',
+      created_by UUID REFERENCES users(id),
+      updated_by UUID REFERENCES users(id),
+      deleted_at TIMESTAMPTZ,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `);
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS idx_cms_nav_parent
+    ON cms_navigation(parent_id, order_index)
+  `);
+
+  /* CMS categories — reusable across content types */
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS cms_categories (
+      id UUID PRIMARY KEY,
+      name TEXT NOT NULL,
+      slug TEXT NOT NULL,
+      description TEXT,
+      icon TEXT,
+      parent_id UUID REFERENCES cms_categories(id),
+      content_type TEXT NOT NULL DEFAULT 'generic',
+      order_index INT NOT NULL DEFAULT 0,
+      status TEXT NOT NULL DEFAULT 'published',
+      visibility TEXT NOT NULL DEFAULT 'public',
+      created_by UUID REFERENCES users(id),
+      updated_by UUID REFERENCES users(id),
+      deleted_at TIMESTAMPTZ,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      UNIQUE (slug, content_type)
+    )
+  `);
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS idx_cms_categories_type
+    ON cms_categories(content_type, order_index)
+  `);
+
+  /* CMS content versions — version history foundation */
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS cms_content_versions (
+      id BIGSERIAL PRIMARY KEY,
+      content_key TEXT NOT NULL,
+      content_type TEXT,
+      version INT NOT NULL DEFAULT 1,
+      content JSONB,
+      created_by UUID REFERENCES users(id),
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      UNIQUE (content_key, version)
+    )
+  `);
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS idx_cms_versions_key
+    ON cms_content_versions(content_key, version DESC)
+  `);
+
+  /* Soft delete support for documents and folders */
+  await pool.query(`
+    ALTER TABLE document_files
+    ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ,
+    ADD COLUMN IF NOT EXISTS deleted_by UUID REFERENCES users(id),
+    ADD COLUMN IF NOT EXISTS created_by UUID REFERENCES users(id),
+    ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'published'
+  `);
+  await pool.query(`
+    ALTER TABLE document_folders
+    ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ,
+    ADD COLUMN IF NOT EXISTS deleted_by UUID REFERENCES users(id),
+    ADD COLUMN IF NOT EXISTS created_by UUID REFERENCES users(id),
+    ADD COLUMN IF NOT EXISTS owner_id UUID REFERENCES users(id),
+    ADD COLUMN IF NOT EXISTS permissions JSONB NOT NULL DEFAULT '{}'::jsonb
+  `);
 }
 
 /* =========================================================
@@ -2431,6 +2625,507 @@ app.post('/api/cms/reset', admin, async (req, res) => {
   } catch (error) {
     console.error('CMS reset error:', error);
     res.status(500).json({ error: 'Failed to reset content' });
+  }
+});
+
+
+/* =========================================================
+   PHASE 2 CMS API — Pages, Sections, Blocks, Navigation, Categories
+   Uses existing admin() and requirePermission() middleware.
+========================================================= */
+
+/* ---- CMS PAGES ---- */
+
+app.get('/api/cms-pages', admin, async (req, res) => {
+  try {
+    const includeDeleted = req.query.include_deleted === 'true';
+    let query = 'SELECT * FROM cms_pages WHERE deleted_at IS NULL';
+    if (includeDeleted) query = 'SELECT * FROM cms_pages';
+    query += ' ORDER BY order_index ASC, name ASC';
+    const q = await pool.query(query);
+    res.json({ ok: true, pages: q.rows });
+  } catch (error) {
+    console.error('CMS pages list error:', error);
+    res.status(500).json({ error: 'Failed to list pages' });
+  }
+});
+
+app.get('/api/cms-pages/:id', admin, async (req, res) => {
+  try {
+    const q = await pool.query('SELECT * FROM cms_pages WHERE id = $1', [req.params.id]);
+    if (!q.rows.length) return res.status(404).json({ error: 'Page not found' });
+    res.json({ ok: true, page: q.rows[0] });
+  } catch (error) {
+    console.error('CMS page get error:', error);
+    res.status(500).json({ error: 'Failed to fetch page' });
+  }
+});
+
+app.post('/api/cms-pages', admin, async (req, res) => {
+  try {
+    const { name, slug, description, icon, parent_id, template } = req.body;
+    if (!name || !slug) return res.status(400).json({ error: 'Name and slug are required' });
+    const id = crypto.randomUUID();
+    const maxOrder = await pool.query('SELECT COALESCE(MAX(order_index), 0) + 1 AS o FROM cms_pages');
+    await pool.query(
+      'INSERT INTO cms_pages (id, name, slug, description, icon, parent_id, order_index, template, created_by) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)',
+      [id, name, slug, description || '', icon || null, parent_id || null, maxOrder.rows[0].o, template || 'standard', req.user.id]
+    );
+    await logAction(req.user.id, 'cms.page.create', 'cms_page', id, { name, slug });
+    const q = await pool.query('SELECT * FROM cms_pages WHERE id = $1', [id]);
+    res.status(201).json({ ok: true, page: q.rows[0] });
+  } catch (error) {
+    console.error('CMS page create error:', error);
+    res.status(500).json({ error: 'Failed to create page' });
+  }
+});
+
+app.put('/api/cms-pages/:id', admin, async (req, res) => {
+  try {
+    const { name, slug, description, icon, parent_id, template } = req.body;
+    const id = req.params.id;
+    await pool.query(
+      'UPDATE cms_pages SET name=COALESCE($1,name), slug=COALESCE($2,slug), description=$3, icon=$4, parent_id=$5, template=COALESCE($6,template), updated_by=$7, updated_at=NOW() WHERE id=$8',
+      [name||null, slug||null, description??null, icon??null, parent_id!==undefined?parent_id:null, template||null, req.user.id, id]
+    );
+    await logAction(req.user.id, 'cms.page.update', 'cms_page', id, { name, slug });
+    const q = await pool.query('SELECT * FROM cms_pages WHERE id = $1', [id]);
+    if (!q.rows.length) return res.status(404).json({ error: 'Page not found' });
+    res.json({ ok: true, page: q.rows[0] });
+  } catch (error) {
+    console.error('CMS page update error:', error);
+    res.status(500).json({ error: 'Failed to update page' });
+  }
+});
+
+app.delete('/api/cms-pages/:id', admin, async (req, res) => {
+  try {
+    const id = req.params.id;
+    const before = await pool.query('SELECT name FROM cms_pages WHERE id = $1', [id]);
+    await pool.query('UPDATE cms_pages SET deleted_at=NOW(), deleted_by=$1, updated_at=NOW() WHERE id=$2', [req.user.id, id]);
+    await logAction(req.user.id, 'cms.page.delete', 'cms_page', id, { name: before.rows[0]?.name });
+    res.json({ ok: true });
+  } catch (error) {
+    console.error('CMS page delete error:', error);
+    res.status(500).json({ error: 'Failed to delete page' });
+  }
+});
+
+app.post('/api/cms-pages/:id/restore', admin, async (req, res) => {
+  try {
+    await pool.query('UPDATE cms_pages SET deleted_at=NULL, deleted_by=NULL, updated_at=NOW() WHERE id=$1', [req.params.id]);
+    await logAction(req.user.id, 'cms.page.restore', 'cms_page', req.params.id, null);
+    res.json({ ok: true });
+  } catch (error) {
+    console.error('CMS page restore error:', error);
+    res.status(500).json({ error: 'Failed to restore page' });
+  }
+});
+
+app.post('/api/cms-pages/:id/duplicate', admin, async (req, res) => {
+  try {
+    const orig = await pool.query('SELECT * FROM cms_pages WHERE id = $1', [req.params.id]);
+    if (!orig.rows.length) return res.status(404).json({ error: 'Page not found' });
+    const p = orig.rows[0];
+    const newId = crypto.randomUUID();
+    const maxOrder = await pool.query('SELECT COALESCE(MAX(order_index),0)+1 AS o FROM cms_pages');
+    await pool.query(
+      'INSERT INTO cms_pages (id,name,slug,description,icon,parent_id,order_index,template,created_by) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)',
+      [newId, p.name+' (copy)', p.slug+'-copy-'+Date.now(), p.description, p.icon, p.parent_id, maxOrder.rows[0].o, p.template, req.user.id]
+    );
+    const q = await pool.query('SELECT * FROM cms_pages WHERE id = $1', [newId]);
+    res.status(201).json({ ok: true, page: q.rows[0] });
+  } catch (error) {
+    console.error('CMS page duplicate error:', error);
+    res.status(500).json({ error: 'Failed to duplicate page' });
+  }
+});
+
+app.post('/api/cms-pages/reorder', admin, async (req, res) => {
+  try {
+    const { order } = req.body;
+    if (!Array.isArray(order)) return res.status(400).json({ error: 'Order array required' });
+    for (let i = 0; i < order.length; i++) {
+      await pool.query('UPDATE cms_pages SET order_index=$1, updated_at=NOW() WHERE id=$2', [i, order[i]]);
+    }
+    await logAction(req.user.id, 'cms.page.reorder', 'cms_page', null, { count: order.length });
+    res.json({ ok: true });
+  } catch (error) {
+    console.error('CMS page reorder error:', error);
+    res.status(500).json({ error: 'Failed to reorder pages' });
+  }
+});
+
+/* ---- CMS CONTENT OPERATIONS (editable_content extensions) ---- */
+
+app.put('/api/cms/:contentType/:key/publish', admin, async (req, res) => {
+  try {
+    const { published } = req.body;
+    await pool.query('UPDATE editable_content SET is_published=$1, updated_by=$2, updated_at=NOW() WHERE content_key=$3',
+      [published !== false, req.user.id, req.params.key]);
+    await logAction(req.user.id, published !== false ? 'cms.item.publish' : 'cms.item.unpublish', req.params.contentType, req.params.key, null);
+    res.json({ ok: true });
+  } catch (error) {
+    console.error('CMS publish error:', error);
+    res.status(500).json({ error: 'Failed to update publish status' });
+  }
+});
+
+app.post('/api/cms/:contentType/:key/duplicate', admin, async (req, res) => {
+  try {
+    const type = req.params.contentType;
+    const key = req.params.key;
+    const orig = await pool.query('SELECT * FROM editable_content WHERE content_key = $1', [key]);
+    if (!orig.rows.length) return res.status(404).json({ error: 'Original not found' });
+    const o = orig.rows[0];
+    const newKey = key + '-copy-' + Date.now();
+    const maxOrder = await pool.query('SELECT COALESCE(MAX(order_index),0)+1 AS o FROM editable_content WHERE content_type=$1', [type]);
+    await pool.query(
+      'INSERT INTO editable_content (content_key,content_type,content,item_name,is_published,order_index,created_by,updated_by) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)',
+      [newKey, type, o.content, (o.item_name||'')+' (copy)', false, maxOrder.rows[0].o, req.user.id, req.user.id]
+    );
+    await logAction(req.user.id, 'cms.item.duplicate', type, newKey, { originalKey: key });
+    res.status(201).json({ ok: true, key: newKey });
+  } catch (error) {
+    console.error('CMS duplicate error:', error);
+    res.status(500).json({ error: 'Failed to duplicate content' });
+  }
+});
+
+app.post('/api/cms/:contentType/reorder', admin, async (req, res) => {
+  try {
+    const { order } = req.body;
+    const type = req.params.contentType;
+    if (!Array.isArray(order)) return res.status(400).json({ error: 'Order array required' });
+    for (let i = 0; i < order.length; i++) {
+      await pool.query('UPDATE editable_content SET order_index=$1, updated_at=NOW() WHERE content_key=$2 AND content_type=$3', [i, order[i], type]);
+    }
+    await logAction(req.user.id, 'cms.reorder', type, null, { count: order.length });
+    res.json({ ok: true });
+  } catch (error) {
+    console.error('CMS reorder error:', error);
+    res.status(500).json({ error: 'Failed to reorder content' });
+  }
+});
+
+app.post('/api/cms/:contentType/:key/restore', admin, async (req, res) => {
+  try {
+    await pool.query('UPDATE editable_content SET deleted_at=NULL, deleted_by=NULL, updated_at=NOW() WHERE content_key=$1', [req.params.key]);
+    await logAction(req.user.id, 'cms.item.restore', req.params.contentType, req.params.key, null);
+    res.json({ ok: true });
+  } catch (error) {
+    console.error('CMS restore error:', error);
+    res.status(500).json({ error: 'Failed to restore content' });
+  }
+});
+
+/* ---- CMS VERSIONS ---- */
+
+app.get('/api/cms/versions/:contentKey', admin, async (req, res) => {
+  try {
+    const q = await pool.query('SELECT * FROM cms_content_versions WHERE content_key=$1 ORDER BY version DESC', [req.params.contentKey]);
+    res.json({ ok: true, versions: q.rows });
+  } catch (error) {
+    console.error('CMS versions list error:', error);
+    res.status(500).json({ error: 'Failed to list versions' });
+  }
+});
+
+app.post('/api/cms/versions/:contentKey', admin, async (req, res) => {
+  try {
+    const key = req.params.contentKey;
+    const current = await pool.query('SELECT content, content_type FROM editable_content WHERE content_key=$1', [key]);
+    if (!current.rows.length) return res.status(404).json({ error: 'Content not found' });
+    const maxVer = await pool.query('SELECT COALESCE(MAX(version),0)+1 AS v FROM cms_content_versions WHERE content_key=$1', [key]);
+    await pool.query(
+      'INSERT INTO cms_content_versions (content_key, content_type, version, content, created_by) VALUES ($1,$2,$3,$4,$5)',
+      [key, current.rows[0].content_type, maxVer.rows[0].v, current.rows[0].content, req.user.id]
+    );
+    res.status(201).json({ ok: true, version: maxVer.rows[0].v });
+  } catch (error) {
+    console.error('CMS version create error:', error);
+    res.status(500).json({ error: 'Failed to create version' });
+  }
+});
+
+app.post('/api/cms/versions/:contentKey/restore/:version', admin, async (req, res) => {
+  try {
+    const { contentKey, version } = req.params;
+    const ver = await pool.query('SELECT content, content_type FROM cms_content_versions WHERE content_key=$1 AND version=$2', [contentKey, Number(version)]);
+    if (!ver.rows.length) return res.status(404).json({ error: 'Version not found' });
+    await pool.query('UPDATE editable_content SET content=$1, updated_by=$2, updated_at=NOW() WHERE content_key=$3',
+      [ver.rows[0].content, req.user.id, contentKey]);
+    await logAction(req.user.id, 'cms.version.restore', ver.rows[0].content_type, contentKey, { version: Number(version) });
+    res.json({ ok: true });
+  } catch (error) {
+    console.error('CMS version restore error:', error);
+    res.status(500).json({ error: 'Failed to restore version' });
+  }
+});
+
+/* ---- CMS PAGE SECTIONS ---- */
+
+app.get('/api/cms-sections/:pageId', admin, async (req, res) => {
+  try {
+    const q = await pool.query('SELECT * FROM cms_page_sections WHERE page_id=$1 AND deleted_at IS NULL ORDER BY order_index ASC', [req.params.pageId]);
+    res.json({ ok: true, sections: q.rows });
+  } catch (error) {
+    console.error('CMS sections list error:', error);
+    res.status(500).json({ error: 'Failed to list sections' });
+  }
+});
+
+app.post('/api/cms-sections/:pageId', admin, async (req, res) => {
+  try {
+    const { title, description, content, section_type } = req.body;
+    const pageId = req.params.pageId;
+    const id = crypto.randomUUID();
+    const maxOrder = await pool.query('SELECT COALESCE(MAX(order_index),0)+1 AS o FROM cms_page_sections WHERE page_id=$1', [pageId]);
+    await pool.query('INSERT INTO cms_page_sections (id,page_id,title,description,content,section_type,order_index,created_by) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)',
+      [id, pageId, title||null, description||null, content?JSON.stringify(content):null, section_type||'content', maxOrder.rows[0].o, req.user.id]);
+    const q = await pool.query('SELECT * FROM cms_page_sections WHERE id=$1', [id]);
+    res.status(201).json({ ok: true, section: q.rows[0] });
+  } catch (error) {
+    console.error('CMS section create error:', error);
+    res.status(500).json({ error: 'Failed to create section' });
+  }
+});
+
+app.put('/api/cms-sections/:id', admin, async (req, res) => {
+  try {
+    const { title, description, content, section_type } = req.body;
+    await pool.query('UPDATE cms_page_sections SET title=COALESCE($1,title), description=$2, content=COALESCE($3,content), section_type=COALESCE($4,section_type), updated_by=$5, updated_at=NOW() WHERE id=$6',
+      [title??null, description??null, content?JSON.stringify(content):null, section_type||null, req.user.id, req.params.id]);
+    const q = await pool.query('SELECT * FROM cms_page_sections WHERE id=$1', [req.params.id]);
+    res.json({ ok: true, section: q.rows[0] });
+  } catch (error) {
+    console.error('CMS section update error:', error);
+    res.status(500).json({ error: 'Failed to update section' });
+  }
+});
+
+app.delete('/api/cms-sections/:id', admin, async (req, res) => {
+  try {
+    await pool.query('UPDATE cms_page_sections SET deleted_at=NOW(), deleted_by=$1 WHERE id=$2', [req.user.id, req.params.id]);
+    res.json({ ok: true });
+  } catch (error) {
+    console.error('CMS section delete error:', error);
+    res.status(500).json({ error: 'Failed to delete section' });
+  }
+});
+
+app.post('/api/cms-sections/:id/restore', admin, async (req, res) => {
+  try {
+    await pool.query('UPDATE cms_page_sections SET deleted_at=NULL, deleted_by=NULL WHERE id=$1', [req.params.id]);
+    res.json({ ok: true });
+  } catch (error) {
+    console.error('CMS section restore error:', error);
+    res.status(500).json({ error: 'Failed to restore section' });
+  }
+});
+
+app.post('/api/cms-sections/reorder', admin, async (req, res) => {
+  try {
+    const { page_id, order } = req.body;
+    if (!Array.isArray(order)) return res.status(400).json({ error: 'Order array required' });
+    for (let i = 0; i < order.length; i++) {
+      await pool.query('UPDATE cms_page_sections SET order_index=$1, updated_at=NOW() WHERE id=$2 AND page_id=$3', [i, order[i], page_id]);
+    }
+    res.json({ ok: true });
+  } catch (error) {
+    console.error('CMS section reorder error:', error);
+    res.status(500).json({ error: 'Failed to reorder sections' });
+  }
+});
+
+/* ---- CMS CONTENT BLOCKS ---- */
+
+app.get('/api/cms-blocks', admin, async (req, res) => {
+  try {
+    let query = 'SELECT * FROM cms_content_blocks WHERE deleted_at IS NULL';
+    const params = [];
+    if (req.query.section_id) { params.push(req.query.section_id); query += ' AND section_id=$' + params.length; }
+    if (req.query.page_id) { params.push(req.query.page_id); query += ' AND page_id=$' + params.length; }
+    if (req.query.block_type) { params.push(req.query.block_type); query += ' AND block_type=$' + params.length; }
+    query += ' ORDER BY order_index ASC';
+    const q = await pool.query(query, params);
+    res.json({ ok: true, blocks: q.rows });
+  } catch (error) {
+    console.error('CMS blocks list error:', error);
+    res.status(500).json({ error: 'Failed to list blocks' });
+  }
+});
+
+app.post('/api/cms-blocks', admin, async (req, res) => {
+  try {
+    const { block_key, block_type, title, content, section_id, page_id, parent_id, category } = req.body;
+    if (!block_key || !block_type) return res.status(400).json({ error: 'block_key and block_type required' });
+    const id = crypto.randomUUID();
+    const maxOrder = await pool.query('SELECT COALESCE(MAX(order_index),0)+1 AS o FROM cms_content_blocks');
+    await pool.query('INSERT INTO cms_content_blocks (id,block_key,block_type,title,content,section_id,page_id,parent_id,category,order_index,created_by) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',
+      [id, block_key, block_type, title||null, content?JSON.stringify(content):'{}', section_id||null, page_id||null, parent_id||null, category||null, maxOrder.rows[0].o, req.user.id]);
+    const q = await pool.query('SELECT * FROM cms_content_blocks WHERE id=$1', [id]);
+    res.status(201).json({ ok: true, block: q.rows[0] });
+  } catch (error) {
+    console.error('CMS block create error:', error);
+    res.status(500).json({ error: 'Failed to create block' });
+  }
+});
+
+app.put('/api/cms-blocks/:id', admin, async (req, res) => {
+  try {
+    const { title, content, block_type, category, parent_id } = req.body;
+    await pool.query('UPDATE cms_content_blocks SET title=COALESCE($1,title), content=COALESCE($2,content), block_type=COALESCE($3,block_type), category=COALESCE($4,category), parent_id=$5, updated_by=$6, updated_at=NOW() WHERE id=$7',
+      [title??null, content?JSON.stringify(content):null, block_type||null, category??null, parent_id!==undefined?parent_id:null, req.user.id, req.params.id]);
+    const q = await pool.query('SELECT * FROM cms_content_blocks WHERE id=$1', [req.params.id]);
+    res.json({ ok: true, block: q.rows[0] });
+  } catch (error) {
+    console.error('CMS block update error:', error);
+    res.status(500).json({ error: 'Failed to update block' });
+  }
+});
+
+app.delete('/api/cms-blocks/:id', admin, async (req, res) => {
+  try {
+    await pool.query('UPDATE cms_content_blocks SET deleted_at=NOW(), deleted_by=$1 WHERE id=$2', [req.user.id, req.params.id]);
+    res.json({ ok: true });
+  } catch (error) {
+    console.error('CMS block delete error:', error);
+    res.status(500).json({ error: 'Failed to delete block' });
+  }
+});
+
+app.post('/api/cms-blocks/reorder', admin, async (req, res) => {
+  try {
+    const { section_id, order } = req.body;
+    if (!Array.isArray(order)) return res.status(400).json({ error: 'Order array required' });
+    for (let i = 0; i < order.length; i++) {
+      await pool.query('UPDATE cms_content_blocks SET order_index=$1, updated_at=NOW() WHERE id=$2 AND section_id=$3', [i, order[i], section_id]);
+    }
+    res.json({ ok: true });
+  } catch (error) {
+    console.error('CMS block reorder error:', error);
+    res.status(500).json({ error: 'Failed to reorder blocks' });
+  }
+});
+
+/* ---- CMS NAVIGATION ---- */
+
+app.get('/api/cms-navigation', admin, async (req, res) => {
+  try {
+    const q = await pool.query('SELECT * FROM cms_navigation WHERE deleted_at IS NULL ORDER BY parent_id NULLS FIRST, order_index ASC, label ASC');
+    res.json({ ok: true, items: q.rows });
+  } catch (error) {
+    console.error('CMS nav list error:', error);
+    res.status(500).json({ error: 'Failed to list navigation' });
+  }
+});
+
+app.post('/api/cms-navigation', admin, async (req, res) => {
+  try {
+    const { label, url, icon, page_id, parent_id, target, is_external, role_required } = req.body;
+    if (!label) return res.status(400).json({ error: 'Label is required' });
+    const id = crypto.randomUUID();
+    const maxOrder = await pool.query('SELECT COALESCE(MAX(order_index),0)+1 AS o FROM cms_navigation');
+    await pool.query('INSERT INTO cms_navigation (id,label,url,icon,page_id,parent_id,order_index,target,is_external,role_required,created_by) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',
+      [id, label, url||null, icon||null, page_id||null, parent_id||null, maxOrder.rows[0].o, target||'_self', !!is_external, role_required||null, req.user.id]);
+    const q = await pool.query('SELECT * FROM cms_navigation WHERE id=$1', [id]);
+    res.status(201).json({ ok: true, item: q.rows[0] });
+  } catch (error) {
+    console.error('CMS nav create error:', error);
+    res.status(500).json({ error: 'Failed to create nav item' });
+  }
+});
+
+app.put('/api/cms-navigation/:id', admin, async (req, res) => {
+  try {
+    const { label, url, icon, page_id, parent_id, target, is_external, role_required } = req.body;
+    await pool.query('UPDATE cms_navigation SET label=COALESCE($1,label), url=$2, icon=$3, page_id=$4, parent_id=$5, target=COALESCE($6,target), is_external=$7, role_required=$8, updated_by=$9, updated_at=NOW() WHERE id=$10',
+      [label||null, url??null, icon??null, page_id!==undefined?page_id:null, parent_id!==undefined?parent_id:null, target||null, is_external!==undefined?is_external:false, role_required??null, req.user.id, req.params.id]);
+    const q = await pool.query('SELECT * FROM cms_navigation WHERE id=$1', [req.params.id]);
+    res.json({ ok: true, item: q.rows[0] });
+  } catch (error) {
+    console.error('CMS nav update error:', error);
+    res.status(500).json({ error: 'Failed to update nav item' });
+  }
+});
+
+app.delete('/api/cms-navigation/:id', admin, async (req, res) => {
+  try {
+    await pool.query('UPDATE cms_navigation SET deleted_at=NOW(), deleted_by=$1 WHERE id=$2', [req.user.id, req.params.id]);
+    res.json({ ok: true });
+  } catch (error) {
+    console.error('CMS nav delete error:', error);
+    res.status(500).json({ error: 'Failed to delete nav item' });
+  }
+});
+
+app.post('/api/cms-navigation/reorder', admin, async (req, res) => {
+  try {
+    const { parent_id, order } = req.body;
+    if (!Array.isArray(order)) return res.status(400).json({ error: 'Order array required' });
+    for (let i = 0; i < order.length; i++) {
+      await pool.query('UPDATE cms_navigation SET order_index=$1, updated_at=NOW() WHERE id=$2', [i, order[i]]);
+    }
+    res.json({ ok: true });
+  } catch (error) {
+    console.error('CMS nav reorder error:', error);
+    res.status(500).json({ error: 'Failed to reorder navigation' });
+  }
+});
+
+/* ---- CMS CATEGORIES ---- */
+
+app.get('/api/cms-categories', admin, async (req, res) => {
+  try {
+    let query = 'SELECT * FROM cms_categories WHERE deleted_at IS NULL';
+    const params = [];
+    if (req.query.content_type) { params.push(req.query.content_type); query += ' AND content_type=$' + params.length; }
+    query += ' ORDER BY order_index ASC, name ASC';
+    const q = await pool.query(query, params);
+    res.json({ ok: true, categories: q.rows });
+  } catch (error) {
+    console.error('CMS categories list error:', error);
+    res.status(500).json({ error: 'Failed to list categories' });
+  }
+});
+
+app.post('/api/cms-categories', admin, async (req, res) => {
+  try {
+    const { name, slug, description, icon, parent_id, content_type } = req.body;
+    if (!name || !slug || !content_type) return res.status(400).json({ error: 'name, slug, content_type required' });
+    const id = crypto.randomUUID();
+    const maxOrder = await pool.query('SELECT COALESCE(MAX(order_index),0)+1 AS o FROM cms_categories');
+    await pool.query('INSERT INTO cms_categories (id,name,slug,description,icon,parent_id,content_type,order_index,created_by) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)',
+      [id, name, slug, description||null, icon||null, parent_id||null, content_type, maxOrder.rows[0].o, req.user.id]);
+    const q = await pool.query('SELECT * FROM cms_categories WHERE id=$1', [id]);
+    res.status(201).json({ ok: true, category: q.rows[0] });
+  } catch (error) {
+    console.error('CMS category create error:', error);
+    res.status(500).json({ error: 'Failed to create category' });
+  }
+});
+
+app.put('/api/cms-categories/:id', admin, async (req, res) => {
+  try {
+    const { name, slug, description, icon, parent_id, content_type } = req.body;
+    await pool.query('UPDATE cms_categories SET name=COALESCE($1,name), slug=COALESCE($2,slug), description=$3, icon=$4, parent_id=$5, content_type=COALESCE($6,content_type), updated_by=$7, updated_at=NOW() WHERE id=$8',
+      [name||null, slug||null, description??null, icon??null, parent_id!==undefined?parent_id:null, content_type||null, req.user.id, req.params.id]);
+    const q = await pool.query('SELECT * FROM cms_categories WHERE id=$1', [req.params.id]);
+    res.json({ ok: true, category: q.rows[0] });
+  } catch (error) {
+    console.error('CMS category update error:', error);
+    res.status(500).json({ error: 'Failed to update category' });
+  }
+});
+
+app.delete('/api/cms-categories/:id', admin, async (req, res) => {
+  try {
+    await pool.query('UPDATE cms_categories SET deleted_at=NOW(), deleted_by=$1 WHERE id=$2', [req.user.id, req.params.id]);
+    res.json({ ok: true });
+  } catch (error) {
+    console.error('CMS category delete error:', error);
+    res.status(500).json({ error: 'Failed to delete category' });
   }
 });
 
