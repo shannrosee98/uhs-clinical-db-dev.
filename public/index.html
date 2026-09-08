@@ -2803,6 +2803,18 @@
         <button class="primary" onclick="cms2OpenEditor(null)">+ Add</button>
         <button class="secondary" onclick="cms2List()">Refresh</button>
       </div>
+
+      <article class="info" style="margin-bottom:14px">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+          <div>
+            <h3 style="margin:0 0 4px">🔎 Legacy CMS Retirement Check</h3>
+            <p class="muted" style="margin:0">Read-only production check. It verifies that legacy content has structured equivalents and that the public site no longer depends on the old CMS.</p>
+          </div>
+          <button class="secondary" onclick="runCmsRetirementCheck()">Run Check</button>
+        </div>
+        <div id="cmsRetirementCheckResult" style="display:none;margin-top:12px"></div>
+      </article>
+
       <div id="cms2List" class="staff-list">
         <p class="muted">Select a type to manage items.</p>
       </div>

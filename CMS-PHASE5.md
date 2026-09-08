@@ -78,3 +78,21 @@ Before a future destructive phase:
 
 This separation is intentional: Phase 5 makes the new CMS authoritative while keeping a reversible
 database safety net.
+
+
+## Render Free plan: browser-based retirement check
+
+If the Render service is on the Free compute plan, Shell/SSH is unavailable. The same
+read-only retirement check is available to authenticated administrators in:
+
+**Admin → CMS Manager → Legacy CMS Retirement Check → Run Check**
+
+It calls `GET /api/admin/cms-retirement-check`, which uses the production service's
+existing database connection and admin session. No database credentials are entered
+into the browser and the endpoint performs no writes or destructive operations.
+
+The CLI command remains available for local/staging environments:
+
+```bash
+npm run cms:retirement-check
+```

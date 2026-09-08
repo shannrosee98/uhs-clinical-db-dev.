@@ -8530,6 +8530,80 @@ function showAdminTab(tab) {
   if (tab === 'rp') renderAdminRpActions();
 }
 
+/* =========================================================
+   CMS RETIREMENT CHECK
+   Read-only admin diagnostic. Useful on Render Free plans
+   where Shell/SSH is unavailable.
+========================================================= */
+async function runCmsRetirementCheck() {
+  var container = document.getElementById('cmsRetirementCheckResult');
+  if (!container) return;
+
+  container.style.display = 'block';
+  container.innerHTML = '<p class="muted">Checking production CMS…</p>';
+
+  try {
+    var report = await api('/api/admin/cms-retirement-check');
+
+    var safe = report.safe_to_retire_legacy_table === true;
+    var blockers = Array.isArray(report.blockers) ? report.blockers : [];
+    var missing = report.legacy && Array.isArray(report.legacy.missing_structured_equivalent)
+      ? report.legacy.missing_structured_equivalent
+      : [];
+
+    var legacyTotal = report.legacy ? Number(report.legacy.total || 0) : 0;
+    var legacyPublished = report.legacy ? Number(report.legacy.published || 0) : 0;
+
+    var html = '';
+    html += '<div style="padding:14px;border:1px solid ' +
+      (safe ? '#315f46' : '#664d2a') +
+      ';border-radius:10px;background:#0f2029">';
+
+    html += '<div style="font-weight:700;font-size:15px;margin-bottom:10px">' +
+      (safe ? '✅ Safe to retire legacy table' : '⚠️ Legacy retirement is not ready') +
+      '</div>';
+
+    html += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:10px">';
+    html += '<div class="info"><strong>Legacy records</strong><br>' + legacyTotal + '</div>';
+    html += '<div class="info"><strong>Legacy published</strong><br>' + legacyPublished + '</div>';
+    html += '<div class="info"><strong>Missing structured</strong><br>' + missing.length + '</div>';
+    html += '<div class="info"><strong>Blockers</strong><br>' + blockers.length + '</div>';
+    html += '</div>';
+
+    if (blockers.length) {
+      html += '<div style="margin-top:8px"><strong>Blockers</strong><ul style="margin:6px 0 0 20px">';
+      blockers.forEach(function(item) {
+        html += '<li>' + escapeHtml(String(item)) + '</li>';
+      });
+      html += '</ul></div>';
+    }
+
+    if (missing.length) {
+      html += '<details style="margin-top:10px"><summary><strong>' +
+        missing.length + ' legacy records need structured equivalents</strong></summary>';
+      html += '<div style="max-height:220px;overflow:auto;margin-top:8px">';
+      missing.forEach(function(item) {
+        html += '<div style="padding:5px 0;border-bottom:1px solid #203542;font-size:12px">' +
+          escapeHtml((item.content_type || '') + ': ' + (item.content_key || '')) +
+          '</div>';
+      });
+      html += '</div></details>';
+    }
+
+    html += '<p class="muted" style="margin:10px 0 0;font-size:11px">Generated: ' +
+      escapeHtml(String(report.generated_at || '')) + '</p>';
+    html += '</div>';
+
+    container.innerHTML = html;
+  } catch (error) {
+    container.innerHTML =
+      '<div style="padding:12px;border:1px solid #663c3c;border-radius:10px;background:#201316">' +
+      '<strong>❌ Check failed</strong><p class="muted" style="margin:6px 0 0">' +
+      escapeHtml(error && error.message ? error.message : 'Unable to run the check.') +
+      '</p></div>';
+  }
+}
+
 /* Load admin documents list */
 async function loadAdminDocuments() {
   var container = document.getElementById('adminDocList');

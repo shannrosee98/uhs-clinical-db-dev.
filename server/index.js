@@ -9,6 +9,7 @@ import rateLimit from 'express-rate-limit';
 import cookieParser from 'cookie-parser';
 import crypto from 'node:crypto';
 import path from 'node:path';
+import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import {
   S3Client,
@@ -22,6 +23,7 @@ import {
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { z } from 'zod';
+import { runRetirementCheck } from '../scripts/cms-retirement-check.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -879,6 +881,35 @@ function assertVideoType(type, name) {
 /* =========================================================
    HEALTH
 ========================================================= */
+
+
+/* =========================================================
+   CMS RETIREMENT CHECK
+   Read-only production health gate for the legacy CMS.
+   This is exposed to authenticated admins so Free Render
+   plans do not need Shell/SSH access to inspect production.
+========================================================= */
+app.get('/api/admin/cms-retirement-check', admin, async (req, res) => {
+  try {
+    const frontendSource = fs.readFileSync(
+      path.join(__dirname, '../public/script.js'),
+      'utf8'
+    );
+
+    const report = await runRetirementCheck({
+      pool,
+      frontendSource
+    });
+
+    res.json(report);
+  } catch (error) {
+    console.error('CMS retirement check failed:', error);
+    res.status(500).json({
+      error: 'CMS retirement check failed',
+      message: error.message || 'Unknown error'
+    });
+  }
+});
 
 app.get('/api/health', async (req, res) => {
   try {
