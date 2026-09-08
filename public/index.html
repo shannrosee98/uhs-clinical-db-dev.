@@ -2698,8 +2698,8 @@
       <button class="admintab" onclick="showAdminTab('equipment')">💰 Equipment</button>
       <button class="admintab" onclick="showAdminTab('documents')">📄 Documents</button>
       <button class="admintab" onclick="showAdminTab('backup')">📥 Backup</button>
-      <button class="admintab" onclick="showAdminTab('foundation')"> Foundation</button>
-      <button class="admintab" onclick="showAdminTab('cms')"> CMS Manager</button>
+      <button class="admintab" onclick="showAdminTab('foundation')">🧩 CMS Manager</button>
+      <button class="admintab" onclick="showAdminTab('cms')">🗃 Legacy / Read-only</button>
     </div>
 
     <!-- Dashboard -->
@@ -2711,7 +2711,7 @@
         <div class="dash-card" onclick="showAdminTab('medications')"><span class="dash-icon">💊</span><h3>Medications</h3><p>Update medication information</p></div>
         <div class="dash-card" onclick="showAdminTab('equipment')"><span class="dash-icon">💰</span><h3>Equipment</h3><p>Manage equipment library</p></div>
         <div class="dash-card" onclick="showAdminTab('documents')"><span class="dash-icon">📄</span><h3>Documents</h3><p>Uploaded PDFs and files</p></div>
-        <div class="dash-card" onclick="showAdminTab('foundation')"><span class="dash-icon">\u25a0</span><h3>Foundation</h3><p>Pages, navigation &amp; categories</p></div>
+        <div class="dash-card" onclick="showAdminTab('foundation')"><span class="dash-icon">🧩</span><h3>CMS Manager</h3><p>Pages, sections, blocks, navigation &amp; categories</p></div>
         <div class="dash-card" onclick="showAdminTab('backup')"><span class="dash-icon">📥</span><h3>Backup</h3><p>Export/import site data</p></div>
       </div>
     </div>
@@ -2795,8 +2795,8 @@
     <!-- Backup -->
     <div id="adminFoundationTab" class="admin-panel" style="display:none">
       <div class="section-head">
-        <h2>Foundation CMS</h2>
-        <p>Manage Pages, Page Sections, Content Blocks, Navigation, Categories and Content Versions.</p>
+        <h2>🧩 CMS Manager</h2>
+        <p>Manage pages, sections, content blocks, navigation and categories without editing code. This is the primary structured CMS.</p>
       </div>
       <div class="admin-toolbar" style="margin-bottom:14px">
         <select id="cms2TypeSelect" onchange="cms2List()" style="background:#0f2029;border:1px solid #29434f;border-radius:8px;color:#eaf2f4;padding:10px 14px;font-size:14px;flex:1;min-width:220px"></select>
@@ -2846,15 +2846,15 @@
     <!-- CMS Manager -->
     <div id="adminCmsTab" class="admin-panel" style="display:none">
       <div class="section-head">
-        <h2>⚙️ CMS Manager</h2>
-        <p>Edit everything on the site from here — no coding needed. Changes are saved to the database and shared with all staff. Built-in defaults are auto-restored if a section is reset.</p>
+        <h2>🗃 Legacy / Compatibility</h2>
+        <p>This is the old key-value CMS retained for rollback and compatibility. <strong>Use the primary CMS Manager above for all new edits.</strong></p>
+        <div class="info" style="margin-top:10px"><strong>Migration mode:</strong> published content is now read from the structured CMS first. Keep this area unchanged unless you are deliberately maintaining legacy fallback content.</div>
       </div>
 
       <div class="admin-toolbar" style="margin-bottom:14px">
         <select id="cmsTypeSelect" onchange="cmsRenderList()" style="background:#0f2029;border:1px solid #29434f;border-radius:8px;color:#eaf2f4;padding:10px 14px;font-size:14px;flex:1;min-width:220px"></select>
-        <button class="primary" onclick="cmsOpenEditor(null)">+ Add Item</button>
-        <button class="secondary" onclick="cmsSeedDefaults()">♻️ Seed Defaults</button>
-        <button class="danger-small" onclick="cmsResetType()">Reset Section</button>
+        <button class="secondary" onclick="cmsRenderList()">Refresh</button>
+        <span class="muted" style="align-self:center">Read-only compatibility view</span>
       </div>
 
       <div id="cmsList" class="staff-list">

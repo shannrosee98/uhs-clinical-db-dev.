@@ -6,7 +6,12 @@
   "scripts": {
     "start": "node server/index.js",
     "dev": "node --watch server/index.js",
-    "check": "node --check server/index.js"
+    "check": "node --check server/index.js",
+    "cms:audit": "node scripts/cms-migration.js",
+    "cms:migrate": "node scripts/cms-migration.js --migrate --create-draft-page",
+    "cms:check": "node --check server/index.js && node --check public/cms.js && node --check public/cms2.js && node --check public/script.js && node --check scripts/cms-migration.js",
+    "cms:promote": "CMS_CUTOVER_CONFIRM=YES node scripts/cms-migration.js --promote",
+    "cms:retirement-check": "node scripts/cms-retirement-check.js"
   },
   "engines": {
     "node": ">=20"

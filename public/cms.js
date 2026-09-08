@@ -1,3 +1,12 @@
+window.CMS_LEGACY_READ_ONLY = true;
+function cmsLegacyMutationBlocked() {
+  if (window.CMS_LEGACY_READ_ONLY) {
+    showToast('Legacy Content is read-only. Use 🧩 CMS Manager for changes.', 'info');
+    return true;
+  }
+  return false;
+}
+
 /* =========================================================
    CMS MANAGER ENGINE (public/cms.js)
    Generic CRUD manager for every content type.
@@ -19,6 +28,7 @@ var CMS_TYPES = {
 
 var cmsCurrentType = 'medication';
 var cmsCurrentKey = null;
+var cmsOriginalKey = null;
 var cmsListCache = {};
 
 function cmsInit() {
@@ -97,7 +107,8 @@ function cmsOpenEditor(key) {
   var slideUrlRow = document.getElementById('cmsSlideUrlRow');
   var slideUrlEl = document.getElementById('cmsSlideUrl');
   if (editor === null || keyEl === null || contentEl === null) return;
-  cmsCurrentKey = key;
+  cmsCurrentKey = key || null;
+  cmsOriginalKey = key || null;
   var def = CMS_TYPES[cmsCurrentType] || {};
   title.textContent = (key ? 'Edit' : 'Add') + ' ' + (def.label || cmsCurrentType) + ' Item';
   keyEl.value = '';
@@ -106,7 +117,8 @@ function cmsOpenEditor(key) {
   if (slideUrlEl) slideUrlEl.value = '';
   /* Show slideUrl field only for procedures and scenes */
   if (slideUrlRow) slideUrlRow.style.display = (cmsCurrentType === 'procedure' || cmsCurrentType === 'scene') ? '' : 'none';
-  keyEl.disabled = Boolean(key);
+  keyEl.disabled = false;
+  keyEl.title = key ? 'You can rename this item. The old key will be moved to the new key.' : 'Stable ID: lowercase letters, numbers, dash or underscore.';
   if (key) {
     var items = cmsListCache[cmsCurrentType] || [];
     var found = null;
@@ -114,8 +126,14 @@ function cmsOpenEditor(key) {
     if (found) {
       keyEl.value = found.content_key;
       nameEl.value = found.item_name || '';
-      var content = typeof found.content === 'string' ? JSON.parse(found.content) : found.content;
-      contentEl.value = JSON.stringify(content, null, 2);
+      var content = found.content;
+      if (typeof content === 'string') {
+        try { content = JSON.parse(content); } catch (e) {
+          showToast('This item contains invalid JSON. Fix it before saving.', 'error');
+          content = {};
+        }
+      }
+      contentEl.value = JSON.stringify(content || {}, null, 2);
       if (slideUrlEl && content && content.slideUrl) slideUrlEl.value = content.slideUrl;
     } else {
       (async function() {
@@ -124,8 +142,14 @@ function cmsOpenEditor(key) {
           if (res && res.item) {
             keyEl.value = res.item.content_key;
             nameEl.value = res.item.item_name || '';
-            var content = typeof res.item.content === 'string' ? JSON.parse(res.item.content) : res.item.content;
-            contentEl.value = JSON.stringify(content, null, 2);
+            var content = res.item.content;
+            if (typeof content === 'string') {
+              try { content = JSON.parse(content); } catch (e) {
+                showToast('This item contains invalid JSON. Fix it before saving.', 'error');
+                content = {};
+              }
+            }
+            contentEl.value = JSON.stringify(content || {}, null, 2);
             if (slideUrlEl && content && content.slideUrl) slideUrlEl.value = content.slideUrl;
           }
         } catch(e) {}
@@ -141,6 +165,7 @@ function cmsCloseEditor() {
   var editor = document.getElementById('cmsEditor');
   if (editor !== null && editor !== undefined) editor.style.display = 'none';
   cmsCurrentKey = null;
+  cmsOriginalKey = null;
 }
 
 async function cmsSaveItem() {
@@ -153,7 +178,13 @@ async function cmsSaveItem() {
   var name = nameEl.value.trim();
   var contentText = contentEl.value.trim();
   if (key === '') { showToast('Enter a key (stable id)', 'error'); return; }
-  if (false === /^[a-zA-Z0-9_-]+$/.test(key)) { showToast('Key must be lowercase letters, numbers, dash or underscore', 'error'); return; }
+  if (!/^[a-z0-9_-]+$/.test(key)) { showToast('Key must use lowercase letters, numbers, dash or underscore', 'error'); return; }
+  if (cmsOriginalKey && cmsOriginalKey !== key) {
+    var existing = (cmsListCache[cmsCurrentType] || []).some(function(it) {
+      return it.content_key === key && it.content_key !== cmsOriginalKey;
+    });
+    if (existing) { showToast('That key is already in use. Choose another.', 'error'); return; }
+  }
   var content = {};
   try {
     content = JSON.parse(contentText || '{}');
@@ -175,12 +206,19 @@ async function cmsSaveItem() {
   if (name === '') name = key;
   var orderIndex = cmsListCache[cmsCurrentType] ? cmsListCache[cmsCurrentType].length : 0;
   try {
+    if (cmsOriginalKey && cmsOriginalKey !== key) {
+      await api('/api/cms/' + encodeURIComponent(cmsCurrentType) + '/' + encodeURIComponent(cmsOriginalKey) + '/rename', {
+        method: 'PATCH',
+        body: { newKey: key }
+      });
+    }
     await api('/api/cms/' + encodeURIComponent(cmsCurrentType) + '/' + encodeURIComponent(key), {
       method: 'PUT',
       body: { content: content, itemName: name, orderIndex: orderIndex }
     });
-    showToast('Saved: ' + name, 'success');
+    showToast((cmsOriginalKey && cmsOriginalKey !== key ? 'Renamed & saved: ' : 'Saved: ') + name, 'success');
     cmsCurrentKey = null;
+    cmsOriginalKey = null;
     cmsCloseEditor();
     await cmsRenderList();
   } catch(e) {
@@ -189,6 +227,8 @@ async function cmsSaveItem() {
 }
 
 async function cmsDelete(key) {
+  if (cmsLegacyMutationBlocked()) return;
+
   if (false === confirm('Delete this item? The built-in default (if any) will be restored on next load.')) return;
   try {
     await api('/api/cms/item/' + encodeURIComponent(key), { method: 'DELETE' });
@@ -209,6 +249,9 @@ async function cmsTogglePublish(key, val) {
     var found = null;
     items.forEach(function(it) { if (it.content_key === key) found = it; });
     var content = found ? found.content : {};
+    if (typeof content === 'string') {
+      try { content = JSON.parse(content); } catch (e) { content = {}; }
+    }
     var name = found ? found.item_name : key;
     await api('/api/cms/' + encodeURIComponent(cmsCurrentType) + '/' + encodeURIComponent(key), {
       method: 'PUT',
@@ -222,6 +265,8 @@ async function cmsTogglePublish(key, val) {
 }
 
 async function cmsDuplicate(key) {
+  if (cmsLegacyMutationBlocked()) return;
+
   try {
     var items = cmsListCache[cmsCurrentType] || [];
     var found = null;
@@ -232,7 +277,12 @@ async function cmsDuplicate(key) {
       if (content.name) content.name = content.name + ' (Copy)';
       if (content.title) content.title = content.title + ' (Copy)';
     }
-    var newKey = key + '-copy';
+    var existingKeys = {};
+    (cmsListCache[cmsCurrentType] || []).forEach(function(it) { existingKeys[it.content_key] = true; });
+    var baseKey = key + '-copy';
+    var newKey = baseKey;
+    var copyNo = 2;
+    while (existingKeys[newKey]) newKey = baseKey + '-' + (copyNo++);
     await api('/api/cms/' + encodeURIComponent(cmsCurrentType) + '/' + encodeURIComponent(newKey), {
       method: 'PUT',
       body: { content: content, itemName: (found.item_name || key) + ' (Copy)', orderIndex: (cmsListCache[cmsCurrentType] || []).length }
@@ -391,6 +441,8 @@ function cmsApplyTheme(theme) {
 }
 
 async function cmsSaveTheme() {
+  if (cmsLegacyMutationBlocked()) return;
+
   var titleEl = document.getElementById('themeTitle');
   var badgeEl = document.getElementById('themeBadge');
   var tagEl = document.getElementById('themeTagline');
@@ -425,7 +477,7 @@ function cmsResetTheme() {
   document.title = 'FiveM \u2022 EMS Clinical Reference';
   var b = document.querySelector('.fivem-badge, .nhs-badge'); if (b) b.textContent = 'FIVEM';
   var p = document.querySelector('.topbar p'); if (p) p.textContent = 'Serious FiveM roleplay reference \u2022 UK terminology \u2022 quick clinical notes';
-  try { api('/api/cms/item/theme', { method: 'DELETE' }); } catch(e) {}
+  api('/api/cms/item/theme', { method: 'DELETE' }).catch(function() {});
   cmsLoadThemeFields();
   showToast('Branding reset', 'success');
 }

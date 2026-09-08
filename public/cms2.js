@@ -32,7 +32,9 @@ var CMS2_TYPES = {
       { k: 'section_type', label: 'Section type', type: 'select', options: ['content', 'hero', 'cards', 'gallery', 'cta'] },
       { k: 'description', label: 'Description', type: 'textarea' },
       { k: 'content', label: 'Content (JSON)', type: 'json' },
-      { k: 'order_index', label: 'Order', type: 'number' }
+      { k: 'order_index', label: 'Order', type: 'number' },
+      { k: 'status', label: 'Status', type: 'select', options: ['published', 'draft', 'hidden', 'archived'] },
+      { k: 'visibility', label: 'Visibility', type: 'select', options: ['public', 'admin', 'user'] }
     ]
   },
   'content-block': {
@@ -40,12 +42,14 @@ var CMS2_TYPES = {
     listEndpoint: '/api/cms-blocks', nameField: 'title',
     fields: [
       { k: 'block_key', label: 'Block key', type: 'text', required: true, placeholder: 'e.g. hero-title' },
-      { k: 'block_type', label: 'Block type', type: 'select', options: ['text', 'heading', 'image', 'card', 'button', 'table', 'procedure', 'medication', 'equipment', 'emergency', 'rp', 'tts', 'alert', 'checklist', 'accordion', 'document', 'video'] },
+      { k: 'block_type', label: 'Block type', type: 'select', required: true, options: ['text', 'heading', 'image', 'card', 'button', 'table', 'procedure', 'medication', 'equipment', 'emergency', 'rp', 'tts', 'alert', 'checklist', 'accordion', 'document', 'video'] },
       { k: 'title', label: 'Title', type: 'text' },
       { k: 'category', label: 'Category', type: 'text' },
       { k: 'page_id', label: 'Page', type: 'select-source', source: 'page' },
       { k: 'section_id', label: 'Section', type: 'select-source', source: 'section' },
-      { k: 'content', label: 'Content (JSON)', type: 'json' }
+      { k: 'content', label: 'Content (JSON)', type: 'json' },
+      { k: 'status', label: 'Status', type: 'select', options: ['published', 'draft', 'hidden', 'archived'] },
+      { k: 'visibility', label: 'Visibility', type: 'select', options: ['public', 'admin', 'user'] }
     ]
   },
   'navigation': {
@@ -71,11 +75,13 @@ var CMS2_TYPES = {
     fields: [
       { k: 'name', label: 'Name', type: 'text', required: true },
       { k: 'slug', label: 'Slug', type: 'text', required: true, placeholder: 'e.g. airway' },
-      { k: 'content_type', label: 'Used for', type: 'select', options: ['generic', 'procedure', 'medication', 'equipment', 'emergency', 'rp_action', 'tts_action', 'document'] },
+      { k: 'content_type', label: 'Used for', type: 'select', required: true, options: ['generic', 'procedure', 'medication', 'equipment', 'emergency', 'rp_action', 'tts_action', 'document'] },
       { k: 'description', label: 'Description', type: 'textarea' },
       { k: 'icon', label: 'Icon (emoji)', type: 'text' },
       { k: 'parent_id', label: 'Parent category', type: 'parent', source: 'category' },
-      { k: 'order_index', label: 'Order', type: 'number' }
+      { k: 'order_index', label: 'Order', type: 'number' },
+      { k: 'status', label: 'Status', type: 'select', options: ['published', 'draft', 'hidden', 'archived'] },
+      { k: 'visibility', label: 'Visibility', type: 'select', options: ['public', 'admin', 'user'] }
     ]
   }
 };
@@ -236,6 +242,15 @@ async function cms2Save() {
       catch(e2) { showToast('Invalid JSON in ' + f.label, 'error'); return; }
       continue;
     }
+    /* select-source and parent fields reference UUID columns
+       server-side (parent_id, page_id, section_id, etc). The
+       "(none)" option sends an empty string, which Postgres
+       correctly rejects as an invalid UUID — convert it to
+       null here so "no selection" actually means no value. */
+    if ((f.type === 'select-source' || f.type === 'parent') && el.value === '') {
+      data[f.k] = null;
+      continue;
+    }
     data[f.k] = el.value;
   }
   for (var j = 0; j < def.fields.length; j++) {
@@ -264,8 +279,9 @@ async function cms2Delete(id) {
   try {
     await api(def.listEndpoint + '/' + id, { method: 'DELETE' });
     showToast('Deleted', 'success');
+    await cms2RefreshSources();
     await cms2List();
-  } catch(e) { showToast('Delete failed', 'error'); }
+  } catch(e) { showToast('Delete failed: ' + ((e&&e.message)||''), 'error'); }
 }
 
 async function cms2Duplicate(id) {

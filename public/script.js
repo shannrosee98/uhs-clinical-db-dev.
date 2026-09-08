@@ -3362,37 +3362,71 @@ var cmsCache = {};
 var cmsCacheTime = {};
 var CMS_CACHE_TTL = 30000; /* 30s */
 var cmsFallbacks = {};
+/*
+ * Phase 5 cutover:
+ * Structured CMS is authoritative. Legacy editable_content is retained only
+ * as an emergency rollback path and is disabled for normal public reads.
+ * The server exposes the same switch to avoid accidental split-brain reads.
+ */
+var CMS_LEGACY_FALLBACK = false;
 
-/* Fetch a content type from the CMS API with cache + fallback */
+/* Fetch a content type from the structured CMS, then built-in defaults. */
 async function cmsGet(type, fallbackFn) {
   var now = Date.now();
   if (cmsCache[type] && cmsCacheTime[type] && (now - cmsCacheTime[type] < CMS_CACHE_TTL)) {
     return cmsCache[type];
   }
   try {
-    var res = await api('/api/cms/' + encodeURIComponent(type));
-    if (res && res.ok && Array.isArray(res.items)) {
-      var published = res.items.filter(function(i) { return i.is_published !== false; });
-      var items = [];
-      published.forEach(function(i) {
+    var structured = await api('/api/public/cms/blocks/' + encodeURIComponent(type));
+    if (structured && structured.ok && Array.isArray(structured.items) && structured.items.length > 0) {
+      var structuredItems = [];
+      structured.items.forEach(function(i) {
         var val = (typeof i.content === 'string') ? JSON.parse(i.content) : i.content;
         if (val && typeof val === 'object' && !Array.isArray(val)) {
-          val._cmsKey = i.content_key;
-          val._cmsName = i.item_name || val.name || val.title || i.content_key;
+          val._cmsKey = i.content_key || i.block_key;
+          val._cmsName = i.title || val.name || val.title || i.content_key || i.block_key;
           val._cmsOrder = i.order_index || 0;
         }
-        items.push(val);
+        structuredItems.push(val);
       });
-      items.sort(function(a, b) { return (a._cmsOrder || 0) - (b._cmsOrder || 0); });
-      if (items.length > 0) {
-        cmsCache[type] = items;
-        cmsCacheTime[type] = now;
-        return items;
-      }
+      structuredItems.sort(function(a, b) { return (a._cmsOrder || 0) - (b._cmsOrder || 0); });
+      cmsCache[type] = structuredItems;
+      cmsCacheTime[type] = now;
+      return structuredItems;
     }
   } catch (e) {
-    /* fall through to built-in defaults */
+    /* Structured CMS unavailable — built-in defaults remain the safe normal path. */
   }
+
+  /* Emergency rollback only. Set CMS_LEGACY_FALLBACK=true in the source if a
+     controlled rollback is required; normal production builds keep this false. */
+  if (CMS_LEGACY_FALLBACK) {
+    try {
+      var res = await api('/api/cms/' + encodeURIComponent(type));
+      if (res && res.ok && Array.isArray(res.items)) {
+        var published = res.items.filter(function(i) { return i.is_published !== false; });
+        var items = [];
+        published.forEach(function(i) {
+          var val = (typeof i.content === 'string') ? JSON.parse(i.content) : i.content;
+          if (val && typeof val === 'object' && !Array.isArray(val)) {
+            val._cmsKey = i.content_key;
+            val._cmsName = i.item_name || val.name || val.title || i.content_key;
+            val._cmsOrder = i.order_index || 0;
+          }
+          items.push(val);
+        });
+        items.sort(function(a, b) { return (a._cmsOrder || 0) - (b._cmsOrder || 0); });
+        if (items.length > 0) {
+          cmsCache[type] = items;
+          cmsCacheTime[type] = now;
+          return items;
+        }
+      }
+    } catch (e) {
+      /* fall through to built-in defaults */
+    }
+  }
+
   var fallback = fallbackFn ? fallbackFn() : (cmsFallbacks[type] || []);
   return fallback;
 }

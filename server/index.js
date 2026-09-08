@@ -28,6 +28,9 @@ const app = express();
 
 const { Pool } = pg;
 
+const LEGACY_CMS_WRITES = String(process.env.CMS_LEGACY_WRITE_ENABLED || '').toLowerCase() === 'true';
+
+
 /*
   By default, pg parses SQL DATE columns into JavaScript Date
   objects. When those get sent back as JSON, Date.toJSON()
@@ -182,200 +185,6 @@ async function ensureCoreSchema() {
       [id, name, description, JSON.stringify(permissions)]
     );
   }
-
-  /* =========================================================
-     PHASE 2 CMS FOUNDATION SCHEMA
-
-     Extends editable_content with soft delete, hierarchy,
-     ownership and visibility columns. Creates supporting CMS
-     tables for pages, sections, content blocks, navigation,
-     categories, and content version history.
-
-     All additions are additive with CREATE IF NOT EXISTS and
-     ADD COLUMN IF NOT EXISTS — existing data and routes are
-     completely unaffected.
-  ========================================================= */
-  await pool.query(`
-    ALTER TABLE editable_content
-    ADD COLUMN IF NOT EXISTS slug TEXT,
-    ADD COLUMN IF NOT EXISTS category TEXT,
-    ADD COLUMN IF NOT EXISTS visibility TEXT NOT NULL DEFAULT 'public',
-    ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'published',
-    ADD COLUMN IF NOT EXISTS parent_key TEXT,
-    ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ,
-    ADD COLUMN IF NOT EXISTS deleted_by UUID REFERENCES users(id),
-    ADD COLUMN IF NOT EXISTS created_by UUID REFERENCES users(id),
-    ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-  `);
-  await pool.query(`
-    CREATE INDEX IF NOT EXISTS idx_editable_content_type_status
-    ON editable_content(content_type, status)
-  `);
-
-  /* CMS pages */
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS cms_pages (
-      id UUID PRIMARY KEY,
-      name TEXT NOT NULL,
-      slug TEXT UNIQUE NOT NULL,
-      description TEXT,
-      icon TEXT,
-      parent_id UUID REFERENCES cms_pages(id),
-      order_index INT NOT NULL DEFAULT 0,
-      status TEXT NOT NULL DEFAULT 'published',
-      visibility TEXT NOT NULL DEFAULT 'public',
-      template TEXT NOT NULL DEFAULT 'standard',
-      created_by UUID REFERENCES users(id),
-      updated_by UUID REFERENCES users(id),
-      deleted_at TIMESTAMPTZ,
-      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-    )
-  `);
-  await pool.query(`
-    CREATE INDEX IF NOT EXISTS idx_cms_pages_parent
-    ON cms_pages(parent_id, order_index)
-  `);
-
-  /* CMS page sections */
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS cms_page_sections (
-      id UUID PRIMARY KEY,
-      page_id UUID NOT NULL REFERENCES cms_pages(id) ON DELETE CASCADE,
-      title TEXT,
-      description TEXT,
-      content JSONB,
-      section_type TEXT NOT NULL DEFAULT 'content',
-      order_index INT NOT NULL DEFAULT 0,
-      status TEXT NOT NULL DEFAULT 'published',
-      visibility TEXT NOT NULL DEFAULT 'public',
-      created_by UUID REFERENCES users(id),
-      updated_by UUID REFERENCES users(id),
-      deleted_at TIMESTAMPTZ,
-      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-    )
-  `);
-  await pool.query(`
-    CREATE INDEX IF NOT EXISTS idx_cms_sections_page
-    ON cms_page_sections(page_id, order_index)
-  `);
-
-  /* CMS content blocks */
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS cms_content_blocks (
-      id UUID PRIMARY KEY,
-      block_key TEXT NOT NULL,
-      block_type TEXT NOT NULL DEFAULT 'text',
-      title TEXT,
-      content JSONB NOT NULL DEFAULT '{}'::jsonb,
-      section_id UUID REFERENCES cms_page_sections(id) ON DELETE CASCADE,
-      page_id UUID REFERENCES cms_pages(id) ON DELETE CASCADE,
-      parent_id UUID REFERENCES cms_content_blocks(id),
-      category TEXT,
-      order_index INT NOT NULL DEFAULT 0,
-      status TEXT NOT NULL DEFAULT 'published',
-      visibility TEXT NOT NULL DEFAULT 'public',
-      created_by UUID REFERENCES users(id),
-      updated_by UUID REFERENCES users(id),
-      deleted_at TIMESTAMPTZ,
-      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-      UNIQUE (block_key, block_type)
-    )
-  `);
-  await pool.query(`
-    CREATE INDEX IF NOT EXISTS idx_cms_blocks_section
-    ON cms_content_blocks(section_id, order_index)
-  `);
-
-  /* CMS navigation — hierarchical */
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS cms_navigation (
-      id UUID PRIMARY KEY,
-      label TEXT NOT NULL,
-      url TEXT,
-      icon TEXT,
-      page_id UUID REFERENCES cms_pages(id),
-      parent_id UUID REFERENCES cms_navigation(id),
-      order_index INT NOT NULL DEFAULT 0,
-      target TEXT NOT NULL DEFAULT '_self',
-      is_external BOOLEAN NOT NULL DEFAULT false,
-      role_required TEXT,
-      status TEXT NOT NULL DEFAULT 'published',
-      visibility TEXT NOT NULL DEFAULT 'public',
-      created_by UUID REFERENCES users(id),
-      updated_by UUID REFERENCES users(id),
-      deleted_at TIMESTAMPTZ,
-      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-    )
-  `);
-  await pool.query(`
-    CREATE INDEX IF NOT EXISTS idx_cms_nav_parent
-    ON cms_navigation(parent_id, order_index)
-  `);
-
-  /* CMS categories — reusable across content types */
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS cms_categories (
-      id UUID PRIMARY KEY,
-      name TEXT NOT NULL,
-      slug TEXT NOT NULL,
-      description TEXT,
-      icon TEXT,
-      parent_id UUID REFERENCES cms_categories(id),
-      content_type TEXT NOT NULL DEFAULT 'generic',
-      order_index INT NOT NULL DEFAULT 0,
-      status TEXT NOT NULL DEFAULT 'published',
-      visibility TEXT NOT NULL DEFAULT 'public',
-      created_by UUID REFERENCES users(id),
-      updated_by UUID REFERENCES users(id),
-      deleted_at TIMESTAMPTZ,
-      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-      UNIQUE (slug, content_type)
-    )
-  `);
-  await pool.query(`
-    CREATE INDEX IF NOT EXISTS idx_cms_categories_type
-    ON cms_categories(content_type, order_index)
-  `);
-
-  /* CMS content versions — version history foundation */
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS cms_content_versions (
-      id BIGSERIAL PRIMARY KEY,
-      content_key TEXT NOT NULL,
-      content_type TEXT,
-      version INT NOT NULL DEFAULT 1,
-      content JSONB,
-      created_by UUID REFERENCES users(id),
-      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-      UNIQUE (content_key, version)
-    )
-  `);
-  await pool.query(`
-    CREATE INDEX IF NOT EXISTS idx_cms_versions_key
-    ON cms_content_versions(content_key, version DESC)
-  `);
-
-  /* Soft delete support for documents and folders */
-  await pool.query(`
-    ALTER TABLE document_files
-    ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ,
-    ADD COLUMN IF NOT EXISTS deleted_by UUID REFERENCES users(id),
-    ADD COLUMN IF NOT EXISTS created_by UUID REFERENCES users(id),
-    ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'published'
-  `);
-  await pool.query(`
-    ALTER TABLE document_folders
-    ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ,
-    ADD COLUMN IF NOT EXISTS deleted_by UUID REFERENCES users(id),
-    ADD COLUMN IF NOT EXISTS created_by UUID REFERENCES users(id),
-    ADD COLUMN IF NOT EXISTS owner_id UUID REFERENCES users(id),
-    ADD COLUMN IF NOT EXISTS permissions JSONB NOT NULL DEFAULT '{}'::jsonb
-  `);
 }
 
 /* =========================================================
@@ -512,6 +321,26 @@ async function ensureBodycamSchema() {
     ALTER TABLE document_folders ADD COLUMN IF NOT EXISTS sort_order INT NOT NULL DEFAULT 0
   `);
 
+  /* Soft delete support for documents and folders (part of the
+     Phase 2 CMS foundation — moved here so it runs after both
+     tables actually exist, rather than before, as it originally
+     did when this lived inside ensureCoreSchema). */
+  await pool.query(`
+    ALTER TABLE document_files
+    ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ,
+    ADD COLUMN IF NOT EXISTS deleted_by UUID REFERENCES users(id),
+    ADD COLUMN IF NOT EXISTS created_by UUID REFERENCES users(id),
+    ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'published'
+  `);
+  await pool.query(`
+    ALTER TABLE document_folders
+    ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ,
+    ADD COLUMN IF NOT EXISTS deleted_by UUID REFERENCES users(id),
+    ADD COLUMN IF NOT EXISTS created_by UUID REFERENCES users(id),
+    ADD COLUMN IF NOT EXISTS owner_id UUID REFERENCES users(id),
+    ADD COLUMN IF NOT EXISTS permissions JSONB NOT NULL DEFAULT '{}'::jsonb
+  `);
+
   /* =========================================================
      EDITABLE RP CONTENT TABLE
      Stores admin-editable RP actions, checklists, and
@@ -535,6 +364,205 @@ async function ensureBodycamSchema() {
     ADD COLUMN IF NOT EXISTS is_published BOOLEAN NOT NULL DEFAULT TRUE,
     ADD COLUMN IF NOT EXISTS order_index INT NOT NULL DEFAULT 0,
     ADD COLUMN IF NOT EXISTS item_name TEXT
+  `);
+
+  /* =========================================================
+     PHASE 2 CMS FOUNDATION SCHEMA
+
+     Extends editable_content with soft delete, hierarchy,
+     ownership and visibility columns. Creates supporting CMS
+     tables for pages, sections, content blocks, navigation,
+     categories, and content version history.
+
+     Moved here (after editable_content's own CREATE TABLE
+     above) from its original position much earlier in this
+     function, where it ran before editable_content existed —
+     that ordering bug caused every statement in this block to
+     be skipped on every startup, since the ALTER TABLE at the
+     top threw and aborted the rest of ensureCoreSchema().
+
+     All additions are additive with CREATE IF NOT EXISTS and
+     ADD COLUMN IF NOT EXISTS — existing data and routes are
+     completely unaffected.
+  ========================================================= */
+  await pool.query(`
+    ALTER TABLE editable_content
+    ADD COLUMN IF NOT EXISTS slug TEXT,
+    ADD COLUMN IF NOT EXISTS category TEXT,
+    ADD COLUMN IF NOT EXISTS visibility TEXT NOT NULL DEFAULT 'public',
+    ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'published',
+    ADD COLUMN IF NOT EXISTS parent_key TEXT,
+    ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ,
+    ADD COLUMN IF NOT EXISTS deleted_by UUID REFERENCES users(id),
+    ADD COLUMN IF NOT EXISTS created_by UUID REFERENCES users(id),
+    ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  `);
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS idx_editable_content_type_status
+    ON editable_content(content_type, status)
+  `);
+
+  /* CMS pages */
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS cms_pages (
+      id UUID PRIMARY KEY,
+      name TEXT NOT NULL,
+      slug TEXT UNIQUE NOT NULL,
+      description TEXT,
+      icon TEXT,
+      parent_id UUID REFERENCES cms_pages(id),
+      order_index INT NOT NULL DEFAULT 0,
+      status TEXT NOT NULL DEFAULT 'published',
+      visibility TEXT NOT NULL DEFAULT 'public',
+      template TEXT NOT NULL DEFAULT 'standard',
+      created_by UUID REFERENCES users(id),
+      updated_by UUID REFERENCES users(id),
+      deleted_at TIMESTAMPTZ,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `);
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS idx_cms_pages_parent
+    ON cms_pages(parent_id, order_index)
+  `);
+  /* deleted_by was missing from the original table definition
+     even though the delete route requires it — added here so
+     existing tables (created before this fix) pick it up too. */
+  await pool.query(`
+    ALTER TABLE cms_pages ADD COLUMN IF NOT EXISTS deleted_by UUID REFERENCES users(id)
+  `);
+
+  /* CMS page sections */
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS cms_page_sections (
+      id UUID PRIMARY KEY,
+      page_id UUID NOT NULL REFERENCES cms_pages(id) ON DELETE CASCADE,
+      title TEXT,
+      description TEXT,
+      content JSONB,
+      section_type TEXT NOT NULL DEFAULT 'content',
+      order_index INT NOT NULL DEFAULT 0,
+      status TEXT NOT NULL DEFAULT 'published',
+      visibility TEXT NOT NULL DEFAULT 'public',
+      created_by UUID REFERENCES users(id),
+      updated_by UUID REFERENCES users(id),
+      deleted_at TIMESTAMPTZ,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `);
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS idx_cms_sections_page
+    ON cms_page_sections(page_id, order_index)
+  `);
+
+  /* CMS content blocks */
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS cms_content_blocks (
+      id UUID PRIMARY KEY,
+      block_key TEXT NOT NULL,
+      block_type TEXT NOT NULL DEFAULT 'text',
+      title TEXT,
+      content JSONB NOT NULL DEFAULT '{}'::jsonb,
+      section_id UUID REFERENCES cms_page_sections(id) ON DELETE CASCADE,
+      page_id UUID REFERENCES cms_pages(id) ON DELETE CASCADE,
+      parent_id UUID REFERENCES cms_content_blocks(id),
+      category TEXT,
+      order_index INT NOT NULL DEFAULT 0,
+      status TEXT NOT NULL DEFAULT 'published',
+      visibility TEXT NOT NULL DEFAULT 'public',
+      created_by UUID REFERENCES users(id),
+      updated_by UUID REFERENCES users(id),
+      deleted_at TIMESTAMPTZ,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      UNIQUE (block_key, block_type)
+    )
+  `);
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS idx_cms_blocks_section
+    ON cms_content_blocks(section_id, order_index)
+  `);
+
+  /* CMS navigation — hierarchical */
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS cms_navigation (
+      id UUID PRIMARY KEY,
+      label TEXT NOT NULL,
+      url TEXT,
+      icon TEXT,
+      page_id UUID REFERENCES cms_pages(id),
+      parent_id UUID REFERENCES cms_navigation(id),
+      order_index INT NOT NULL DEFAULT 0,
+      target TEXT NOT NULL DEFAULT '_self',
+      is_external BOOLEAN NOT NULL DEFAULT false,
+      role_required TEXT,
+      status TEXT NOT NULL DEFAULT 'published',
+      visibility TEXT NOT NULL DEFAULT 'public',
+      created_by UUID REFERENCES users(id),
+      updated_by UUID REFERENCES users(id),
+      deleted_at TIMESTAMPTZ,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `);
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS idx_cms_nav_parent
+    ON cms_navigation(parent_id, order_index)
+  `);
+  await pool.query(`
+    ALTER TABLE cms_navigation ADD COLUMN IF NOT EXISTS metadata JSONB NOT NULL DEFAULT '{}'::jsonb
+  `);
+  await pool.query(`
+    ALTER TABLE cms_navigation ADD COLUMN IF NOT EXISTS deleted_by UUID REFERENCES users(id)
+  `);
+
+  /* CMS categories — reusable across content types */
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS cms_categories (
+      id UUID PRIMARY KEY,
+      name TEXT NOT NULL,
+      slug TEXT NOT NULL,
+      description TEXT,
+      icon TEXT,
+      parent_id UUID REFERENCES cms_categories(id),
+      content_type TEXT NOT NULL DEFAULT 'generic',
+      order_index INT NOT NULL DEFAULT 0,
+      status TEXT NOT NULL DEFAULT 'published',
+      visibility TEXT NOT NULL DEFAULT 'public',
+      created_by UUID REFERENCES users(id),
+      updated_by UUID REFERENCES users(id),
+      deleted_at TIMESTAMPTZ,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      UNIQUE (slug, content_type)
+    )
+  `);
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS idx_cms_categories_type
+    ON cms_categories(content_type, order_index)
+  `);
+  await pool.query(`
+    ALTER TABLE cms_categories ADD COLUMN IF NOT EXISTS metadata JSONB NOT NULL DEFAULT '{}'::jsonb
+  `);
+
+  /* CMS content versions — version history foundation */
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS cms_content_versions (
+      id BIGSERIAL PRIMARY KEY,
+      content_key TEXT NOT NULL,
+      content_type TEXT,
+      version INT NOT NULL DEFAULT 1,
+      content JSONB,
+      created_by UUID REFERENCES users(id),
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      UNIQUE (content_key, version)
+    )
+  `);
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS idx_cms_versions_key
+    ON cms_content_versions(content_key, version DESC)
   `);
 
   /* =========================================================
@@ -2434,6 +2462,14 @@ app.post('/api/user-content/:type/migrate', auth, async (req, res) => {
    - order_index   controls display order
 ========================================================= */
 
+function legacyCmsWriteGuard(req, res, next) {
+  if (LEGACY_CMS_WRITES) return next();
+  return res.status(410).json({
+    error: 'Legacy CMS writes are retired. Use the structured CMS Manager.',
+    code: 'LEGACY_CMS_RETIRED'
+  });
+}
+
 /* GET /api/cms/:contentType -- list all items of a type */
 app.get('/api/cms/:contentType', async (req, res) => {
   try {
@@ -2443,7 +2479,7 @@ app.get('/api/cms/:contentType', async (req, res) => {
     }
     const q = await pool.query(
       `SELECT content_key, content_type, is_published, order_index, item_name,
-              updated_at, updated_by
+              content, updated_at, updated_by
        FROM editable_content
        WHERE content_type = $1
        ORDER BY order_index ASC, item_name ASC, content_key ASC`,
@@ -2479,7 +2515,7 @@ app.get('/api/cms/item/:key', async (req, res) => {
 });
 
 /* PUT /api/cms/:contentType/:key -- create/update an item (admin) */
-app.put('/api/cms/:contentType/:key', admin, async (req, res) => {
+app.put('/api/cms/:contentType/:key', admin, legacyCmsWriteGuard, async (req, res) => {
   try {
     const type = req.params.contentType;
     const key = req.params.key;
@@ -2528,8 +2564,74 @@ app.put('/api/cms/:contentType/:key', admin, async (req, res) => {
   }
 });
 
+/* PATCH /api/cms/:contentType/:key/rename -- rename an item without losing its data */
+app.patch('/api/cms/:contentType/:key/rename', admin, legacyCmsWriteGuard, async (req, res) => {
+  const client = await pool.connect();
+  try {
+    const type = req.params.contentType;
+    const oldKey = req.params.key;
+    const newKey = String(req.body && req.body.newKey || '').trim();
+
+    if (!/^[a-zA-Z0-9_-]+$/.test(type) || !/^[a-zA-Z0-9_-]+$/.test(oldKey) || !/^[a-z0-9_-]+$/.test(newKey)) {
+      return res.status(400).json({ error: 'Invalid type or key' });
+    }
+    if (oldKey === newKey) return res.json({ ok: true, renamed: false });
+
+    await client.query('BEGIN');
+
+    const current = await client.query(
+      `SELECT content_key, item_name, content_type
+       FROM editable_content
+       WHERE content_key = $1 AND content_type = $2
+       FOR UPDATE`,
+      [oldKey, type]
+    );
+    if (current.rows.length === 0) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: 'Item not found' });
+    }
+
+    const conflict = await client.query(
+      'SELECT 1 FROM editable_content WHERE content_key = $1 FOR UPDATE',
+      [newKey]
+    );
+    if (conflict.rows.length > 0) {
+      await client.query('ROLLBACK');
+      return res.status(409).json({ error: 'That key is already in use' });
+    }
+
+    await client.query(
+      `UPDATE editable_content
+       SET content_key = $1, updated_by = $3, updated_at = NOW()
+       WHERE content_key = $2 AND content_type = $4`,
+      [newKey, oldKey, req.user.id, type]
+    );
+
+    await client.query('COMMIT');
+
+    await logAction(
+      req.user.id,
+      'cms.item.rename',
+      type,
+      newKey,
+      { oldKey, newKey, itemName: current.rows[0].item_name || newKey }
+    );
+
+    res.json({ ok: true, renamed: true, oldKey, newKey });
+  } catch (error) {
+    try { await client.query('ROLLBACK'); } catch (_) {}
+    if (error && error.code === '23505') {
+      return res.status(409).json({ error: 'That key is already in use' });
+    }
+    console.error('CMS rename error:', error);
+    res.status(500).json({ error: 'Failed to rename content' });
+  } finally {
+    client.release();
+  }
+});
+
 /* DELETE /api/cms/item/:key -- remove an override item (admin) */
-app.delete('/api/cms/item/:key', admin, async (req, res) => {
+app.delete('/api/cms/item/:key', admin, legacyCmsWriteGuard, async (req, res) => {
   try {
     const key = req.params.key;
     if (!/^[a-zA-Z0-9_-]+$/.test(key)) {
@@ -2559,7 +2661,7 @@ app.delete('/api/cms/item/:key', admin, async (req, res) => {
 });
 
 /* POST /api/cms/seed -- reseed defaults for a content type (admin) */
-app.post('/api/cms/seed', admin, async (req, res) => {
+app.post('/api/cms/seed', admin, legacyCmsWriteGuard, async (req, res) => {
   try {
     const { content_type, items } = req.body;
     if (!/^[a-zA-Z0-9_-]+$/.test(content_type) || !Array.isArray(items)) {
@@ -2597,7 +2699,7 @@ app.post('/api/cms/seed', admin, async (req, res) => {
 });
 
 /* POST /api/cms/reset -- wipe all override rows for a type, restoring defaults (admin) */
-app.post('/api/cms/reset', admin, async (req, res) => {
+app.post('/api/cms/reset', admin, legacyCmsWriteGuard, async (req, res) => {
   try {
     const { content_type } = req.body;
     if (content_type && !/^[a-zA-Z0-9_-]+$/.test(content_type)) {
@@ -2634,6 +2736,193 @@ app.post('/api/cms/reset', admin, async (req, res) => {
    Uses existing admin() and requirePermission() middleware.
 ========================================================= */
 
+
+/* =========================================================
+   PHASE 3 PUBLIC CMS RUNTIME BRIDGE
+   The structured CMS is the preferred source of published
+   admin-managed content. These read-only endpoints expose only
+   published/public records. The legacy /api/cms endpoints remain
+   available as a compatibility fallback while migration is reviewed.
+========================================================= */
+
+const CMS_RUNTIME_TYPE_MAP = {
+  medication: ['medication'],
+  procedure: ['procedure'],
+  equipment: ['equipment'],
+  emergency: ['emergency'],
+  question: ['tts', 'question'],
+  surgery: ['document', 'surgery'],
+  'rp-action': ['rp'],
+  scene: ['document'],
+  'section-text': ['text'],
+  theme: ['document'],
+  generic: ['document', 'text']
+};
+
+function cmsRuntimePublicContent(value) {
+  let content = value;
+  if (typeof content === 'string') {
+    try { content = JSON.parse(content); } catch { content = { value }; }
+  }
+  if (!content || typeof content !== 'object' || Array.isArray(content)) {
+    return content;
+  }
+  const copy = JSON.parse(JSON.stringify(content));
+  if (copy._migration) delete copy._migration;
+  return copy;
+}
+
+app.get('/api/public/cms/blocks/:contentType', async (req, res) => {
+  try {
+    const sourceTypes = CMS_RUNTIME_TYPE_MAP[req.params.contentType];
+    if (!sourceTypes) return res.status(400).json({ error: 'Unknown content type' });
+
+    const q = await pool.query(`
+      SELECT id, block_key, block_type, title, content, category,
+             section_id, page_id, order_index, status, visibility,
+             updated_at
+      FROM cms_content_blocks
+      WHERE deleted_at IS NULL
+        AND status = 'published'
+        AND visibility = 'public'
+        AND block_type = ANY($1::text[])
+        AND (
+          block_type <> 'document'
+          OR NOT (content ? '_migration')
+          OR content->'_migration'->>'source_type' = $2
+        )
+      ORDER BY order_index ASC, title ASC, block_key ASC
+    `, [sourceTypes, req.params.contentType]);
+
+    const items = q.rows.map(row => {
+      const content = cmsRuntimePublicContent(row.content);
+      const migration = row.content && typeof row.content === 'object' ? row.content._migration : null;
+      return {
+        id: row.id,
+        content_key: migration?.source_key || row.block_key,
+        block_key: row.block_key,
+        block_type: row.block_type,
+        title: row.title,
+        content,
+        category: row.category,
+        section_id: row.section_id,
+        page_id: row.page_id,
+        order_index: row.order_index,
+        status: row.status,
+        visibility: row.visibility,
+        updated_at: row.updated_at
+      };
+    });
+
+    res.set('Cache-Control', 'public, max-age=30, stale-while-revalidate=120');
+    res.json({ ok: true, source: 'structured-cms', items });
+  } catch (error) {
+    /* During a rolling deployment the structured tables may not exist yet.
+       Returning an empty result lets the existing frontend fallback safely. */
+    console.error('Public CMS blocks error:', error);
+    res.json({ ok: true, source: 'structured-cms-unavailable', items: [] });
+  }
+});
+
+app.get('/api/public/cms/pages/:slug', async (req, res) => {
+  try {
+    const pageQ = await pool.query(`
+      SELECT id, name, slug, description, icon, parent_id, order_index,
+             status, visibility, template, updated_at
+      FROM cms_pages
+      WHERE slug = $1
+        AND deleted_at IS NULL
+        AND status = 'published'
+        AND visibility = 'public'
+      LIMIT 1
+    `, [req.params.slug]);
+
+    if (!pageQ.rows.length) return res.status(404).json({ error: 'Page not found' });
+    const page = pageQ.rows[0];
+
+    const sectionsQ = await pool.query(`
+      SELECT id, title, description, content, section_type, order_index,
+             status, visibility, updated_at
+      FROM cms_page_sections
+      WHERE page_id = $1
+        AND deleted_at IS NULL
+        AND status = 'published'
+        AND visibility = 'public'
+      ORDER BY order_index ASC, id ASC
+    `, [page.id]);
+
+    const blocksQ = await pool.query(`
+      SELECT id, block_key, block_type, title, content, category,
+             section_id, order_index, status, visibility, updated_at
+      FROM cms_content_blocks
+      WHERE page_id = $1
+        AND deleted_at IS NULL
+        AND status = 'published'
+        AND visibility = 'public'
+      ORDER BY order_index ASC, title ASC, block_key ASC
+    `, [page.id]);
+
+    const sections = sectionsQ.rows.map(section => ({
+      ...section,
+      content: cmsRuntimePublicContent(section.content),
+      blocks: blocksQ.rows
+        .filter(block => block.section_id === section.id)
+        .map(block => ({
+          ...block,
+          content: cmsRuntimePublicContent(block.content)
+        }))
+    }));
+
+    const unsectioned = blocksQ.rows
+      .filter(block => !block.section_id)
+      .map(block => ({ ...block, content: cmsRuntimePublicContent(block.content) }));
+
+    res.set('Cache-Control', 'public, max-age=30, stale-while-revalidate=120');
+    res.json({ ok: true, source: 'structured-cms', page, sections, blocks: unsectioned });
+  } catch (error) {
+    console.error('Public CMS page error:', error);
+    res.status(500).json({ error: 'Failed to fetch CMS page' });
+  }
+});
+
+app.get('/api/public/cms/navigation', async (req, res) => {
+  try {
+    const q = await pool.query(`
+      SELECT id, label, url, icon, page_id, parent_id, order_index,
+             target, is_external, role_required
+      FROM cms_navigation
+      WHERE deleted_at IS NULL
+        AND status = 'published'
+        AND visibility = 'public'
+      ORDER BY parent_id NULLS FIRST, order_index ASC, label ASC
+    `);
+    res.set('Cache-Control', 'public, max-age=30, stale-while-revalidate=120');
+    res.json({ ok: true, source: 'structured-cms', items: q.rows });
+  } catch (error) {
+    console.error('Public CMS navigation error:', error);
+    res.json({ ok: true, source: 'structured-cms-unavailable', items: [] });
+  }
+});
+
+app.get('/api/public/cms/categories/:contentType', async (req, res) => {
+  try {
+    const q = await pool.query(`
+      SELECT id, name, slug, description, icon, parent_id, content_type, order_index
+      FROM cms_categories
+      WHERE content_type = $1
+        AND deleted_at IS NULL
+        AND status = 'published'
+        AND visibility = 'public'
+      ORDER BY order_index ASC, name ASC
+    `, [req.params.contentType]);
+    res.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
+    res.json({ ok: true, source: 'structured-cms', categories: q.rows });
+  } catch (error) {
+    console.error('Public CMS categories error:', error);
+    res.json({ ok: true, source: 'structured-cms-unavailable', categories: [] });
+  }
+});
+
 /* ---- CMS PAGES ---- */
 
 app.get('/api/cms-pages', admin, async (req, res) => {
@@ -2663,13 +2952,13 @@ app.get('/api/cms-pages/:id', admin, async (req, res) => {
 
 app.post('/api/cms-pages', admin, async (req, res) => {
   try {
-    const { name, slug, description, icon, parent_id, template } = req.body;
+    const { name, slug, description, icon, parent_id, template, order_index, status, visibility } = req.body;
     if (!name || !slug) return res.status(400).json({ error: 'Name and slug are required' });
     const id = crypto.randomUUID();
     const maxOrder = await pool.query('SELECT COALESCE(MAX(order_index), 0) + 1 AS o FROM cms_pages');
     await pool.query(
-      'INSERT INTO cms_pages (id, name, slug, description, icon, parent_id, order_index, template, created_by) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)',
-      [id, name, slug, description || '', icon || null, parent_id || null, maxOrder.rows[0].o, template || 'standard', req.user.id]
+      'INSERT INTO cms_pages (id, name, slug, description, icon, parent_id, order_index, template, status, visibility, created_by) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',
+      [id, name, slug, description || '', icon || null, parent_id || null, order_index !== undefined ? Number(order_index) : maxOrder.rows[0].o, template || 'standard', status || 'published', visibility || 'public', req.user.id]
     );
     await logAction(req.user.id, 'cms.page.create', 'cms_page', id, { name, slug });
     const q = await pool.query('SELECT * FROM cms_pages WHERE id = $1', [id]);
@@ -2682,11 +2971,20 @@ app.post('/api/cms-pages', admin, async (req, res) => {
 
 app.put('/api/cms-pages/:id', admin, async (req, res) => {
   try {
-    const { name, slug, description, icon, parent_id, template } = req.body;
+    const { name, slug, description, icon, parent_id, template, order_index, status, visibility } = req.body;
     const id = req.params.id;
     await pool.query(
-      'UPDATE cms_pages SET name=COALESCE($1,name), slug=COALESCE($2,slug), description=$3, icon=$4, parent_id=$5, template=COALESCE($6,template), updated_by=$7, updated_at=NOW() WHERE id=$8',
-      [name||null, slug||null, description??null, icon??null, parent_id!==undefined?parent_id:null, template||null, req.user.id, id]
+      `UPDATE cms_pages
+       SET name=COALESCE($1,name), slug=COALESCE($2,slug), description=$3, icon=$4,
+           parent_id=$5, template=COALESCE($6,template),
+           order_index=COALESCE($7,order_index),
+           status=COALESCE($8,status), visibility=COALESCE($9,visibility),
+           updated_by=$10, updated_at=NOW()
+       WHERE id=$11`,
+      [name||null, slug||null, description??null, icon??null,
+       parent_id!==undefined?parent_id:null, template||null,
+       order_index!==undefined?Number(order_index):null,
+       status||null, visibility||null, req.user.id, id]
     );
     await logAction(req.user.id, 'cms.page.update', 'cms_page', id, { name, slug });
     const q = await pool.query('SELECT * FROM cms_pages WHERE id = $1', [id]);
@@ -2758,7 +3056,7 @@ app.post('/api/cms-pages/reorder', admin, async (req, res) => {
 
 /* ---- CMS CONTENT OPERATIONS (editable_content extensions) ---- */
 
-app.put('/api/cms/:contentType/:key/publish', admin, async (req, res) => {
+app.put('/api/cms/:contentType/:key/publish', admin, legacyCmsWriteGuard, async (req, res) => {
   try {
     const { published } = req.body;
     await pool.query('UPDATE editable_content SET is_published=$1, updated_by=$2, updated_at=NOW() WHERE content_key=$3',
@@ -2771,7 +3069,7 @@ app.put('/api/cms/:contentType/:key/publish', admin, async (req, res) => {
   }
 });
 
-app.post('/api/cms/:contentType/:key/duplicate', admin, async (req, res) => {
+app.post('/api/cms/:contentType/:key/duplicate', admin, legacyCmsWriteGuard, async (req, res) => {
   try {
     const type = req.params.contentType;
     const key = req.params.key;
@@ -2792,7 +3090,7 @@ app.post('/api/cms/:contentType/:key/duplicate', admin, async (req, res) => {
   }
 });
 
-app.post('/api/cms/:contentType/reorder', admin, async (req, res) => {
+app.post('/api/cms/:contentType/reorder', admin, legacyCmsWriteGuard, async (req, res) => {
   try {
     const { order } = req.body;
     const type = req.params.contentType;
@@ -2808,7 +3106,7 @@ app.post('/api/cms/:contentType/reorder', admin, async (req, res) => {
   }
 });
 
-app.post('/api/cms/:contentType/:key/restore', admin, async (req, res) => {
+app.post('/api/cms/:contentType/:key/restore', admin, legacyCmsWriteGuard, async (req, res) => {
   try {
     await pool.query('UPDATE editable_content SET deleted_at=NULL, deleted_by=NULL, updated_at=NOW() WHERE content_key=$1', [req.params.key]);
     await logAction(req.user.id, 'cms.item.restore', req.params.contentType, req.params.key, null);
@@ -2831,7 +3129,7 @@ app.get('/api/cms/versions/:contentKey', admin, async (req, res) => {
   }
 });
 
-app.post('/api/cms/versions/:contentKey', admin, async (req, res) => {
+app.post('/api/cms/versions/:contentKey', admin, legacyCmsWriteGuard, async (req, res) => {
   try {
     const key = req.params.contentKey;
     const current = await pool.query('SELECT content, content_type FROM editable_content WHERE content_key=$1', [key]);
@@ -2848,7 +3146,7 @@ app.post('/api/cms/versions/:contentKey', admin, async (req, res) => {
   }
 });
 
-app.post('/api/cms/versions/:contentKey/restore/:version', admin, async (req, res) => {
+app.post('/api/cms/versions/:contentKey/restore/:version', admin, legacyCmsWriteGuard, async (req, res) => {
   try {
     const { contentKey, version } = req.params;
     const ver = await pool.query('SELECT content, content_type FROM cms_content_versions WHERE content_key=$1 AND version=$2', [contentKey, Number(version)]);
@@ -2890,12 +3188,12 @@ app.get('/api/cms-sections/:pageId', admin, async (req, res) => {
 
 app.post('/api/cms-sections/:pageId', admin, async (req, res) => {
   try {
-    const { title, description, content, section_type } = req.body;
+    const { title, description, content, section_type, order_index, status, visibility } = req.body;
     const pageId = req.params.pageId;
     const id = crypto.randomUUID();
     const maxOrder = await pool.query('SELECT COALESCE(MAX(order_index),0)+1 AS o FROM cms_page_sections WHERE page_id=$1', [pageId]);
-    await pool.query('INSERT INTO cms_page_sections (id,page_id,title,description,content,section_type,order_index,created_by) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)',
-      [id, pageId, title||null, description||null, content?JSON.stringify(content):null, section_type||'content', maxOrder.rows[0].o, req.user.id]);
+    await pool.query('INSERT INTO cms_page_sections (id,page_id,title,description,content,section_type,order_index,status,visibility,created_by) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)',
+      [id, pageId, title||null, description||null, content?JSON.stringify(content):null, section_type||'content', order_index !== undefined ? Number(order_index) : maxOrder.rows[0].o, status || 'published', visibility || 'public', req.user.id]);
     const q = await pool.query('SELECT * FROM cms_page_sections WHERE id=$1', [id]);
     res.status(201).json({ ok: true, section: q.rows[0] });
   } catch (error) {
@@ -2906,9 +3204,19 @@ app.post('/api/cms-sections/:pageId', admin, async (req, res) => {
 
 app.put('/api/cms-sections/:id', admin, async (req, res) => {
   try {
-    const { title, description, content, section_type } = req.body;
-    await pool.query('UPDATE cms_page_sections SET title=COALESCE($1,title), description=$2, content=COALESCE($3,content), section_type=COALESCE($4,section_type), updated_by=$5, updated_at=NOW() WHERE id=$6',
-      [title??null, description??null, content?JSON.stringify(content):null, section_type||null, req.user.id, req.params.id]);
+    const { title, description, content, section_type, order_index, status, visibility } = req.body;
+    await pool.query(
+      `UPDATE cms_page_sections
+       SET title=COALESCE($1,title), description=$2, content=COALESCE($3,content),
+           section_type=COALESCE($4,section_type),
+           order_index=COALESCE($5,order_index),
+           status=COALESCE($6,status), visibility=COALESCE($7,visibility),
+           updated_by=$8, updated_at=NOW()
+       WHERE id=$9`,
+      [title??null, description??null, content!==undefined?JSON.stringify(content):null,
+       section_type||null, order_index!==undefined?Number(order_index):null,
+       status||null, visibility||null, req.user.id, req.params.id]
+    );
     const q = await pool.query('SELECT * FROM cms_page_sections WHERE id=$1', [req.params.id]);
     res.json({ ok: true, section: q.rows[0] });
   } catch (error) {
@@ -2971,12 +3279,12 @@ app.get('/api/cms-blocks', admin, async (req, res) => {
 
 app.post('/api/cms-blocks', admin, async (req, res) => {
   try {
-    const { block_key, block_type, title, content, section_id, page_id, parent_id, category } = req.body;
+    const { block_key, block_type, title, content, section_id, page_id, parent_id, category, order_index, status, visibility } = req.body;
     if (!block_key || !block_type) return res.status(400).json({ error: 'block_key and block_type required' });
     const id = crypto.randomUUID();
     const maxOrder = await pool.query('SELECT COALESCE(MAX(order_index),0)+1 AS o FROM cms_content_blocks');
-    await pool.query('INSERT INTO cms_content_blocks (id,block_key,block_type,title,content,section_id,page_id,parent_id,category,order_index,created_by) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',
-      [id, block_key, block_type, title||null, content?JSON.stringify(content):'{}', section_id||null, page_id||null, parent_id||null, category||null, maxOrder.rows[0].o, req.user.id]);
+    await pool.query('INSERT INTO cms_content_blocks (id,block_key,block_type,title,content,section_id,page_id,parent_id,category,order_index,status,visibility,created_by) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)',
+      [id, block_key, block_type, title||null, content?JSON.stringify(content):'{}', section_id||null, page_id||null, parent_id||null, category||null, order_index !== undefined ? Number(order_index) : maxOrder.rows[0].o, status || 'published', visibility || 'public', req.user.id]);
     const q = await pool.query('SELECT * FROM cms_content_blocks WHERE id=$1', [id]);
     res.status(201).json({ ok: true, block: q.rows[0] });
   } catch (error) {
@@ -2987,9 +3295,22 @@ app.post('/api/cms-blocks', admin, async (req, res) => {
 
 app.put('/api/cms-blocks/:id', admin, async (req, res) => {
   try {
-    const { title, content, block_type, category, parent_id, section_id, page_id } = req.body;
-    await pool.query('UPDATE cms_content_blocks SET title=COALESCE($1,title), content=COALESCE($2,content), block_type=COALESCE($3,block_type), category=COALESCE($4,category), parent_id=$5, section_id=$6, page_id=$7, updated_by=$8, updated_at=NOW() WHERE id=$9',
-      [title??null, content?JSON.stringify(content):null, block_type||null, category??null, parent_id!==undefined?parent_id:null, section_id||null, page_id||null, req.user.id, req.params.id]);
+    const { block_key, title, content, block_type, category, parent_id, section_id, page_id, order_index, status, visibility } = req.body;
+    await pool.query(
+      `UPDATE cms_content_blocks
+       SET block_key=COALESCE($1,block_key), title=COALESCE($2,title),
+           content=COALESCE($3,content), block_type=COALESCE($4,block_type),
+           category=$5, parent_id=$6, section_id=$7, page_id=$8,
+           order_index=COALESCE($9,order_index),
+           status=COALESCE($10,status), visibility=COALESCE($11,visibility),
+           updated_by=$12, updated_at=NOW()
+       WHERE id=$13`,
+      [block_key||null, title??null, content!==undefined?JSON.stringify(content):null,
+       block_type||null, category??null, parent_id!==undefined?parent_id:null,
+       section_id!==undefined?section_id:null, page_id!==undefined?page_id:null,
+       order_index!==undefined?Number(order_index):null,
+       status||null, visibility||null, req.user.id, req.params.id]
+    );
     const q = await pool.query('SELECT * FROM cms_content_blocks WHERE id=$1', [req.params.id]);
     res.json({ ok: true, block: q.rows[0] });
   } catch (error) {
@@ -3005,6 +3326,17 @@ app.delete('/api/cms-blocks/:id', admin, async (req, res) => {
   } catch (error) {
     console.error('CMS block delete error:', error);
     res.status(500).json({ error: 'Failed to delete block' });
+  }
+});
+
+app.post('/api/cms-blocks/:id/restore', admin, async (req, res) => {
+  try {
+    await pool.query('UPDATE cms_content_blocks SET deleted_at=NULL, deleted_by=NULL, updated_at=NOW() WHERE id=$1', [req.params.id]);
+    await logAction(req.user.id, 'cms.block.restore', 'cms_content_block', req.params.id, null);
+    res.json({ ok: true });
+  } catch (error) {
+    console.error('CMS block restore error:', error);
+    res.status(500).json({ error: 'Failed to restore block' });
   }
 });
 
@@ -3036,12 +3368,12 @@ app.get('/api/cms-navigation', admin, async (req, res) => {
 
 app.post('/api/cms-navigation', admin, async (req, res) => {
   try {
-    const { label, url, icon, page_id, parent_id, target, is_external, role_required } = req.body;
+    const { label, url, icon, page_id, parent_id, target, is_external, role_required, order_index, status, visibility } = req.body;
     if (!label) return res.status(400).json({ error: 'Label is required' });
     const id = crypto.randomUUID();
     const maxOrder = await pool.query('SELECT COALESCE(MAX(order_index),0)+1 AS o FROM cms_navigation');
-    await pool.query('INSERT INTO cms_navigation (id,label,url,icon,page_id,parent_id,order_index,target,is_external,role_required,created_by) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',
-      [id, label, url||null, icon||null, page_id||null, parent_id||null, maxOrder.rows[0].o, target||'_self', !!is_external, role_required||null, req.user.id]);
+    await pool.query('INSERT INTO cms_navigation (id,label,url,icon,page_id,parent_id,order_index,target,is_external,role_required,status,visibility,created_by) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)',
+      [id, label, url||null, icon||null, page_id||null, parent_id||null, order_index !== undefined ? Number(order_index) : maxOrder.rows[0].o, target||'_self', !!is_external, role_required||null, status || 'published', visibility || 'public', req.user.id]);
     const q = await pool.query('SELECT * FROM cms_navigation WHERE id=$1', [id]);
     res.status(201).json({ ok: true, item: q.rows[0] });
   } catch (error) {
@@ -3052,9 +3384,21 @@ app.post('/api/cms-navigation', admin, async (req, res) => {
 
 app.put('/api/cms-navigation/:id', admin, async (req, res) => {
   try {
-    const { label, url, icon, page_id, parent_id, target, is_external, role_required } = req.body;
-    await pool.query('UPDATE cms_navigation SET label=COALESCE($1,label), url=$2, icon=$3, page_id=$4, parent_id=$5, target=COALESCE($6,target), is_external=$7, role_required=$8, updated_by=$9, updated_at=NOW() WHERE id=$10',
-      [label||null, url??null, icon??null, page_id!==undefined?page_id:null, parent_id!==undefined?parent_id:null, target||null, is_external!==undefined?is_external:false, role_required??null, req.user.id, req.params.id]);
+    const { label, url, icon, page_id, parent_id, target, is_external, role_required, order_index, status, visibility } = req.body;
+    await pool.query(
+      `UPDATE cms_navigation
+       SET label=COALESCE($1,label), url=$2, icon=$3, page_id=$4, parent_id=$5,
+           target=COALESCE($6,target), is_external=COALESCE($7,is_external),
+           role_required=$8, order_index=COALESCE($9,order_index),
+           status=COALESCE($10,status), visibility=COALESCE($11,visibility),
+           updated_by=$12, updated_at=NOW()
+       WHERE id=$13`,
+      [label||null, url??null, icon??null, page_id!==undefined?page_id:null,
+       parent_id!==undefined?parent_id:null, target||null,
+       is_external!==undefined?is_external:null, role_required??null,
+       order_index!==undefined?Number(order_index):null,
+       status||null, visibility||null, req.user.id, req.params.id]
+    );
     const q = await pool.query('SELECT * FROM cms_navigation WHERE id=$1', [req.params.id]);
     res.json({ ok: true, item: q.rows[0] });
   } catch (error) {
@@ -3070,6 +3414,17 @@ app.delete('/api/cms-navigation/:id', admin, async (req, res) => {
   } catch (error) {
     console.error('CMS nav delete error:', error);
     res.status(500).json({ error: 'Failed to delete nav item' });
+  }
+});
+
+app.post('/api/cms-navigation/:id/restore', admin, async (req, res) => {
+  try {
+    await pool.query('UPDATE cms_navigation SET deleted_at=NULL, deleted_by=NULL, updated_at=NOW() WHERE id=$1', [req.params.id]);
+    await logAction(req.user.id, 'cms.navigation.restore', 'cms_navigation', req.params.id, null);
+    res.json({ ok: true });
+  } catch (error) {
+    console.error('CMS nav restore error:', error);
+    res.status(500).json({ error: 'Failed to restore navigation item' });
   }
 });
 
@@ -3105,12 +3460,12 @@ app.get('/api/cms-categories', admin, async (req, res) => {
 
 app.post('/api/cms-categories', admin, async (req, res) => {
   try {
-    const { name, slug, description, icon, parent_id, content_type } = req.body;
+    const { name, slug, description, icon, parent_id, content_type, order_index, status, visibility } = req.body;
     if (!name || !slug || !content_type) return res.status(400).json({ error: 'name, slug, content_type required' });
     const id = crypto.randomUUID();
     const maxOrder = await pool.query('SELECT COALESCE(MAX(order_index),0)+1 AS o FROM cms_categories');
-    await pool.query('INSERT INTO cms_categories (id,name,slug,description,icon,parent_id,content_type,order_index,created_by) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)',
-      [id, name, slug, description||null, icon||null, parent_id||null, content_type, maxOrder.rows[0].o, req.user.id]);
+    await pool.query('INSERT INTO cms_categories (id,name,slug,description,icon,parent_id,content_type,order_index,status,visibility,created_by) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',
+      [id, name, slug, description||null, icon||null, parent_id||null, content_type, order_index !== undefined ? Number(order_index) : maxOrder.rows[0].o, status || 'published', visibility || 'public', req.user.id]);
     const q = await pool.query('SELECT * FROM cms_categories WHERE id=$1', [id]);
     res.status(201).json({ ok: true, category: q.rows[0] });
   } catch (error) {
@@ -3121,9 +3476,20 @@ app.post('/api/cms-categories', admin, async (req, res) => {
 
 app.put('/api/cms-categories/:id', admin, async (req, res) => {
   try {
-    const { name, slug, description, icon, parent_id, content_type } = req.body;
-    await pool.query('UPDATE cms_categories SET name=COALESCE($1,name), slug=COALESCE($2,slug), description=$3, icon=$4, parent_id=$5, content_type=COALESCE($6,content_type), updated_by=$7, updated_at=NOW() WHERE id=$8',
-      [name||null, slug||null, description??null, icon??null, parent_id!==undefined?parent_id:null, content_type||null, req.user.id, req.params.id]);
+    const { name, slug, description, icon, parent_id, content_type, order_index, status, visibility } = req.body;
+    await pool.query(
+      `UPDATE cms_categories
+       SET name=COALESCE($1,name), slug=COALESCE($2,slug), description=$3, icon=$4,
+           parent_id=$5, content_type=COALESCE($6,content_type),
+           order_index=COALESCE($7,order_index),
+           status=COALESCE($8,status), visibility=COALESCE($9,visibility),
+           updated_by=$10, updated_at=NOW()
+       WHERE id=$11`,
+      [name||null, slug||null, description??null, icon??null,
+       parent_id!==undefined?parent_id:null, content_type||null,
+       order_index!==undefined?Number(order_index):null,
+       status||null, visibility||null, req.user.id, req.params.id]
+    );
     const q = await pool.query('SELECT * FROM cms_categories WHERE id=$1', [req.params.id]);
     res.json({ ok: true, category: q.rows[0] });
   } catch (error) {
@@ -3139,6 +3505,17 @@ app.delete('/api/cms-categories/:id', admin, async (req, res) => {
   } catch (error) {
     console.error('CMS category delete error:', error);
     res.status(500).json({ error: 'Failed to delete category' });
+  }
+});
+
+app.post('/api/cms-categories/:id/restore', admin, async (req, res) => {
+  try {
+    await pool.query('UPDATE cms_categories SET deleted_at=NULL, deleted_by=NULL, updated_at=NOW() WHERE id=$1', [req.params.id]);
+    await logAction(req.user.id, 'cms.category.restore', 'cms_category', req.params.id, null);
+    res.json({ ok: true });
+  } catch (error) {
+    console.error('CMS category restore error:', error);
+    res.status(500).json({ error: 'Failed to restore category' });
   }
 });
 
