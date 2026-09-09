@@ -1516,162 +1516,105 @@
           </div></section>
 
 
-      <section id="documentation" class="section">
-        <div class="section-head"><div class="tag">CLINICAL NOTES</div><h2>Documentation & handover</h2></div>
-        <div class="two-col"><article class="info"><h3>SBAR</h3><p><strong>S</strong>ituation • <strong>B</strong>ackground • <strong>A</strong>ssessment • <strong>R</strong>ecommendation.</p></article><article class="info"><h3>Document</h3><p>Time, presenting complaint, assessment findings, observations, interventions, response, escalation and handover.</p></article></div>
+      
+<section id="documentation" class="section">
+<div class="section-head"><div class="tag">CLINICAL NOTES</div><h2>Documentation &amp; Specialist Response</h2><p>Structured RP documentation, handover and specialist-resource reference. This is a roleplay reference, not operational guidance.</p></div>
 
-        <div class="section-head">
-          <div class="tag">SPECIALIST GUIDES</div>
-          <h2>HART &amp; HEMS</h2>
-          <p>Full activation-through-handover guides for the two specialist resources, for RP realism. Not real operational guidance — follow your service's own protocols.</p>
-        </div>
+<div class="scenario-tabs doc-main-tabs">
+<button class="doccat active" type="button" data-doc-tab="clinical">📝 Clinical Documentation</button>
+<button class="doccat" type="button" data-doc-tab="sbar">📡 SBAR Handover</button>
+<button class="doccat" type="button" data-doc-tab="hart">☣ HART Guide</button>
+<button class="doccat" type="button" data-doc-tab="hems">🚁 HEMS Guide</button>
+<button class="doccat" type="button" data-doc-tab="calls">📟 Call Matrix</button>
+</div>
 
-        <div class="scenario-tabs">
-          <button class="doccat active" onclick="showDocGuide('hart')">☣ HART</button>
-          <button class="doccat" onclick="showDocGuide('hems')">🚁 HEMS</button>
-          <button class="doccat" onclick="showDocGuide('training')">🎓 Training</button>
-          <button class="doccat" onclick="showDocGuide('docs')">📝 Docs</button>
-          <button class="doccat" onclick="showDocGuide('slides')">📽️ Slides</button>
-        </div>
+<div class="doc-main-panel active" data-doc-panel="clinical">
+<div class="scene-grid">
+<article><h3>Core Clinical Record</h3><ul><li>Date/time and clinician identity</li><li>Presenting complaint / mechanism</li><li>Initial impression and primary survey</li><li>Observations and trends</li><li>Examination findings</li><li>Interventions and response</li><li>Medication / fluid documentation</li><li>Escalation and specialist requests</li><li>Disposition and receiving team</li></ul></article>
+<article><h3>Trauma Documentation</h3><ul><li>Mechanism and time of injury</li><li>Injury pattern and anatomical location</li><li>Haemorrhage control</li><li>Neurovascular findings</li><li>Immobilisation/transport decisions</li><li>Serial ABCDE reassessment</li><li>Handover destination and clinical rationale</li></ul></article>
+<article><h3>Major Incident Record</h3><ul><li>Incident type and location</li><li>Command / control contact</li><li>Safety information and hazards</li><li>Patient count / triage information</li><li>Specialist resources requested</li><li>Casualty movement and destination</li><li>Outstanding risks / actions</li></ul></article>
+</div>
+<div class="action-list">
+<div class="action-row"><span>Start clinical note</span><button class="copy-action" data-copy="/me opens the clinical record and documents the time, presentation, initial impression and immediate concerns.">/me</button><button class="copy-action f8-action" data-copy="me opens the clinical record and documents the time, presentation, initial impression and immediate concerns.">F8 me</button></div>
+<div class="action-row"><span>Record observations</span><button class="copy-action" data-copy="/me records the current observations and compares them with previous readings to establish the clinical trend.">/me</button><button class="copy-action f8-action" data-copy="me records the current observations and compares them with previous readings to establish the clinical trend.">F8 me</button></div>
+<div class="action-row"><span>Document intervention and response</span><button class="copy-action" data-copy="/me documents the intervention performed, the clinical reason for it and the patient's response on reassessment.">/me</button><button class="copy-action f8-action" data-copy="me documents the intervention performed, the clinical reason for it and the patient's response on reassessment.">F8 me</button></div>
+<div class="action-row"><span>Close record / handover</span><button class="copy-action" data-copy="/me completes the clinical record, documents the receiving clinician and gives a structured handover of outstanding concerns and ongoing care.">/me</button><button class="copy-action f8-action" data-copy="me completes the clinical record, documents the receiving clinician and gives a structured handover of outstanding concerns and ongoing care.">F8 me</button></div>
+</div>
+</div>
 
-        <div id="doc-hart" class="doc-panel active">
-          <div class="scenario-hero">
-            <span>☣</span>
-            <div>
-              <h3>Hazardous Area Response Team (HART)</h3>
-              <p>A specialist ambulance service team trained and equipped to reach and treat casualties in hazardous environments that conventional crews can't safely enter.</p>
-            </div>
-          </div>
-          <div class="scene-grid">
-            <article><h4>Role</h4><p>Provides life-saving clinical care inside the hot/warm zone of a hazardous incident — CBRN, marauding terrorist attacks, water rescue, confined spaces, height and structural collapse — working closely with police and fire colleagues.</p></article>
-            <article><h4>PPE</h4><p>Wears the level of respiratory and skin protection appropriate to the hazard, ranging from standard fire-service-provided PPE for an MTA response up to full CBRN protection for a chemical/biological incident.</p></article>
-            <article><h4>Activation</h4><p>Tasked by ambulance control when a hazardous scene, marauding attack, CBRN incident or technical rescue needs specialist clinical support beyond what a conventional crew can safely provide.</p></article>
-            <article><h4>Zones</h4><p>Works within an agreed hot/warm/cold zone structure set jointly with the police/fire incident commander, only entering the hazard area within a defined safe system of work.</p></article>
-          </div>
-          <div class="pdf-doc-section">
-            <div class="pdf-doc-head">
-              <div class="tag">PDF DOCUMENT</div>
-              <label class="pdf-upload-btn" for="pdfInput-hart">📄 Add Document</label>
-              <input type="file" id="pdfInput-hart" accept="application/pdf,.pdf,application/vnd.openxmlformats-officedocument.presentationml.presentation,.pptx" onchange="handleDocPdf('hart', this)" hidden>
-            </div>
-            <p class="pdf-doc-note">Upload a PDF or PPTX file and it will be displayed here as a reference document.</p>
-            <div id="pdfContent-hart" class="pdf-content"></div>
-          </div>
-        </div>
+<div class="doc-main-panel" data-doc-panel="sbar">
+<div class="info-grid">
+<div><h3>S — Situation</h3><p>Who is the patient, what is happening now, and what is the immediate concern?</p></div>
+<div><h3>B — Background</h3><p>Relevant history, mechanism, known conditions, medications, allergies and events.</p></div>
+<div><h3>A — Assessment</h3><p>ABCDE findings, observations, examination, interventions and response.</p></div>
+<div><h3>R — Recommendation</h3><p>What is needed next, destination, specialist input and outstanding risks.</p></div>
+</div>
+<div class="action-list">
+<div class="action-row"><span>SBAR radio handover</span><button class="copy-action" data-copy="/me keys the radio, identifies the receiving clinician and delivers a concise SBAR handover with current observations and outstanding concerns.">/me</button><button class="copy-action f8-action" data-copy="me keys the radio, identifies the receiving clinician and delivers a concise SBAR handover with current observations and outstanding concerns.">F8 me</button></div>
+<div class="action-row"><span>Specialist request</span><button class="copy-action" data-copy="/me updates control with the patient's presentation, mechanism, current ABCDE findings, location and reason for requesting a specialist resource.">/me</button><button class="copy-action f8-action" data-copy="me updates control with the patient's presentation, mechanism, current ABCDE findings, location and reason for requesting a specialist resource.">F8 me</button></div>
+</div>
+</div>
 
-        <div id="doc-hems" class="doc-panel">
-          <div class="scenario-hero">
-            <span>🚁</span>
-            <div>
-              <h3>Helicopter Emergency Medical Service (HEMS)</h3>
-              <p>Rapid pre-hospital critical care delivered by air, bringing advanced hospital-level interventions to the scene and rapid transport to a major trauma centre.</p>
-            </div>
-          </div>
-          <div class="scene-grid">
-            <article><h4>Crew</h4><p>Typically a critical care doctor paired with a specialist/critical care paramedic, trained to deliver advanced interventions in the prehospital environment.</p></article>
-            <article><h4>Capabilities</h4><p>Prehospital anaesthesia/RSI, blood product transfusion, thoracostomy/chest drain insertion, advanced analgesia and rapid transfer direct to a major trauma centre.</p></article>
-            <article><h4>Activation criteria</h4><p>Major trauma, entrapment, a mechanism suggesting severe injury, time-critical medical emergencies, or difficult-access/rural locations where road transport would take too long.</p></article>
-            <article><h4>Landing site</h4><p>Ground crews identify and secure a safe landing site — clear of overhead wires, loose debris and livestock — and keep bystanders well clear of the rotor disc.</p></article>
-          </div>
-          <div class="pdf-doc-section">
-            <div class="pdf-doc-head">
-              <div class="tag">PDF DOCUMENT</div>
-              <label class="pdf-upload-btn" for="pdfInput-hems">📄 Add Document</label>
-              <input type="file" id="pdfInput-hems" accept="application/pdf,.pdf,application/vnd.openxmlformats-officedocument.presentationml.presentation,.pptx" onchange="handleDocPdf('hems', this)" hidden>
-            </div>
-            <p class="pdf-doc-note">Upload a PDF or PPTX file and it will be displayed here as a reference document.</p>
-            <div id="pdfContent-hems" class="pdf-content"></div>
-          </div>
-        </div>
+<div class="doc-main-panel" data-doc-panel="hart">
+<div class="scenario-hero"><span>☣</span><div><h2>HART — Hazardous Area Response Team</h2><p>Specialist ambulance capability for patients in hazardous or technically challenging environments. Exact capabilities and deployment arrangements vary by ambulance trust.</p></div></div>
+<div class="scene-grid">
+<article><h3>Common HART-type activations</h3><ul><li>CBRN / HazMat incidents</li><li>Urban search and rescue / structural collapse</li><li>Safe working at height</li><li>High-risk confined space</li><li>Inland water operations</li><li>Tactical medicine / marauding terrorist incidents</li><li>Complex hazardous-area casualties</li><li>Mass-casualty / major-incident support where specialist capability is required</li></ul></article>
+<article><h3>What HART adds</h3><ul><li>Clinical care where the environment itself creates additional risk</li><li>Specialist PPE and hazardous-area capability</li><li>Support to CBRN/HazMat response and decontamination activity</li><li>Interoperable working with police, fire and other agencies</li><li>Specialist access/rescue environments</li></ul></article>
+<article><h3>HART scene workflow — RP</h3><ol><li>Control identifies specialist need</li><li>HART requested / tasked</li><li>Incident location and hazards confirmed</li><li>Joint safety arrangements established</li><li>HART team deploys to the appropriate operational area</li><li>Casualty access / clinical care represented in RP</li><li>Casualty transferred to safe treatment/transport area</li><li>Handover and demobilisation</li></ol></article>
+</div>
+<div class="action-list">
+<div class="action-row"><span>Request HART</span><button class="copy-action" data-copy="/me contacts ambulance control and requests HART support, providing the incident type, location, hazards and casualty information available.">/me</button><button class="copy-action f8-action" data-copy="me contacts ambulance control and requests HART support, providing the incident type, location, hazards and casualty information available.">F8 me</button></div>
+<div class="action-row"><span>HART arrives</span><button class="copy-action" data-copy="/me briefs the arriving HART team on the hazard, patient location, casualty condition and known safety information before clinical access.">/me</button><button class="copy-action f8-action" data-copy="me briefs the arriving HART team on the hazard, patient location, casualty condition and known safety information before clinical access.">F8 me</button></div>
+<div class="action-row"><span>HART clinical handover</span><button class="copy-action" data-copy="/me gives HART a structured casualty handover covering presentation, ABCDE findings, treatment completed and any known contamination or environmental risks.">/me</button><button class="copy-action f8-action" data-copy="me gives HART a structured casualty handover covering presentation, ABCDE findings, treatment completed and any known contamination or environmental risks.">F8 me</button></div>
+</div>
+<p class="scenario-note"><strong>Important:</strong> HART is not simply a 'more advanced ambulance'. It is primarily the specialist capability for hazardous or technically challenging environments. Actual deployment criteria are trust-specific.</p>
+</div>
 
-<div id="doc-training" class="doc-panel">
-          <div class="section-head">
-            <div class="tag">TRAINING DOCUMENTS</div>
-            <h2>Training Reference</h2>
-            <p>Upload and view training PDFs here.</p>
-          </div>
-          <div class="pdf-doc-section">
-            <div class="pdf-doc-head">
-              <div class="tag">PDF DOCUMENT</div>
-              <label class="pdf-upload-btn" for="pdfInput-training">📄 Add Document</label>
-              <input type="file" id="pdfInput-training" accept="application/pdf,.pdf,application/vnd.openxmlformats-officedocument.presentationml.presentation,.pptx" onchange="handleDocPdf('training', this)" hidden>
-            </div>
-            <p class="pdf-doc-note">Upload a PDF or PPTX file and it will be displayed here as a reference document.</p>
-            <div id="pdfContent-training" class="pdf-content"></div>
-          </div>
-        </div>
+<div class="doc-main-panel" data-doc-panel="hems">
+<div class="scenario-hero"><span>🚁</span><div><h2>HEMS — Helicopter Emergency Medical Service</h2><p>Specialist pre-hospital critical-care resource. Activation criteria, clinical scope and availability vary by service.</p></div></div>
+<div class="scene-grid">
+<article><h3>Common HEMS-type calls</h3><ul><li>Major trauma with suspected time-critical injury</li><li>Serious road traffic collisions, especially entrapment/ejection</li><li>Severe falls</li><li>Penetrating trauma such as stabbing or shooting</li><li>Severe head injury</li><li>Drowning / near drowning</li><li>Electrocution</li><li>Industrial accidents</li><li>Explosions</li><li>Traumatic amputation</li><li>Remote/difficult-access incidents</li><li>Requests from ambulance, police or fire colleagues where specialist critical care may help</li></ul></article>
+<article><h3>What HEMS adds</h3><ul><li>Rapid specialist critical-care team response</li><li>Advanced pre-hospital decision-making and interventions within local scope</li><li>Potential rapid access to major trauma/definitive care pathways</li><li>Specialist scene assessment and critical-care support</li></ul></article>
+<article><h3>HEMS scene workflow — RP</h3><ol><li>Potentially suitable case identified</li><li>HEMS requested / tasked</li><li>Landing/access information exchanged</li><li>Landing site or alternative access arranged</li><li>HEMS crew meets ground team</li><li>Joint assessment and treatment plan represented</li><li>Transport / rendezvous / handover decision</li><li>Definitive-care handover</li></ol></article>
+</div>
+<div class="action-list">
+<div class="action-row"><span>Request HEMS</span><button class="copy-action" data-copy="/me contacts control and requests HEMS, providing the patient's condition, mechanism, location, access issues and current treatment.">/me</button><button class="copy-action f8-action" data-copy="me contacts control and requests HEMS, providing the patient's condition, mechanism, location, access issues and current treatment.">F8 me</button></div>
+<div class="action-row"><span>Prepare landing/access information</span><button class="copy-action" data-copy="/me relays the safest available landing or access information to control and prepares the scene team to receive the HEMS crew.">/me</button><button class="copy-action f8-action" data-copy="me relays the safest available landing or access information to control and prepares the scene team to receive the HEMS crew.">F8 me</button></div>
+<div class="action-row"><span>HEMS arrival handover</span><button class="copy-action" data-copy="/me gives the HEMS clinician a concise handover covering mechanism, injuries, ABCDE findings, observations, treatment and response.">/me</button><button class="copy-action f8-action" data-copy="me gives the HEMS clinician a concise handover covering mechanism, injuries, ABCDE findings, observations, treatment and response.">F8 me</button></div>
+</div>
+<p class="scenario-note"><strong>Important:</strong> HEMS is not automatically dispatched to every severe call. Activation and landing decisions are service-specific and depend on clinical need, geography, weather, aircraft availability and scene safety.</p>
+</div>
 
-        <div id="doc-docs" class="doc-panel">
-          <div class="section-head">
-            <div class="tag">DOCUMENTS</div>
-            <h2>Docs</h2>
-            <p>Create and edit rich documents with the built-in editor. Format text, add tables, images and bullet points - word processor style.</p>
-          </div>
-          <div class="editor-wrap">
-            <div class="editor-toolbar">
-              <button type="button" data-cmd="bold" title="Bold"><strong>B</strong></button>
-              <button type="button" data-cmd="italic" title="Italic"><em>I</em></button>
-              <button type="button" data-cmd="underline" title="Underline"><u>U</u></button>
-              <span class="sep"></span>
-              <button type="button" data-block="h2" title="Heading 1">H1</button>
-              <button type="button" data-block="h3" title="Heading 2">H2</button>
-              <button type="button" data-block="p" title="Paragraph">¶</button>
-              <span class="sep"></span>
-              <button type="button" data-cmd="insertUnorderedList" title="Bullet list">☰</button>
-              <button type="button" data-cmd="insertOrderedList" title="Numbered list">1.</button>
-              <span class="sep"></span>
-              <button type="button" data-cmd="insertHorizontalRule" title="Line">—</button>
-              <button type="button" onclick="insertTableToEditor('doc-editor')" title="Table">▦</button>
-              <span class="sep"></span>
-              <button type="button" onclick="saveEditorContent('doc-editor')" title="Save">💾 Save</button>
-            </div>
-            <div id="doc-editor" class="editor-content" contenteditable="true" spellcheck="true"></div>
-            <div class="editor-save-status">Auto-saved locally</div>
-          </div>
-        </div>
+<div class="doc-main-panel" data-doc-panel="calls">
+<h2>HART vs HEMS — RP Call Matrix</h2>
+<p class="muted">Use this as a roleplay dispatch guide, not a universal NHS dispatch protocol. There is overlap and individual ambulance services use their own criteria.</p>
+<table class="comparison-table"><thead><tr><th>Call type</th><th>HART</th><th>HEMS</th><th>RP note</th></tr></thead>
+<tbody>
+<tr><td>CBRN / HazMat</td><td>🟢 Primary specialist fit</td><td>⚪ Usually not the defining reason</td><td>Hazard/environment is the driver.</td></tr>
+<tr><td>Structural collapse / USAR</td><td>🟢 Primary specialist fit</td><td>🟡 Possible if serious casualty</td><td>HART for access/environment; HEMS for critical patient if appropriate.</td></tr>
+<tr><td>Confined space</td><td>🟢 Primary specialist fit</td><td>🟡 Possible</td><td>HART for technical/hazardous access.</td></tr>
+<tr><td>Height / difficult rescue</td><td>🟢 Specialist capability</td><td>🟡 Possible for serious trauma</td><td>Can require both.</td></tr>
+<tr><td>Inland water</td><td>🟢 Specialist capability</td><td>🟡 Possible for critical casualty</td><td>HART capability depends on local service.</td></tr>
+<tr><td>Tactical medicine / MTA</td><td>🟢 Specialist capability</td><td>🟡 Possible for casualties</td><td>Police/fire interoperability is central.</td></tr>
+<tr><td>Major trauma / RTC</td><td>🟡 If environment is hazardous/technical</td><td>🟢 Common HEMS consideration</td><td>HEMS is driven by clinical/time-critical need; HART by environment.</td></tr>
+<tr><td>Severe fall</td><td>🟡 If technical rescue required</td><td>🟢 Common HEMS consideration</td><td>Both may be appropriate.</td></tr>
+<tr><td>Stabbing / shooting</td><td>🟡 If tactical/hazardous environment</td><td>🟢 Common HEMS consideration</td><td>HEMS for severe injury; HART/SORT for hazardous tactical context where applicable.</td></tr>
+<tr><td>Drowning</td><td>🟡 Water capability varies</td><td>🟢 Common HEMS consideration</td><td>Local HART water capability varies.</td></tr>
+<tr><td>Electrocution</td><td>🟡 If technical/hazardous access</td><td>🟢 Common HEMS consideration</td><td>Make the scene safe before clinical access.</td></tr>
+<tr><td>Explosion</td><td>🟢 If hazardous/technical environment</td><td>🟢 If major trauma/time-critical</td><td>Strong potential for joint response.</td></tr>
+<tr><td>Traumatic amputation</td><td>🟡 If rescue/hazard complicates access</td><td>🟢 Common HEMS consideration</td><td>Clinical severity and access both matter.</td></tr>
+<tr><td>Remote / difficult access</td><td>🟡 If specialist access needed</td><td>🟢 Possible if HEMS offers time/access advantage</td><td>Availability and geography matter.</td></tr>
+</tbody></table>
+<div class="scene-grid">
+<article><h3>Think HART when…</h3><p><strong>The environment is the problem.</strong> Hazardous materials, CBRN, technical rescue, confined space, height, water or tactical/hazardous access.</p></article>
+<article><h3>Think HEMS when…</h3><p><strong>The patient's clinical need and time/access are the problem.</strong> Major trauma, severe injury, time-critical critical care or difficult geography.</p></article>
+<article><h3>Think BOTH when…</h3><p><strong>The environment and patient are both high-risk.</strong> For example, a severe trauma patient trapped in a hazardous/technical environment.</p></article>
+</div>
+</div>
 
-        <div id="doc-slides" class="doc-panel">
-          <div class="section-head">
-            <div class="tag">SLIDES</div>
-            <h2>Slides</h2>
-            <p>Create slide-style documents with the rich text editor. Use headings to structure content like presentation slides.</p>
-          </div>
-          <div class="editor-wrap">
-            <div class="editor-toolbar">
-              <button type="button" data-cmd="bold" title="Bold"><strong>B</strong></button>
-              <button type="button" data-cmd="italic" title="Italic"><em>I</em></button>
-              <button type="button" data-cmd="underline" title="Underline"><u>U</u></button>
-              <span class="sep"></span>
-              <button type="button" data-block="h1" title="Slide title">Title</button>
-              <button type="button" data-block="h2" title="Slide heading">Slide</button>
-              <button type="button" data-block="p" title="Body text">¶</button>
-              <span class="sep"></span>
-              <button type="button" data-cmd="insertUnorderedList" title="Bullet list">☰</button>
-              <button type="button" data-cmd="insertOrderedList" title="Numbered list">1.</button>
-              <span class="sep"></span>
-              <button type="button" onclick="insertTableToEditor('slides-editor')" title="Table">▦</button>
-              <button type="button" onclick="saveEditorContent('slides-editor')" title="Save">💾 Save</button>
-            </div>
-            <div id="slides-editor" class="editor-content" contenteditable="true" spellcheck="true"></div>
-            <div class="editor-save-status">Auto-saved locally</div>
-          </div>
-        </div>
+<p class="scenario-note"><strong>Source note:</strong> HART capabilities and NHS interoperable specialist-response concepts are based on NHS England EPRR material and published ambulance-service descriptions. HEMS examples are based on published London Ambulance Service HEMS targeting criteria. Local service criteria can differ.</p>
+</section>
 
-        <div class="scene-rp-panel" id="docRPPanel">
-          <div class="tag">SPECIALIST /me LIBRARY</div>
-          <h4>HART / HEMS RP actions</h4>
-          <p>Each guide has its own actions. Use the two tabs to copy the exact command format you need.</p>
-          <div class="scene-rp-tabs">
-            <div class="context-tabs"><button class="doc-context-btn active" data-context="bed" onclick="setDocContext('bed')">🛏️ Bed</button><button class="doc-context-btn" data-context="floor" onclick="setDocContext('floor')">🏣 Floor</button></div>
-            <div class="scene-rp-tabs">
-            <button class="dpt active" onclick="setDocRPMode('slash')">/me</button>
-            <button class="dpt" onclick="setDocRPMode('f8')">ME • F8</button>
-          </div>
-          <div id="docRPList"></div>
-        </div>
-
-        <div class="scenario-note"><strong>RP realism note:</strong> Reflects general, publicly-known UK ambulance specialist-resource roles for roleplay realism only — not real operational guidance.</div>
-      </section>
 
       <section id="procedures" class="section">
         <div class="section-head">

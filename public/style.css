@@ -837,3 +837,12 @@ button:focus-visible{outline:2px solid #41b6e6;outline-offset:2px}
 .abcde-tab-panel{display:none}.abcde-tab-panel.active{display:block}
 
 .abcde-enhanced .role-action-section{margin:20px 0}.abcde-enhanced .role-action-section h4{margin-bottom:10px}.abcde-enhanced .action-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.abcde-enhanced .action-row>span{flex:1;min-width:230px}.abcde-enhanced .f8-action{opacity:.9}
+
+/* Documentation / specialist response layout */
+.doc-main-panel{display:none}.doc-main-panel.active{display:block}
+.doc-main-panel .info-grid,.doc-main-panel .scene-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.doc-main-panel .info-grid>div,.doc-main-panel .scene-grid>article{padding:16px;border:1px solid rgba(127,127,127,.22);border-radius:10px}
+.doc-main-panel .action-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.doc-main-panel .action-row>span{flex:1;min-width:220px}
+.comparison-table{width:100%;border-collapse:collapse;margin:18px 0;overflow:hidden}
+.comparison-table th,.comparison-table td{padding:10px;border:1px solid rgba(127,127,127,.22);text-align:left;vertical-align:top}

@@ -11047,3 +11047,14 @@ document.addEventListener('click', async (event) => {
     area.remove();
   }
 });
+
+// Documentation / HART / HEMS tab controller
+document.addEventListener('click', (event) => {
+  const tab = event.target.closest('[data-doc-tab]');
+  if (!tab) return;
+  const section = tab.closest('#documentation');
+  if (!section) return;
+  const name = tab.getAttribute('data-doc-tab');
+  section.querySelectorAll('[data-doc-tab]').forEach(t => t.classList.toggle('active', t === tab));
+  section.querySelectorAll('[data-doc-panel]').forEach(p => p.classList.toggle('active', p.getAttribute('data-doc-panel') === name));
+});
