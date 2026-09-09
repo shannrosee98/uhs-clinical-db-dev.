@@ -546,3 +546,215 @@ button:focus-visible{outline:2px solid #41b6e6;outline-offset:2px}
 
 /* --- Dashboard favourites in RP section --- */
 #dashboardFavourites{display:grid;gap:8px;min-height:60px}
+
+
+/* =========================================================
+   No-code CMS content editor
+========================================================= */
+.cms2-content-help {
+  display:flex;
+  gap:12px;
+  align-items:center;
+  padding:12px 14px;
+  margin:8px 0 12px;
+  border:1px solid rgba(90,170,200,.25);
+  border-radius:10px;
+  background:rgba(20,50,65,.55);
+}
+.cms2-content-help strong { color:#fff; }
+.cms2-content-help span { color:#9fb3ba; font-size:13px; }
+.cms2-json-builder { width:100%; }
+.cms2-vgroup {
+  border:1px solid rgba(120,160,175,.18);
+  border-radius:10px;
+  padding:12px;
+  margin:8px 0;
+  background:rgba(8,25,34,.45);
+}
+.cms2-vgroup-head {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-bottom:10px;
+  color:#dbe7ea;
+}
+.cms2-vproperty {
+  display:flex;
+  gap:8px;
+  align-items:flex-start;
+  margin:8px 0;
+}
+.cms2-vproperty > div { flex:1; }
+.cms2-vfield label { display:block; }
+.cms2-vfield label > span {
+  display:block;
+  color:#b9cbd0;
+  font-weight:600;
+  font-size:13px;
+  margin-bottom:5px;
+}
+.cms2-vfield input, .cms2-vfield textarea {
+  width:100%;
+  box-sizing:border-box;
+}
+.cms2-vbool label {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-height:38px;
+}
+.cms2-vbool label > span { margin:0; }
+.cms2-varray-item {
+  border-left:3px solid rgba(70,170,205,.35);
+  padding:8px 10px;
+  margin:8px 0;
+  background:rgba(15,35,45,.45);
+  border-radius:7px;
+}
+.cms2-varray-title {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  color:#cbdde1;
+  font-size:12px;
+  font-weight:700;
+  margin-bottom:8px;
+}
+.cms2-vempty {
+  color:#81969e;
+  font-size:13px;
+  padding:8px 2px;
+}
+.cms2-mini-btn, .cms2-mini-danger, .cms2-add-field {
+  border:1px solid rgba(100,160,180,.3);
+  border-radius:7px;
+  padding:5px 9px;
+  background:#102b37;
+  color:#d9edf2;
+  cursor:pointer;
+  font-size:12px;
+}
+.cms2-mini-danger {
+  background:rgba(120,35,45,.28);
+  border-color:rgba(190,80,95,.35);
+}
+.cms2-add-field {
+  margin-top:8px;
+  width:100%;
+  background:rgba(30,70,85,.35);
+}
+.cms2-mini-btn:hover, .cms2-add-field:hover { filter:brightness(1.15); }
+.cms2-remove-field { align-self:flex-start; margin-top:21px; }
+@media (max-width: 760px) {
+  .cms2-content-help { align-items:flex-start; flex-direction:column; }
+  .cms2-vproperty { flex-direction:column; }
+  .cms2-remove-field { margin-top:0; }
+}
+
+
+/* =========================================================
+   No-code dedicated clinical CMS forms
+========================================================= */
+.cms2-clinical-editor { width:100%; }
+.cms2-clinical-section {
+  border:1px solid rgba(120,160,175,.18);
+  border-radius:12px;
+  padding:14px;
+  margin:10px 0;
+  background:rgba(8,25,34,.45);
+}
+.cms2-clinical-section h4 {
+  margin:0 0 12px;
+  color:#e8f2f4;
+  font-size:15px;
+}
+.cms2-clinical-field { margin:12px 0; }
+.cms2-clinical-label {
+  display:flex;
+  align-items:baseline;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:6px;
+}
+.cms2-clinical-label strong { color:#d8e6e9; font-size:13px; }
+.cms2-clinical-placeholder { color:#78919b; font-size:11px; }
+.cms2-clinical-field input,
+.cms2-clinical-field textarea {
+  width:100%;
+  box-sizing:border-box;
+}
+.cms2-clinical-list {
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+}
+.cms2-clinical-list-item {
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:7px;
+  align-items:center;
+}
+.cms2-clinical-remove {
+  border:1px solid rgba(190,80,95,.35);
+  background:rgba(120,35,45,.28);
+  color:#f0cbd0;
+  border-radius:7px;
+  padding:7px 10px;
+  cursor:pointer;
+}
+.cms2-clinical-add {
+  width:100%;
+  border:1px solid rgba(100,160,180,.3);
+  border-radius:8px;
+  padding:8px 10px;
+  background:#102b37;
+  color:#d9edf2;
+  cursor:pointer;
+  text-align:left;
+}
+.cms2-clinical-add:hover,
+.cms2-clinical-remove:hover { filter:brightness(1.15); }
+.cms2-clinical-empty {
+  color:#81969e;
+  font-size:12px;
+  padding:5px 0;
+}
+.cms2-clinical-list-or-text {
+  margin-top:8px;
+}
+.cms2-clinical-list-or-text small {
+  display:block;
+  margin-top:4px;
+  color:#78919b;
+  font-size:11px;
+}
+@media (max-width:760px) {
+  .cms2-clinical-list-item { grid-template-columns:1fr; }
+}
+
+/* No-code clinical rich text + drag/drop controls */
+.cms2-rich-editor{border:1px solid #29404d;border-radius:10px;background:#091820;overflow:hidden}
+.cms2-rich-toolbar{display:flex;gap:5px;flex-wrap:wrap;padding:7px;background:#102833;border-bottom:1px solid #29404d}
+.cms2-rich-btn{border:1px solid #365260;background:#142f3c;color:#dce9ee;border-radius:6px;padding:5px 9px;cursor:pointer;font:inherit;font-size:12px}
+.cms2-rich-btn:hover{background:#1c3d4c}
+.cms2-rich-surface{min-height:110px;padding:11px 13px;background:#07141b;color:#eef5f7;outline:none;line-height:1.6}
+.cms2-rich-surface:empty:before{content:attr(data-placeholder);color:#6f8792;pointer-events:none}
+.cms2-rich-surface:focus{box-shadow:inset 0 0 0 1px #41b6e6}
+.cms2-rich-surface h3{margin:8px 0 5px;font-size:17px}
+.cms2-rich-surface p{margin:6px 0}
+.cms2-rich-surface ul,.cms2-rich-surface ol{padding-left:24px}
+.cms2-rich-help{display:block;padding:6px 11px;color:#718894;background:#091820}
+.cms2-clinical-list-item{display:flex;align-items:center;gap:7px;margin:7px 0;padding:6px;border:1px solid #203943;border-radius:8px;background:#0a1a22}
+.cms2-clinical-list-item input{flex:1;min-width:0}
+.cms2-drag-handle{width:32px;height:34px;border:1px solid #365260;background:#112934;color:#91a8b2;border-radius:6px;cursor:grab;font-size:18px;line-height:1}
+.cms2-drag-handle:active{cursor:grabbing}
+.cms2-clinical-list-item.cms2-dragging{opacity:.45;border-style:dashed}
+.cms2-clinical-list-item[draggable="true"]{cursor:default}
+.cms2-clinical-list-item:hover{border-color:#355765}
+.cms2-clinical-add{margin-top:5px}
+@media(max-width:700px){
+  .cms2-rich-toolbar{gap:4px}
+  .cms2-clinical-list-item{align-items:stretch}
+  .cms2-clinical-list-item input{min-width:0}
+}

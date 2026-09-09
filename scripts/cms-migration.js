@@ -76,6 +76,22 @@ function safeName(row) {
     row.content?.label || row.content?.text || row.content_key;
 }
 
+function migrationError(error, context = {}) {
+  const e = new Error(
+    `Migration failed while processing ${context.content_type || 'unknown'} ` +
+    `record "${context.content_key || 'unknown'}"` +
+    `${context.stage ? ` during ${context.stage}` : ''}: ` +
+    (error?.message || String(error))
+  );
+  if (error && typeof error === 'object') {
+    for (const key of ['code','constraint','table','column','detail','hint','position']) {
+      if (error[key] != null) e[key] = error[key];
+    }
+    e.cause = error;
+  }
+  return e;
+}
+
 async function tableExists(client, name) {
   const q = await client.query(
     `SELECT to_regclass($1) IS NOT NULL AS exists`,
@@ -192,10 +208,9 @@ export async function migrateRows(client, report, { createDraftPage: shouldCreat
   const sectionByType = new Map();
   if (shouldCreateDraftPage) {
     const existingPage = await client.query(
-      `SELECT id FROM cms_pages
+      `SELECT id, deleted_at FROM cms_pages
        WHERE slug='legacy-content-migration'
-       ORDER BY CASE WHEN deleted_at IS NULL THEN 0 ELSE 1 END,
-                created_at ASC LIMIT 1`
+       ORDER BY CASE WHEN deleted_at IS NULL THEN 0 ELSE 1 END, created_at ASC LIMIT 1`
     );
     if (existingPage.rows.length) {
       draftPageId = existingPage.rows[0].id;
@@ -224,8 +239,12 @@ export async function migrateRows(client, report, { createDraftPage: shouldCreat
   const result = { blocks: 0, navigation: 0, categories: 0, versions: 0, sections: 0 };
 
   // Use one deterministic key per source row so the migration is idempotent.
-  for (const row of rows) {
-    const sourceKey = `legacy-${slugify(row.content_type)}-${slugify(row.content_key)}`;
+  for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
+    const row = rows[rowIndex];
+    const savepoint = `cms_migrate_row_${rowIndex}`;
+    await client.query(`SAVEPOINT ${savepoint}`);
+    try {
+      const sourceKey = `legacy-${slugify(row.content_type)}-${slugify(row.content_key)}`;
     const blockType = TYPE_TO_BLOCK[row.content_type] || 'document';
     const title = safeName(row);
     const category = row.category || row.content?.category || null;
@@ -238,20 +257,37 @@ export async function migrateRows(client, report, { createDraftPage: shouldCreat
       const label = row.content?.label || title;
       const url = row.content?.url || (row.content?.section ? `/${row.content.section}` : null);
       const existing = await client.query(
-        `SELECT id FROM cms_navigation
-         WHERE deleted_at IS NULL
-           AND metadata->>'source_table'='editable_content'
+        `SELECT id, deleted_at FROM cms_navigation
+         WHERE metadata->>'source_table'='editable_content'
            AND metadata->>'source_key'=$1
+         ORDER BY CASE WHEN deleted_at IS NULL THEN 0 ELSE 1 END,
+                  created_at ASC
          LIMIT 1`,
         [row.content_key]
       );
-      if (!existing.rows.length) {
+      const navMeta = JSON.stringify({
+        source_table: 'editable_content',
+        source_key: row.content_key,
+        source_type: row.content_type,
+        source_published: row.is_published === true
+      });
+      if (existing.rows.length) {
+        await client.query(
+          `UPDATE cms_navigation
+           SET label=$1, url=$2, icon=$3, order_index=$4,
+               status='draft', visibility='admin', metadata=$5,
+               deleted_at=NULL, updated_at=NOW()
+           WHERE id=$6`,
+          [label, url, row.content?.icon || null, Number(row.content?.order ?? row.order_index ?? 0),
+           navMeta, existing.rows[0].id]
+        );
+      } else {
         await client.query(
           `INSERT INTO cms_navigation
            (id,label,url,icon,order_index,target,is_external,status,visibility,metadata)
            VALUES ($1,$2,$3,$4,$5,'_self',false,'draft','admin',$6)`,
           [crypto.randomUUID(), label, url, row.content?.icon || null, Number(row.content?.order ?? row.order_index ?? 0),
-           JSON.stringify({ source_table: 'editable_content', source_key: row.content_key, source_type: row.content_type, source_published: row.is_published === true })]
+           navMeta]
         );
         result.navigation++;
       }
@@ -260,16 +296,17 @@ export async function migrateRows(client, report, { createDraftPage: shouldCreat
       if (draftPageId) {
         if (!sectionByType.has(row.content_type)) {
           const existingSection = await client.query(
-            `SELECT id FROM cms_page_sections
-             WHERE page_id=$1 AND title=$2 AND deleted_at IS NULL
-             ORDER BY order_index ASC, created_at ASC LIMIT 1`,
+            `SELECT id, deleted_at FROM cms_page_sections
+             WHERE page_id=$1 AND title=$2
+             ORDER BY CASE WHEN deleted_at IS NULL THEN 0 ELSE 1 END,
+                      order_index ASC, created_at ASC LIMIT 1`,
             [draftPageId, row.content_type]
           );
           if (existingSection.rows.length) {
             sectionId = existingSection.rows[0].id;
             await client.query(
               `UPDATE cms_page_sections
-               SET status='draft', visibility='admin', updated_at=NOW()
+               SET status='draft', visibility='admin', deleted_at=NULL, updated_at=NOW()
                WHERE id=$1`,
               [sectionId]
             );
@@ -294,15 +331,16 @@ export async function migrateRows(client, report, { createDraftPage: shouldCreat
       const existing = await client.query(
         `SELECT id FROM cms_content_blocks
          WHERE block_key=$1 AND block_type=$2
-         ORDER BY CASE WHEN deleted_at IS NULL THEN 0 ELSE 1 END,
-                  created_at ASC LIMIT 1`,
+         ORDER BY CASE WHEN deleted_at IS NULL THEN 0 ELSE 1 END, created_at ASC
+         LIMIT 1`,
         [sourceKey, blockType]
       );
       if (existing.rows.length) {
         await client.query(
           `UPDATE cms_content_blocks
            SET title=$1, content=$2, category=$3, section_id=$4, page_id=$5,
-               status='draft', visibility='admin', deleted_at=NULL, updated_at=NOW()
+               status='draft', visibility='admin', deleted_at=NULL,
+               updated_at=NOW()
            WHERE id=$6`,
           [title, JSON.stringify(content), category, sectionId, draftPageId, existing.rows[0].id]
         );
@@ -310,7 +348,7 @@ export async function migrateRows(client, report, { createDraftPage: shouldCreat
         await client.query(
           `INSERT INTO cms_content_blocks
            (id,block_key,block_type,title,content,section_id,page_id,category,order_index,status,visibility)
-           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,'draft','admin')`,
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,'draft','admin')`,
           [crypto.randomUUID(), sourceKey, blockType, title, JSON.stringify(content),
            sectionId, draftPageId, category, Number(row.order_index || 0)]
         );
@@ -334,12 +372,13 @@ export async function migrateRows(client, report, { createDraftPage: shouldCreat
       const catSlug = slugify(catName);
       const categoryType = CATEGORY_TYPE[row.content_type] || row.content_type;
       const existingCat = await client.query(
-        `SELECT id, metadata
+        `SELECT id, metadata, deleted_at
          FROM cms_categories
          WHERE slug=$1
            AND content_type=$2
          ORDER BY CASE WHEN deleted_at IS NULL THEN 0 ELSE 1 END,
-                  created_at ASC LIMIT 1`,
+                  created_at ASC
+         LIMIT 1`,
         [catSlug, categoryType]
       );
       const migrationMeta = {
@@ -382,6 +421,15 @@ export async function migrateRows(client, report, { createDraftPage: shouldCreat
         );
         result.categories++;
       }
+      }
+      await client.query(`RELEASE SAVEPOINT ${savepoint}`);
+    } catch (error) {
+      try { await client.query(`ROLLBACK TO SAVEPOINT ${savepoint}`); } catch {}
+      throw migrationError(error, {
+        content_type: row.content_type,
+        content_key: row.content_key,
+        stage: 'database write'
+      });
     }
   }
 

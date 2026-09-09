@@ -30,10 +30,15 @@ async function api(url, options = {}) {
   } catch (_) {}
 
   if (!res.ok) {
-    var message = data.message || data.error || `Request failed (${res.status})`;
-    if (data.detail && data.detail !== message) message += ` — ${data.detail}`;
-    if (data.constraint && !message.includes(data.constraint)) message += ` [${data.constraint}]`;
-    throw new Error(message);
+    const detail = [
+      data.message,
+      data.detail,
+      data.constraint ? `constraint: ${data.constraint}` : '',
+      data.table ? `table: ${data.table}` : '',
+      data.column ? `column: ${data.column}` : '',
+      data.code ? `code: ${data.code}` : ''
+    ].filter(Boolean).join(' — ');
+    throw new Error(detail || data.error || `Request failed (${res.status})`);
   }
 
   return data;

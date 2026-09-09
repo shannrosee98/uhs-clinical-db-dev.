@@ -117,3 +117,16 @@ review the result. The legacy table remains intact throughout this process.
 
 ### Browser migration reliability fix
 The browser migration reuses categories by `(slug, content_type)` so multiple legacy records sharing a category cannot violate the structured CMS unique constraint. Migration remains transactional and non-destructive.
+
+
+### Browser migration v4
+The browser migration now:
+- reuses/restores soft-deleted navigation, categories, and blocks;
+- wraps each source row in a PostgreSQL savepoint;
+- reports the exact legacy content type/key and database stage if a row fails;
+- remains fully transactional and never changes `editable_content`.
+
+
+## Browser migration v5
+
+The browser migration restores soft-deleted pages, sections, navigation, categories, and content blocks instead of conflicting with their unique constraints. Failed API responses expose PostgreSQL diagnostics to authenticated admins.
