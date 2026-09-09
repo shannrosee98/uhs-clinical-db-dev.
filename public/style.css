@@ -813,3 +813,18 @@ button:focus-visible{outline:2px solid #41b6e6;outline-offset:2px}
 .burn-depth-panel {
   margin-bottom: 14px;
 }
+
+
+/* Surgery team-role action tabs */
+.surgery-role-block{margin-top:16px;padding:14px;border:1px solid #29434f;border-radius:12px;background:#0b1720}
+.surgery-role-tabs{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 12px}
+.surgery-role-tab{border:1px solid #29434f;background:#10212b;color:#c9d6da;border-radius:8px;padding:8px 11px;cursor:pointer;font-weight:700;font-size:12px}
+.surgery-role-tab.active{background:#173746;border-color:#41b6e6;color:#fff}
+.surgery-role-panel{display:none}
+.surgery-role-panel.active{display:block}
+.surgery-role-actions{display:grid;gap:7px}
+.surgery-role-action{display:grid;grid-template-columns:34px 1fr auto;gap:9px;align-items:start;padding:9px 10px;border:1px solid #203742;border-radius:8px;background:#0f2029}
+.surgery-role-action .num{font-weight:800;color:#41b6e6}
+.surgery-role-action .cmd{color:#dbe7ea;font-size:13px;line-height:1.45}
+.surgery-role-action button{white-space:nowrap}
+@media(max-width:700px){.surgery-role-action{grid-template-columns:26px 1fr}.surgery-role-action button{grid-column:2;justify-self:start}}

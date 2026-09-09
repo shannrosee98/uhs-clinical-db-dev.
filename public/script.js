@@ -10499,6 +10499,117 @@ function showSurgery(name) {
   renderSurgeryQuestions();
   renderSurgeryRP();
   renderSurgeryWorkflow();
+  renderAllSurgeryRoleActions(name);
+}
+
+
+var surgeryRoleActions = {
+  surgeon: [
+    "takes the lead for {SURGERY}, confirms the operative plan aloud and checks the intended site with the team.",
+    "reviews the available assessment, imaging and observations with the team before entering the operative phase.",
+    "confirms the operative equipment and specialist items are present, sterile and ready before requesting the start.",
+    "participates in the team time-out, confirming patient, procedure, site, allergies and the agreed surgical plan.",
+    "positions at the operating field and coordinates the assistant and scrub nurse as the procedure begins.",
+    "works through the operative sequence while communicating key findings, changes in plan and requests for equipment.",
+    "pauses for a deliberate final check of haemostasis, field condition, counts and closure plan before finishing.",
+    "dictates the key operative findings and procedure summary, then gives the recovery team a structured handover."
+  ],
+  assistant: [
+    "checks the planned position and operative side with the surgeon before helping prepare " + "{SURGERY}.",
+    "assists with patient positioning and ensures pressure areas, lines and monitoring equipment remain accessible.",
+    "helps prepare the operative field and maintains a clear working view for the surgeon without contaminating the sterile field.",
+    "anticipates instruments and equipment requested by the surgeon and keeps the operative field organised.",
+    "assists with exposure and retraction as directed, maintaining steady positioning while watching the surrounding field.",
+    "communicates relevant changes to the surgeon and anaesthetist and confirms any additional equipment requested.",
+    "supports the final field check and closure phase, helping confirm dressings, drains and equipment are accounted for.",
+    "assists with transfer and gives the receiving team a concise summary of the procedure, dressings and immediate concerns."
+  ],
+  scrub: [
+    "checks the sterile packs, instrument trays, indicator strips and specialist equipment for " + "{SURGERY} before opening.",
+    "arranges the sterile field in a logical sequence and confirms critical instruments with the surgeon before incision.",
+    "participates in the surgical time-out and confirms the sterile setup matches the planned procedure.",
+    "passes instruments cleanly and anticipates the next stage while maintaining awareness of the sterile field.",
+    "keeps used instruments organised, manages sharps safely and communicates when additional sterile equipment is required.",
+    "maintains an accurate running count and raises any discrepancy immediately rather than allowing the procedure to continue unnoticed.",
+    "prepares the closure instruments and requested dressings, then completes the final count with the circulating nurse.",
+    "helps secure and organise the final sterile dressing setup and confirms the field is clear before leaving theatre."
+  ],
+  circulator: [
+    "checks the theatre environment, equipment, patient identity and documentation before the start of " + "{SURGERY}.",
+    "confirms required equipment, implants, blood products or specialist items are available and records relevant checks.",
+    "supports the time-out by reading back patient, procedure and site details and documenting the team confirmation.",
+    "opens additional sterile supplies without breaking the sterile field and responds to requests from the scrub team.",
+    "monitors theatre workflow, equipment status and documentation while remaining ready to obtain additional supplies.",
+    "records key procedural events and specimen or implant details as directed by the theatre team.",
+    "coordinates the final count, specimen labelling, documentation and transfer paperwork before the patient leaves theatre.",
+    "helps coordinate safe transfer and communicates the documented procedure and outstanding tasks to recovery."
+  ],
+  anaesthetist: [
+    "reviews the patient, airway plan, allergies, observations and anaesthetic requirements before " + "{SURGERY}.",
+    "checks monitoring, airway equipment, vascular access and emergency equipment before induction or procedural sedation.",
+    "confirms the patient is ready for the operative phase and communicates the anaesthetic plan to the theatre team.",
+    "maintains continuous monitoring during the procedure and announces significant changes clearly to the surgical team.",
+    "coordinates with the surgeon before major operative stages when changes in position, blood loss or physiological stability may matter.",
+    "reassesses the patient throughout the case and prepares the team for emergence or transfer when the operation is nearing completion.",
+    "confirms the patient is stable for transfer and communicates analgesia, airway, monitoring and recovery considerations.",
+    "gives a structured anaesthetic handover to recovery, including the procedure, relevant events and immediate monitoring priorities."
+  ],
+  recovery: [
+    "receives the patient and confirms identity, procedure, allergies and the theatre handover before taking over care.",
+    "checks airway, breathing, circulation, neurological status and immediate observations on arrival in recovery.",
+    "checks operative dressings, drains, lines and any documented equipment or specimen requirements.",
+    "confirms the post-operative monitoring and escalation plan with the anaesthetist and surgical team.",
+    "documents observations and recovery progress while watching for deterioration or unexpected changes.",
+    "communicates concerns promptly to the appropriate senior clinician and records the response.",
+    "confirms the receiving destination and outstanding instructions before the patient leaves recovery.",
+    "completes the final handover, ensuring the receiving team understands the procedure, dressings, observations and ongoing plan."
+  ]
+};
+
+function getSurgeryRoleTitle(name) {
+  var panel = document.getElementById('surgery-' + name);
+  if (!panel) return name;
+  var h3 = panel.querySelector('.scenario-hero h3');
+  return h3 ? h3.textContent.trim() : name;
+}
+
+function renderSurgeryRoleActions(name, role) {
+  var panel = document.getElementById('surgery-' + name);
+  if (!panel) return;
+  var target = panel.querySelector('#surgery-role-' + name + '-' + role + ' .surgery-role-actions');
+  if (!target) return;
+  var title = getSurgeryRoleTitle(name);
+  var actions = (surgeryRoleActions[role] || []).map(function(action) {
+    return action.replace(/\{SURGERY\}/g, title);
+  });
+  target.innerHTML = actions.map(function(action, index) {
+    var id = 'roleRp-' + name + '-' + role + '-' + index;
+    return '<div class="surgery-role-action">'
+      + '<span class="num">' + (index + 1) + '</span>'
+      + '<span class="cmd">/me ' + escapeHtml(action) + '</span>'
+      + '<button class="edit-small" onclick="copyText(\'' + id + '\')">Copy</button>'
+      + '<span id="' + id + '" style="display:none">/me ' + escapeHtml(action) + '</span>'
+      + '</div>';
+  }).join('');
+}
+
+function showSurgeryRole(name, role) {
+  var block = document.querySelector('[data-surgery-roles="' + name + '"]');
+  if (!block) return;
+  block.querySelectorAll('.surgery-role-tab').forEach(function(btn) {
+    var onclick = btn.getAttribute('onclick') || '';
+    btn.classList.toggle('active', onclick.indexOf("'" + role + "'") >= 0 || onclick.indexOf('"' + role + '"') >= 0);
+  });
+  block.querySelectorAll('.surgery-role-panel').forEach(function(el) {
+    el.classList.toggle('active', el.id === 'surgery-role-' + name + '-' + role);
+  });
+  renderSurgeryRoleActions(name, role);
+}
+
+function renderAllSurgeryRoleActions(name) {
+  ["surgeon","assistant","scrub","circulator","anaesthetist","recovery"].forEach(function(role) {
+    renderSurgeryRoleActions(name, role);
+  });
 }
 
 function renderSurgeryPrepChecklist() {
