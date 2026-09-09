@@ -1254,6 +1254,37 @@
 
   <div id="scenario-burns" class="scenario">
     <div class="scenario-hero"><span>🔥</span><div><h3>Burns</h3><p>Classify by depth, size, location and mechanism, and consider inhalation injury.</p></div></div>
+
+    <div class="burn-depth-tabs" role="tablist" aria-label="Burn depth">
+      <button class="burn-depth-tab active" onclick="showBurnDepth('first')">1st Degree / Superficial</button>
+      <button class="burn-depth-tab" onclick="showBurnDepth('second')">2nd Degree / Partial Thickness</button>
+      <button class="burn-depth-tab" onclick="showBurnDepth('third')">3rd Degree / Full Thickness</button>
+    </div>
+
+    <div id="burn-depth-first" class="burn-depth-panel active">
+      <div class="scene-grid">
+        <article><h4>Appearance</h4><p>Typically red, dry and painful with no blistering. In RP, describe the affected area, colour and pain rather than assuming a precise depth from appearance alone.</p></article>
+        <article><h4>RP assessment</h4><ul><li>Mechanism and time of injury</li><li>Location and approximate extent</li><li>Pain score and associated injuries</li><li>Check for facial/airway involvement and other trauma</li></ul></article>
+        <article><h4>RP equipment</h4><p>Gloves, cooling/water access, clean dressings, cling film where appropriate, analgesia and observation equipment. Escalate if the extent or location is concerning.</p></article>
+      </div>
+    </div>
+
+    <div id="burn-depth-second" class="burn-depth-panel" style="display:none">
+      <div class="scene-grid">
+        <article><h4>Appearance</h4><p>Partial-thickness burns may be blistered, moist and very painful. Record the appearance and extent and avoid popping blisters in routine RP.</p></article>
+        <article><h4>RP assessment</h4><ul><li>Estimate affected body surface area</li><li>Record depth and distribution</li><li>Assess circulation and sensation where relevant</li><li>Check for circumferential, facial, hand, foot or genital involvement</li></ul></article>
+        <article><h4>RP equipment</h4><p>Non-adherent dressings, sterile gauze, cling film for initial cover where appropriate, PPE, pain/observation equipment and a burns referral/handover sheet.</p></article>
+      </div>
+    </div>
+
+    <div id="burn-depth-third" class="burn-depth-panel" style="display:none">
+      <div class="scene-grid">
+        <article><h4>Appearance</h4><p>Full-thickness burns can look white, brown or charred and may have reduced sensation. Depth can be mixed, so specialist assessment is important.</p></article>
+        <article><h4>RP priorities</h4><ul><li>ABCDE and associated trauma first</li><li>Estimate extent and document location</li><li>Assess airway/inhalation injury risk</li><li>Prevent hypothermia and arrange urgent specialist care</li></ul></article>
+        <article><h4>RP equipment</h4><p>Full PPE, sterile/non-adherent coverings, thermal blankets, monitoring equipment, IV-access supplies and specialist burns transfer equipment.</p></article>
+      </div>
+    </div>
+
     <div class="burn-grid">
       <div><strong>Superficial</strong><p>Red and painful skin without deeper tissue destruction. Assess extent and symptoms.</p></div>
       <div><strong>Partial thickness</strong><p>Can be blistered, moist and painful; needs appropriate assessment and dressing.</p></div>
@@ -1611,6 +1642,18 @@
     <button class="surgeon" onclick="showSurgery('debridement')">🧹 Wound Debridement</button>
     <button class="surgeon" onclick="showSurgery('amputation')">✂️ Amputation</button>
     <button class="surgeon" onclick="showSurgery('emergencyField')">🚑 Emergency (Field)</button>
+    <button class="surgeon" onclick="showSurgery('appendectomy')">🩺 Appendectomy</button>
+    <button class="surgeon" onclick="showSurgery('cholecystectomy')">🟢 Cholecystectomy</button>
+    <button class="surgeon" onclick="showSurgery('bowelResection')">🧬 Bowel Resection</button>
+    <button class="surgeon" onclick="showSurgery('splenectomy')">🩸 Splenectomy</button>
+    <button class="surgeon" onclick="showSurgery('jointWashout')">🦴 Joint Washout</button>
+    <button class="surgeon" onclick="showSurgery('vascularRepair')">🫀 Vascular Repair</button>
+  </div>
+
+  <div class="surgery-workflow-banner">
+    <div class="tag">START → FINISH SURGERY WORKFLOW</div>
+    <p>RP-friendly theatre sequence. Use the selected surgery's checklist, equipment and action library alongside this workflow.</p>
+    <div id="surgeryWorkflow"></div>
   </div>
 
   <div id="surgery-bulletHead" class="surgery-panel active">
@@ -1701,6 +1744,60 @@
       <article><h4>When to operate in the field</h4><p>Only when the patient will die before reaching hospital. This includes: uncontrollable external haemorrhage, tension pneumothorax not relieved by needle decompression, open pneumothorax with bubbling, or traumatic amputation with uncontrolled bleeding. Field surgery is a last resort.</p></article>
       <article><h4>Field surgery kit</h4><ul><li>Scalpel, scissors, forceps, needle holder, retractors</li><li>Haemostatic gauze (QuickClot/Celox), tourniquets</li><li>Chest tube / thoracostomy kit, occlusive dressings</li><li>IV access supplies, warmed saline</li><li>Sterile gloves, gowns, masks, eye protection</li><li>Head torch / portable lighting</li><li>Emergency blanket, thermal protection</li><li>Basic wound closure supplies, stapler, sutures</li></ul></article>
       <article><h4>Key principles</h4><ol><li>Only do what is necessary to save life - no cosmetic surgery</li><li>Control haemorrhage first - clamp, pack, tourniquet</li><li>Deal with tension pneumothorax - finger thoracostomy or chest tube</li><li>Cover open wounds with sterile dressings</li><li>Splint fractures with available materials</li><li>Get the patient to definitive care as fast as possible</li><li>Document what was done for handover to the surgical team</li></ol></article>
+    </div>
+  </div>
+
+  <div id="surgery-appendectomy" class="surgery-panel">
+    <div class="scenario-hero"><span>🩺</span><div><h3>Appendectomy</h3><p>Common abdominal operation for suspected acute appendicitis. FiveM RP reference only.</p></div></div>
+    <div class="scene-grid">
+      <article><h4>Indications</h4><p>Clinical/imaging assessment consistent with acute appendicitis, with the surgical team deciding whether operative management is appropriate.</p></article>
+      <article><h4>Equipment</h4><ul><li>Laparoscopic/general surgical tray</li><li>Camera, light source and laparoscopic instruments</li><li>Specimen container and labels</li><li>Suction/irrigation and haemostasis equipment</li><li>Dressings and recovery monitoring equipment</li></ul></article>
+      <article><h4>Finish</h4><p>Confirm specimen handling, haemostasis, instrument counts, dressing, recovery plan and structured handover.</p></article>
+    </div>
+  </div>
+
+  <div id="surgery-cholecystectomy" class="surgery-panel">
+    <div class="scenario-hero"><span>🟢</span><div><h3>Cholecystectomy</h3><p>Gallbladder removal, commonly performed laparoscopically. FiveM RP reference only.</p></div></div>
+    <div class="scene-grid">
+      <article><h4>Preparation</h4><p>Confirm patient, indication, imaging, consent, allergies, fasting status, prophylaxis and theatre readiness.</p></article>
+      <article><h4>Equipment</h4><ul><li>Laparoscopic tower and camera</li><li>General/laparoscopic instrument set</li><li>Specimen bag and pathology labels</li><li>Suction/irrigation</li><li>Clips/energy equipment as selected by the surgical team</li></ul></article>
+      <article><h4>Finish</h4><p>Complete counts, specimen documentation, dressing, recovery observations and post-operative handover.</p></article>
+    </div>
+  </div>
+
+  <div id="surgery-bowelResection" class="surgery-panel">
+    <div class="scenario-hero"><span>🧬</span><div><h3>Bowel Resection</h3><p>Removal of a diseased or injured bowel segment with reconstruction or diversion as required.</p></div></div>
+    <div class="scene-grid">
+      <article><h4>Preparation</h4><p>Review imaging and blood results, confirm consent and possible stoma planning, prepare blood availability and complete team briefing.</p></article>
+      <article><h4>Equipment</h4><ul><li>Laparotomy/laparoscopic bowel set</li><li>Retractors and atraumatic bowel instruments</li><li>Suction/irrigation and haemostasis equipment</li><li>Stapling/anastomosis equipment where selected</li><li>Stoma marking and appliance supplies when indicated</li></ul></article>
+      <article><h4>Finish</h4><p>Specimen identification, counts, wound/dressing checks, stoma assessment if applicable and ICU/ward handover.</p></article>
+    </div>
+  </div>
+
+  <div id="surgery-splenectomy" class="surgery-panel">
+    <div class="scenario-hero"><span>🩸</span><div><h3>Splenectomy</h3><p>Removal of the spleen for selected traumatic, haematological or other surgical indications.</p></div></div>
+    <div class="scene-grid">
+      <article><h4>Preparation</h4><p>Confirm indication, imaging, blood availability, consent and vaccination/aftercare planning where appropriate.</p></article>
+      <article><h4>Equipment</h4><ul><li>Upper-abdominal surgical/laparoscopic set</li><li>Retractors, suction and haemostasis equipment</li><li>Specimen container and pathology labels</li><li>Blood warming and transfusion support as required</li></ul></article>
+      <article><h4>Finish</h4><p>Confirm haemostasis and counts, label the specimen, apply dressing and complete recovery and specialist handover.</p></article>
+    </div>
+  </div>
+
+  <div id="surgery-jointWashout" class="surgery-panel">
+    <div class="scenario-hero"><span>🦴</span><div><h3>Joint Washout</h3><p>Operative washout for selected contaminated or infected joints under specialist surgical direction.</p></div></div>
+    <div class="scene-grid">
+      <article><h4>Preparation</h4><p>Confirm joint and side, review imaging/aspirate results, document neurovascular status and complete the theatre time-out.</p></article>
+      <article><h4>Equipment</h4><ul><li>Orthopaedic washout tray</li><li>Arthroscopy equipment where appropriate</li><li>Irrigation system and sterile fluid</li><li>Specimen/culture containers</li><li>Dressings and drain supplies when required</li></ul></article>
+      <article><h4>Finish</h4><p>Send specimens correctly, document findings, complete counts and dressing, then hand over antibiotics/review plan to the receiving team.</p></article>
+    </div>
+  </div>
+
+  <div id="surgery-vascularRepair" class="surgery-panel">
+    <div class="scenario-hero"><span>🫀</span><div><h3>Vascular Repair</h3><p>Specialist repair of an injured blood vessel. This is a senior-led theatre procedure in RP.</p></div></div>
+    <div class="scene-grid">
+      <article><h4>Preparation</h4><p>Confirm site and imaging, document distal perfusion, prepare blood products and ensure vascular/surgical support is present.</p></article>
+      <article><h4>Equipment</h4><ul><li>Vascular instrument set</li><li>Vascular clamps and atraumatic instruments</li><li>Vascular graft/repair materials as selected by the team</li><li>Doppler/perfusion assessment equipment</li><li>Blood warmer and transfusion support</li></ul></article>
+      <article><h4>Finish</h4><p>Recheck perfusion, document the repair and distal status, complete counts/dressing and arrange monitored recovery and handover.</p></article>
     </div>
   </div>
 
@@ -2164,6 +2261,13 @@
     <button class="eqcat" onclick="showEquipmentCategory('monitoring')">📊 Monitoring</button>
     <button class="eqcat" onclick="showEquipmentCategory('medication')">💊 Medication</button>
     <button class="eqcat" onclick="showEquipmentCategory('ppe')">🦺 PPE</button>
+    <button class="eqcat" onclick="showEquipmentCategory('surgical')">🔪 Surgical</button>
+    <button class="eqcat" onclick="showEquipmentCategory('burns')">🔥 Burns</button>
+    <button class="eqcat" onclick="showEquipmentCategory('extrication')">🚗 Extrication</button>
+    <button class="eqcat" onclick="showEquipmentCategory('paediatric')">🧒 Paediatric</button>
+    <button class="eqcat" onclick="showEquipmentCategory('obstetric')">🤰 Obstetric</button>
+    <button class="eqcat" onclick="showEquipmentCategory('infection')">🧼 Infection Control</button>
+    <button class="eqcat" onclick="showEquipmentCategory('documentation')">📋 Documentation</button>
   </div>
   <div id="eq-airway" class="eq-panel active">
     <div class="section-head"><h2>Airway Equipment</h2></div>
@@ -2197,6 +2301,13 @@
     <div class="section-head"><h2>PPE</h2></div>
     <div class="med-grid" id="eqGrid-ppe"></div>
   </div>
+  <div id="eq-surgical" class="eq-panel" style="display:none"><div class="section-head"><h2>Surgical & Theatre Equipment</h2></div><div class="med-grid" id="eqGrid-surgical"></div></div>
+  <div id="eq-burns" class="eq-panel" style="display:none"><div class="section-head"><h2>Burns Equipment</h2></div><div class="med-grid" id="eqGrid-burns"></div></div>
+  <div id="eq-extrication" class="eq-panel" style="display:none"><div class="section-head"><h2>Extrication & Transport</h2></div><div class="med-grid" id="eqGrid-extrication"></div></div>
+  <div id="eq-paediatric" class="eq-panel" style="display:none"><div class="section-head"><h2>Paediatric Equipment</h2></div><div class="med-grid" id="eqGrid-paediatric"></div></div>
+  <div id="eq-obstetric" class="eq-panel" style="display:none"><div class="section-head"><h2>Obstetric & Neonatal Equipment</h2></div><div class="med-grid" id="eqGrid-obstetric"></div></div>
+  <div id="eq-infection" class="eq-panel" style="display:none"><div class="section-head"><h2>Infection Control & PPE</h2></div><div class="med-grid" id="eqGrid-infection"></div></div>
+  <div id="eq-documentation" class="eq-panel" style="display:none"><div class="section-head"><h2>Documentation Equipment</h2></div><div class="med-grid" id="eqGrid-documentation"></div></div>
 
   <div class="pdf-doc-section">
     <div class="pdf-doc-head">

@@ -8295,6 +8295,91 @@ var equipmentData = {
   ]
 };
 
+/* Expanded equipment catalogue: theatre, burns, extrication, paediatrics, obstetric and infection-control RP kit. */
+equipmentData.surgical = [
+  { name: 'General Surgical Tray', purpose: 'Core sterile instruments for general surgical cases', rp: '/me checks the general surgical tray, confirms the instrument count and verifies sterile packaging before opening it' },
+  { name: 'Laparoscopic Tower', purpose: 'Camera, light and display system for laparoscopic procedures', rp: '/me powers up the laparoscopic tower, checks the camera and light source and confirms the display is working' },
+  { name: 'Laparoscopic Instrument Set', purpose: 'Reusable/sterile instruments for laparoscopic theatre cases', rp: '/me checks the laparoscopic instruments, seals and packaging before laying them out on the sterile field' },
+  { name: 'Orthopaedic Instrument Set', purpose: 'Specialist instruments for fracture and orthopaedic cases', rp: '/me checks the orthopaedic set, confirms the required instruments are present and verifies the packaging' },
+  { name: 'Vascular Instrument Set', purpose: 'Specialist atraumatic instruments for vascular surgery', rp: '/me checks the vascular tray and confirms the specialist instruments and repair materials are ready' },
+  { name: 'Surgical Suction', purpose: 'Removes blood and fluid from the operative field', rp: '/me connects the suction tubing, checks the canister and confirms suction is functioning' },
+  { name: 'Electrosurgical Unit', purpose: 'Provides controlled surgical energy for haemostasis and tissue work', rp: '/me checks the electrosurgical unit, cables and return electrode before the case starts' },
+  { name: 'Surgical Diathermy Pencil', purpose: 'Handpiece used with an electrosurgical unit', rp: '/me checks the diathermy pencil and cable are intact and ready on the sterile field' },
+  { name: 'Operating Theatre Light', purpose: 'Focused illumination of the operative field', rp: '/me adjusts the theatre light over the operative field and confirms clear illumination' },
+  { name: 'Instrument Count Board', purpose: 'Supports documented swab, instrument and sharp counts', rp: '/me completes the theatre count with the scrub team and records the count status' },
+  { name: 'Specimen Container', purpose: 'Secure container for tissue or removed material sent for analysis', rp: '/me labels the specimen container and confirms patient and specimen details with the team' },
+  { name: 'Surgical Skin Marker', purpose: 'Marks operative site or relevant anatomy before preparation', rp: '/me confirms the operative site and marks it as directed before final skin preparation' },
+  { name: 'Sterile Drapes', purpose: 'Creates and maintains the sterile operative field', rp: '/me opens the sterile drapes and helps establish the sterile field without contaminating the packs' },
+  { name: 'Sterile Gown & Gloves', purpose: 'Maintains sterile technique for theatre staff', rp: '/me performs surgical hand preparation and dons the sterile gown and gloves' },
+  { name: 'Suture & Closure Set', purpose: 'Supports wound closure at the end of a procedure', rp: '/me checks the closure materials and confirms the required sizes are available' },
+  { name: 'Surgical Stapler', purpose: 'Device used for selected surgical closure or anastomosis', rp: '/me checks the stapler packaging and confirms the correct device is available for the planned case' },
+  { name: 'Patient Warming System', purpose: 'Helps maintain temperature during longer procedures', rp: '/me applies the patient warming system and confirms the temperature monitoring is active' },
+  { name: 'Blood Warmer / Rapid Infusion Set', purpose: 'Supports warmed blood/fluid delivery when clinically required', rp: '/me checks the blood warming and rapid infusion equipment is available and functioning' },
+  { name: 'Recovery Trolley', purpose: 'Supports immediate post-operative transfer and monitoring', rp: '/me checks the recovery trolley, monitoring equipment and oxygen supply before receiving the patient' }
+];
+
+equipmentData.burns = [
+  { name: 'Burns Assessment Chart', purpose: 'Supports documentation of burn depth, location and estimated extent', rp: '/me opens the burns assessment chart and records the affected areas, depth and estimated extent' },
+  { name: 'Non-Adherent Burn Dressing', purpose: 'Provides a protective dressing that minimises adherence to injured skin', rp: '/me selects a non-adherent dressing and covers the affected area without applying it directly to an exposed wound bed' },
+  { name: 'Cling Film / Temporary Burn Cover', purpose: 'Temporary protective cover for appropriate thermal burns during transfer', rp: '/me applies a loose protective cling-film cover over the burn as part of transfer preparation' },
+  { name: 'Burns Dressing Pack', purpose: 'Sterile supplies for burn dressing changes', rp: '/me opens the burns dressing pack and checks all sterile contents before the dressing change' },
+  { name: 'Thermal Blanket', purpose: 'Helps reduce heat loss and hypothermia risk', rp: '/me covers the patient with a thermal blanket while keeping the injured areas accessible' },
+  { name: 'Irrigation / Cooling Water Supply', purpose: 'Provides appropriate running water for initial thermal burn cooling', rp: '/me positions the affected area under a safe running water supply and monitors the patient for heat loss' },
+  { name: 'Burns Measuring Tape', purpose: 'Supports documentation of burn size and distribution', rp: '/me measures the affected area and records the dimensions in the burns chart' },
+  { name: 'Hydrogel Burn Dressing', purpose: 'Specialist dressing option for selected burns according to local protocol', rp: '/me checks the hydrogel dressing pack and prepares it for use according to the local burns protocol' },
+  { name: 'Sterile Gauze', purpose: 'Protective absorbent dressing material', rp: '/me selects sterile gauze and prepares it for the burn dressing' },
+  { name: 'Eye Protection', purpose: 'Protects staff during burn cleaning or irrigation', rp: '/me puts on eye protection before beginning the burn care setup' }
+];
+
+equipmentData.extrication = [
+  { name: 'Scoop Stretcher', purpose: 'Allows lifting with reduced patient movement', rp: '/me assembles the scoop stretcher around the patient and confirms the locks are secure' },
+  { name: 'Extrication Collar', purpose: 'Provides support where cervical spine protection is indicated', rp: '/me checks the collar size and applies it while maintaining appropriate manual support' },
+  { name: 'Cutting / Glass Management Kit', purpose: 'Supports safe access around damaged vehicles and broken glass', rp: '/me checks the vehicle-access kit and confirms the crew has appropriate eye and hand protection' },
+  { name: 'Vacuum Mattress', purpose: 'Provides moulded support for transport of selected trauma patients', rp: '/me prepares the vacuum mattress and checks the valve before transferring the patient onto it' },
+  { name: 'Trauma Stretcher', purpose: 'Primary transport platform for injured patients', rp: '/me locks the trauma stretcher, checks the brakes and prepares it for patient transfer' },
+  { name: 'Head Blocks / Stabilisation Aids', purpose: 'Supports head positioning during selected trauma transfers', rp: '/me checks the head stabilisation aids and positions them without compromising the airway' },
+  { name: 'Blanket & Foil Pack', purpose: 'Provides thermal protection during prolonged extrication', rp: '/me prepares the thermal protection pack and covers exposed areas while the extrication continues' },
+  { name: 'Scene Lighting', purpose: 'Portable lighting for dark or poorly lit scenes', rp: '/me sets up the portable scene light and directs it over the patient care area' }
+];
+
+equipmentData.paediatric = [
+  { name: 'Paediatric BVM Set', purpose: 'Age/size-appropriate ventilation equipment', rp: '/me selects the paediatric BVM size and checks the mask, valve and oxygen connection' },
+  { name: 'Paediatric Airway Set', purpose: 'Age/size-appropriate airway adjuncts', rp: '/me lays out the paediatric airway sizes and confirms the appropriate options are available' },
+  { name: 'Paediatric BP Cuffs', purpose: 'Age-appropriate non-invasive blood pressure measurement', rp: '/me selects the correct paediatric cuff and prepares it for observations' },
+  { name: 'Paediatric Pulse Oximeter Probe', purpose: 'Suitable sensor for smaller fingers or feet', rp: '/me selects the paediatric pulse oximeter probe and checks for a stable reading' },
+  { name: 'Paediatric Weighing Scales', purpose: 'Supports weight-based clinical calculations where appropriate', rp: '/me checks the paediatric scales and records the patient\'s measured weight' },
+  { name: 'Paediatric Immobilisation Set', purpose: 'Supports safe positioning and transport of injured children', rp: '/me prepares the appropriately sized paediatric immobilisation equipment for transport' },
+  { name: 'Paediatric Observation Chart', purpose: 'Records age-appropriate observations and trends', rp: '/me opens the paediatric observation chart and records the latest observations' }
+];
+
+equipmentData.obstetric = [
+  { name: 'Maternity / Delivery Pack', purpose: 'Sterile supplies for delivery-related care', rp: '/me opens the maternity pack and checks the sterile contents are intact' },
+  { name: 'Neonatal Resuscitation Bag', purpose: 'Ventilation equipment for a newborn requiring resuscitation support', rp: '/me prepares the neonatal resuscitation bag and checks the oxygen connection and mask size' },
+  { name: 'Neonatal Warmth Pack', purpose: 'Supports thermal protection of the newborn', rp: '/me prepares the neonatal warmth pack and keeps the newborn protected from heat loss' },
+  { name: 'Maternity Pads', purpose: 'Absorbent supplies for post-delivery care', rp: '/me prepares maternity pads and places them within easy reach for post-delivery care' },
+  { name: 'Cord Clamp', purpose: 'Used as part of umbilical cord management after birth', rp: '/me checks the cord clamp packaging and prepares it for the maternity team' },
+  { name: 'Obstetric Monitoring Kit', purpose: 'Supports maternal observations and fetal assessment where appropriate', rp: '/me prepares the obstetric monitoring equipment and confirms it is functioning' }
+];
+
+equipmentData.infection = [
+  { name: 'FFP3 Respirator', purpose: 'Respiratory protection for appropriate airborne-risk situations', rp: '/me fits the FFP3 respirator and completes the required seal check' },
+  { name: 'Fluid-Resistant Gown', purpose: 'Protects clothing and skin from fluid exposure', rp: '/me dons the fluid-resistant gown before entering the patient care area' },
+  { name: 'Face Shield', purpose: 'Protects face and eyes from splash exposure', rp: '/me puts on the face shield before starting a splash-risk procedure' },
+  { name: 'Apron & Glove Pack', purpose: 'Quick-access PPE for routine patient contact', rp: '/me selects the appropriate PPE and checks the gloves and apron before patient contact' },
+  { name: 'Clinical Waste Bag', purpose: 'Segregates appropriate contaminated clinical waste', rp: '/me opens the clinical waste bag and disposes of used contaminated items correctly' },
+  { name: 'Sharps Container', purpose: 'Safe point-of-use disposal of sharps', rp: '/me places the used sharp directly into the approved sharps container' },
+  { name: 'Hand Hygiene Station', purpose: 'Supports hand hygiene before and after patient contact', rp: '/me performs hand hygiene before approaching the patient and again after the procedure' }
+];
+
+equipmentData.documentation = [
+  { name: 'PCR / Patient Care Record', purpose: 'Records assessment, treatment, observations and handover', rp: '/me opens the patient care record and documents the assessment, treatment and outcome' },
+  { name: 'SBAR Handover Sheet', purpose: 'Structures transfer of patient information between teams', rp: '/me prepares the SBAR handover and checks that the key clinical details are complete' },
+  { name: 'Incident / Scene Form', purpose: 'Documents scene information and major events', rp: '/me completes the incident form with mechanism, findings, actions and timings' },
+  { name: 'Observation Chart', purpose: 'Tracks vital signs and trends over time', rp: '/me records the latest observations on the chart and compares them with the previous set' },
+  { name: 'Consent Documentation', purpose: 'Records consent discussions and procedure status where applicable', rp: '/me checks the consent documentation is complete and filed with the patient record' },
+  { name: 'Specimen Label Set', purpose: 'Supports accurate identification of specimens', rp: '/me labels the specimen with the required patient and specimen identifiers and checks it with the team' }
+];
+
 /* Equipment category switcher */
 function showEquipmentCategory(cat) {
   document.querySelectorAll('.eq-panel').forEach(function(p) { p.style.display = 'none'; });
@@ -10278,6 +10363,52 @@ var surgeriesData = {
 
 };
 
+/* Enhanced surgery workflow + additional surgery references.
+   Content is intentionally RP-friendly and high-level; follow local clinical policy in real care. */
+var surgeryWorkflow = {
+  intake: ["Confirm patient, procedure, site and indication", "Review allergies, relevant history, imaging and observations", "Confirm consent/status and senior surgical plan"],
+  equipment: ["Select the named theatre tray", "Check sterile packs, packaging, expiry and integrity", "Confirm implants, specimens, blood/support equipment and backups"],
+  prep: ["Assign theatre roles and complete briefing", "Position patient safely and complete skin/site preparation", "Attach appropriate monitoring and confirm anaesthetic plan"],
+  timeout: ["Team time-out: patient, procedure, site and key risks", "Confirm imaging, equipment, implants and anticipated blood loss", "Record start time and any agreed special precautions"],
+  procedure: ["Perform the planned operation under the appropriate surgical team", "Keep actions coordinated with the theatre team", "Document key findings, specimens, implants and complications"],
+  close: ["Confirm haemostasis and complete instrument/swab/sharp counts", "Close/dress the operative site as directed by the surgical team", "Label and send specimens/removed items correctly"],
+  recovery: ["Transfer to recovery with monitoring and clear instructions", "Recheck observations, pain, airway/breathing and operative site", "Escalate unexpected deterioration promptly"],
+  handover: ["Structured SBAR/PCR handover", "Record operation, findings, treatment and outstanding tasks", "Document destination, post-op plan and follow-up"]
+};
+
+Object.assign(surgeriesData, {
+  appendectomy: {
+    checklist: ["Confirm patient, procedure and side/site; review imaging and blood results.", "Confirm consent, allergies, fasting status and peri-operative plan.", "Prepare laparoscopic/general surgical tray and specimen supplies.", "Check sterile packaging, equipment function and counts.", "Complete theatre briefing and time-out.", "Confirm post-operative recovery and handover plan."],
+    questions: ["Do you understand the planned operation and possible risks?", "Do you have medication, latex or anaesthetic allergies?", "When did you last eat or drink?", "Are you taking regular medicines or blood thinners?"],
+    rp: ["confirms the patient, consent and imaging with the theatre team.", "checks the laparoscopic tower, sterile tray, specimen container and backup equipment.", "checks sterile packaging and expiry information before opening the selected packs.", "arranges equipment on the sterile field and confirms counts with the scrub team.", "participates in the team time-out before the operation begins.", "documents the key operative findings and any specimen sent to pathology.", "confirms counts, dressing and recovery plan before transfer to recovery.", "gives a structured post-operative handover and documents outstanding tasks."]
+  },
+  cholecystectomy: {
+    checklist: ["Confirm indication, patient identity, consent and imaging.", "Check allergies, blood results and peri-operative medication plan.", "Prepare laparoscopic tower, general surgical instruments and specimen bag.", "Check sterile packaging, equipment function and counts.", "Complete team briefing and time-out.", "Confirm recovery, specimen and handover plan."],
+    questions: ["Do you understand the planned gallbladder operation and possible risks?", "Any allergies or previous anaesthetic problems?", "When did you last eat or drink?", "What regular medicines do you take?"],
+    rp: ["confirms the patient, consent and imaging before theatre preparation.", "checks the laparoscopic tower, camera, instruments and specimen bag.", "inspects sterile packaging and expiry information before opening packs.", "sets out equipment in order of use and confirms counts.", "completes the team time-out and records the operation start.", "documents the operative findings and specimen handling.", "checks counts, dressing and recovery instructions at the end of the case.", "hands the patient over to recovery with a concise SBAR."]
+  },
+  bowelResection: {
+    checklist: ["Confirm indication, imaging, consent and possible stoma planning.", "Review blood results, allergies and blood availability where required.", "Prepare bowel/general surgical tray, suction, specimen and stoma supplies as applicable.", "Check sterile packaging, equipment and counts.", "Complete team briefing and time-out.", "Confirm monitored recovery and handover requirements."],
+    questions: ["Do you understand that the operation may involve removal of bowel and possible diversion?", "Any allergies or regular medicines?", "When did you last eat or drink?", "Have you previously had abdominal surgery?"],
+    rp: ["confirms the planned bowel procedure, consent and imaging.", "checks the bowel tray, suction, specimen containers and any stoma supplies.", "checks packaging integrity and arranges the sterile equipment with the scrub team.", "completes the theatre time-out and confirms the planned procedure.", "documents key findings, specimens and any diversion required.", "confirms counts and dressing before leaving theatre.", "gives recovery a structured handover including outstanding investigations and review."]
+  },
+  splenectomy: {
+    checklist: ["Confirm indication, imaging, consent and blood availability.", "Review allergies, medication and relevant blood results.", "Prepare upper-abdominal surgical equipment, suction and specimen supplies.", "Check sterile packaging, equipment and counts.", "Complete team briefing/time-out.", "Confirm monitored recovery and specialist follow-up plan."],
+    questions: ["Do you understand the reason for removing the spleen and the expected aftercare?", "Any allergies or blood-thinning medication?", "When did you last eat or drink?", "Any significant previous medical conditions?"],
+    rp: ["confirms the indication, patient identity and consent.", "checks the abdominal tray, suction, haemostasis equipment and specimen container.", "inspects sterile packaging and expiry information before opening the selected packs.", "arranges equipment and confirms counts with the theatre team.", "completes the time-out and records the operation start.", "documents specimen handling and key findings.", "confirms counts, dressing and monitored recovery plan.", "hands over the patient and outstanding tasks to recovery/ward staff."]
+  },
+  jointWashout: {
+    checklist: ["Confirm joint, side, indication and imaging/results.", "Document baseline distal neurovascular status.", "Confirm consent, allergies and antibiotic plan where applicable.", "Prepare orthopaedic/arthroscopy equipment, irrigation and specimen containers.", "Check sterile packaging, equipment and counts.", "Complete team time-out and recovery plan."],
+    questions: ["Do you understand the planned joint washout and possible risks?", "Any allergies or regular medication?", "Any numbness, weakness or circulation problems in the limb?", "When did you last eat or drink?"],
+    rp: ["confirms the correct joint and side with the team.", "checks the orthopaedic tray, irrigation system and specimen containers.", "checks sterile packaging and arranges equipment on the sterile field.", "records baseline neurovascular status and completes the time-out.", "documents findings and specimens collected for laboratory review.", "confirms dressing, counts and post-operative observations.", "hands over the neurovascular monitoring and review plan."]
+  },
+  vascularRepair: {
+    checklist: ["Confirm injured vessel/site, imaging and baseline distal perfusion.", "Confirm consent/status, blood availability and senior vascular support.", "Prepare vascular instruments, clamps, repair materials and perfusion assessment equipment.", "Check sterile packaging, equipment and counts.", "Complete a vascular theatre briefing and time-out.", "Confirm monitored recovery and post-operative perfusion checks."],
+    questions: ["Do you understand the need for specialist vascular surgery and its risks?", "Any allergies or blood-thinning medication?", "Any previous vascular conditions or surgery?", "When did you last eat or drink?"],
+    rp: ["confirms the vascular injury, imaging and distal perfusion status.", "checks the vascular tray, repair materials and perfusion assessment equipment.", "inspects sterile packaging and confirms all required equipment is available.", "completes the theatre briefing and time-out with the vascular team.", "documents the repair, findings and distal perfusion assessment.", "confirms counts, dressing and monitored recovery requirements.", "gives a structured handover including the required vascular observations."]
+  }
+});
+
 var currentSurgery = 'bulletHead';
 var currentSurgeryRPMode = 'slash';
 var currentSurgeryContext = 'bed';
@@ -10320,6 +10451,7 @@ function showSurgery(name) {
   renderSurgeryPrepChecklist();
   renderSurgeryQuestions();
   renderSurgeryRP();
+  renderSurgeryWorkflow();
 }
 
 function renderSurgeryPrepChecklist() {
@@ -10361,6 +10493,41 @@ function renderSurgeryRP() {
       + '<button class="edit-small" onclick="copyText(\'surgeryRP-' + index + '\')">Copy</button>'
       + '</div>';
   }).join('');
+}
+
+function renderSurgeryWorkflow() {
+  var container = document.getElementById('surgeryWorkflow');
+  if (!container) return;
+  var surgery = surgeriesData[currentSurgery] || {};
+  var names = [
+    ['01', 'Brief & assess', surgery.checklist && surgery.checklist[0] || surgeryWorkflow.intake[0]],
+    ['02', 'Equipment', ' '.concat(surgeryWorkflow.equipment[0], ' ', surgeryWorkflow.equipment[1])],
+    ['03', 'Prep & package', surgeryWorkflow.prep[0] + ' ' + surgeryWorkflow.equipment[1]],
+    ['04', 'Time-out', surgeryWorkflow.timeout[0]],
+    ['05', 'Start → procedure', surgery.rp && surgery.rp[0] || surgeryWorkflow.procedure[0]],
+    ['06', 'Specimen / implant', surgery.rp && surgery.rp[Math.min(4, surgery.rp.length - 1)] || surgeryWorkflow.procedure[2]],
+    ['07', 'Close & count', surgeryWorkflow.close[0] + ' ' + surgeryWorkflow.close[1]],
+    ['08', 'Recovery', surgeryWorkflow.recovery[0] + ' ' + surgeryWorkflow.recovery[1]],
+    ['09', 'Handover', surgeryWorkflow.handover[0] + ' ' + surgeryWorkflow.handover[1]]
+  ];
+  container.innerHTML = '<div class="surgery-workflow">' + names.map(function(step) {
+    return '<div class="surgery-workflow-step"><strong>' + escapeHtml(step[0] + ' · ' + step[1]) + '</strong><span>' + escapeHtml(step[2]) + '</span></div>';
+  }).join('') + '</div>';
+}
+
+function showBurnDepth(depth) {
+  if (['first','second','third'].indexOf(depth) < 0) depth = 'first';
+  document.querySelectorAll('.burn-depth-panel').forEach(function(panel) {
+    panel.style.display = 'none';
+    panel.classList.remove('active');
+  });
+  document.querySelectorAll('.burn-depth-tab').forEach(function(btn) { btn.classList.remove('active'); });
+  var panel = document.getElementById('burn-depth-' + depth);
+  if (panel) { panel.style.display = ''; panel.classList.add('active'); }
+  document.querySelectorAll('.burn-depth-tab').forEach(function(btn) {
+    var onclick = btn.getAttribute('onclick') || '';
+    if (onclick.indexOf("'" + depth + "'") >= 0 || onclick.indexOf('"' + depth + '"') >= 0) btn.classList.add('active');
+  });
 }
 
 function setSurgeryRPMode(mode) {
@@ -10637,6 +10804,17 @@ window.openDocEditMeta = openDocEditMeta;
 window.saveDocMeta = saveDocMeta;
 window.deleteDoc = deleteDoc;
 window.closeModal = closeModal;
+/* Populate the equipment library on first load. */
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', function() {
+    showEquipmentCategory('airway');
+    renderSurgeryWorkflow();
+  });
+} else {
+  showEquipmentCategory('airway');
+  renderSurgeryWorkflow();
+}
+
 function escapeHtml(value) {
   return String(
     value ?? ''

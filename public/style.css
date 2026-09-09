@@ -758,3 +758,58 @@ button:focus-visible{outline:2px solid #41b6e6;outline-offset:2px}
   .cms2-clinical-list-item{align-items:stretch}
   .cms2-clinical-list-item input{min-width:0}
 }
+
+
+/* Enhanced surgery and burn reference UI */
+.surgery-workflow-banner {
+  margin: 16px 0;
+  padding: 16px;
+  background: #0b1821;
+  border: 1px solid #203542;
+  border-radius: 12px;
+}
+.surgery-workflow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+.surgery-workflow-step {
+  min-height: 100px;
+  padding: 12px;
+  background: #0f2029;
+  border: 1px solid #29434f;
+  border-radius: 10px;
+}
+.surgery-workflow-step strong {
+  display: block;
+  margin-bottom: 6px;
+}
+.surgery-workflow-step span {
+  display: block;
+  color: #9eb1b9;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.burn-depth-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0 10px;
+}
+.burn-depth-tab {
+  border: 1px solid #29434f;
+  background: #0f2029;
+  color: #c9d6da;
+  border-radius: 8px;
+  padding: 9px 12px;
+  cursor: pointer;
+}
+.burn-depth-tab.active {
+  border-color: #4c8da8;
+  background: #16303d;
+  color: #fff;
+}
+.burn-depth-panel {
+  margin-bottom: 14px;
+}
