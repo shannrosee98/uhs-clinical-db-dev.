@@ -10409,9 +10409,50 @@ Object.assign(surgeriesData, {
   }
 ,
   skinGraft: {
-    checklist: ["Confirm patient, donor site, recipient site and indication.", "Confirm consent/status, allergies, relevant wound assessment and peri-operative plan.", "Prepare skin graft/plastic surgery tray, dermatome, graft handling equipment and dressings.", "Check sterile packaging, equipment integrity, graft supplies and counts.", "Complete theatre briefing and time-out including donor and recipient sites.", "Prepare for monitored recovery and clear donor/recipient-site handover."],
-    questions: ["Do you understand the planned graft and the donor/recipient sites?", "Do you have medication, latex or anaesthetic allergies?", "Have you had previous grafting or reconstructive surgery?", "Are there any medicines or conditions that may affect healing?"],
-    rp: ["confirms the patient, donor site, recipient site and operative plan.", "checks the graft tray, dermatome, mesher if required and dressing supplies.", "inspects sterile packaging and confirms equipment integrity before opening packs.", "assists with theatre preparation and completes the donor/recipient-site time-out.", "documents graft and donor-site details and key operative findings.", "confirms dressings, counts and recovery requirements.", "gives a structured handover covering both donor and recipient sites."]
+    checklist: [
+      "Confirms the patient identity, procedure, recipient site and planned donor site with the theatre team.",
+      "Reviews the RP case briefing, relevant wound/burn description, allergies and stated peri-operative requirements.",
+      "Checks the skin-graft/plastics tray, sterile drapes, skin markers, measuring supplies and dressing packs.",
+      "Checks the dermatome, graft-handling instruments and mesher setup if the scenario calls for meshing.",
+      "Verifies sterile pack seals, expiry/indicator status and that required equipment is present before opening.",
+      "Completes the theatre briefing and site-specific time-out for donor and recipient sites.",
+      "Records the planned graft type, donor/recipient locations and key intra-operative RP findings.",
+      "Confirms final counts, dressings, recovery destination and handover information."
+    ],
+    questions: [
+      "Do you understand which area is being covered and where the donor skin is being taken from?",
+      "Do you have any medication, latex, antiseptic or anaesthetic allergies?",
+      "Have you had previous grafting or reconstructive surgery?",
+      "Have you had any problems with wound healing or previous operations?",
+      "Is there anything you want the theatre team to know before we start?"
+    ],
+    rp: [
+      "introduces themselves to the theatre team and confirms the patient, planned skin graft and operative side.",
+      "checks the theatre board and verbally confirms the recipient site and planned donor site against the case briefing.",
+      "positions the patient for the scenario while maintaining appropriate access to both the donor and recipient areas.",
+      "checks the monitoring setup and confirms the anaesthetic team is ready before the surgical preparation begins.",
+      "opens the sterile outer packaging without contaminating the field and passes the required sterile supplies to the scrub team.",
+      "checks each sterile pack for an intact seal and confirms the required graft instruments are available before opening the field.",
+      "lays out the skin-graft tray, sterile measuring equipment, dressings and graft-handling supplies in an organised theatre setup.",
+      "checks the dermatome and associated equipment, confirming it is ready for the planned graft-harvesting stage.",
+      "checks the mesher and carrier supplies are available when the theatre plan calls for a meshed graft.",
+      "assists with exposing and preparing the donor and recipient areas while maintaining the sterile field.",
+      "confirms the planned donor and recipient sites aloud with the surgeon immediately before the grafting stage.",
+      "marks the relevant RP landmarks with the theatre team and records the planned graft dimensions.",
+      "assists the scrub team by passing the requested graft instruments in sequence while maintaining sterile technique.",
+      "carefully receives the prepared graft onto the sterile field and avoids handling the graft unnecessarily.",
+      "checks the graft orientation with the surgical team before it is positioned onto the prepared recipient area.",
+      "assists with positioning the graft over the recipient area and keeps the graft edges aligned with the marked wound margins.",
+      "passes the requested fixation and dressing materials as the surgeon secures the graft in the scenario.",
+      "applies the planned recipient-site dressing without disturbing the graft and checks that the dressing is secure.",
+      "prepares the donor-site dressing and confirms that the donor site has been covered before leaving theatre.",
+      "checks the sterile field for any displaced items or contamination and alerts the scrub team if anything requires replacement.",
+      "performs the final instrument, swab and equipment count with the scrub team and reports the result aloud.",
+      "records the RP procedure details including donor site, recipient site, graft type, dressings and notable theatre findings.",
+      "assists with transferring the patient from the operating position and keeps the donor and recipient dressings protected.",
+      "gives recovery staff a structured handover covering the procedure, donor site, recipient site, dressings, observations and outstanding tasks.",
+      "confirms the theatre is ready for recovery and remains available for any immediate post-operative requests from the surgical team."
+    ]
   }
 });
 
