@@ -10407,6 +10407,12 @@ Object.assign(surgeriesData, {
     questions: ["Do you understand the need for specialist vascular surgery and its risks?", "Any allergies or blood-thinning medication?", "Any previous vascular conditions or surgery?", "When did you last eat or drink?"],
     rp: ["confirms the vascular injury, imaging and distal perfusion status.", "checks the vascular tray, repair materials and perfusion assessment equipment.", "inspects sterile packaging and confirms all required equipment is available.", "completes the theatre briefing and time-out with the vascular team.", "documents the repair, findings and distal perfusion assessment.", "confirms counts, dressing and monitored recovery requirements.", "gives a structured handover including the required vascular observations."]
   }
+,
+  skinGraft: {
+    checklist: ["Confirm patient, donor site, recipient site and indication.", "Confirm consent/status, allergies, relevant wound assessment and peri-operative plan.", "Prepare skin graft/plastic surgery tray, dermatome, graft handling equipment and dressings.", "Check sterile packaging, equipment integrity, graft supplies and counts.", "Complete theatre briefing and time-out including donor and recipient sites.", "Prepare for monitored recovery and clear donor/recipient-site handover."],
+    questions: ["Do you understand the planned graft and the donor/recipient sites?", "Do you have medication, latex or anaesthetic allergies?", "Have you had previous grafting or reconstructive surgery?", "Are there any medicines or conditions that may affect healing?"],
+    rp: ["confirms the patient, donor site, recipient site and operative plan.", "checks the graft tray, dermatome, mesher if required and dressing supplies.", "inspects sterile packaging and confirms equipment integrity before opening packs.", "assists with theatre preparation and completes the donor/recipient-site time-out.", "documents graft and donor-site details and key operative findings.", "confirms dressings, counts and recovery requirements.", "gives a structured handover covering both donor and recipient sites."]
+  }
 });
 
 var currentSurgery = 'bulletHead';
