@@ -846,3 +846,187 @@ button:focus-visible{outline:2px solid #41b6e6;outline-offset:2px}
 .doc-main-panel .action-row>span{flex:1;min-width:220px}
 .comparison-table{width:100%;border-collapse:collapse;margin:18px 0;overflow:hidden}
 .comparison-table th,.comparison-table td{padding:10px;border:1px solid rgba(127,127,127,.22);text-align:left;vertical-align:top}
+
+
+/* ============================================================
+   UHS Clinical Desk — Branding / Visual Surface Cleanup
+   DEV-only visual layer
+   ============================================================ */
+:root{
+  --uhs-navy:#07111f;
+  --uhs-navy-2:#0b1728;
+  --uhs-panel:#0f1d2d;
+  --uhs-panel-2:#122338;
+  --uhs-border:rgba(148,163,184,.18);
+  --uhs-border-strong:rgba(148,163,184,.28);
+  --uhs-text:#e8eef7;
+  --uhs-muted:#9eacbd;
+  --uhs-accent:#54b7d8;
+  --uhs-accent-soft:rgba(84,183,216,.12);
+}
+
+/* Overall clinical-desk surfaces */
+body{
+  background:
+    radial-gradient(circle at 15% 0%, rgba(84,183,216,.08), transparent 28%),
+    radial-gradient(circle at 90% 15%, rgba(30,64,175,.08), transparent 30%),
+    var(--uhs-navy) !important;
+  color:var(--uhs-text);
+}
+
+/* Replace stark white cards with layered dark clinical panels */
+.card,
+.clinical-card,
+.panel,
+.modal-content,
+.modal-dialog,
+.section-card,
+.content-card,
+.info-card,
+.action-card,
+.equipment-card,
+.tool-card,
+.feature-card{
+  background:linear-gradient(180deg,var(--uhs-panel-2),var(--uhs-panel)) !important;
+  color:var(--uhs-text) !important;
+  border:1px solid var(--uhs-border) !important;
+  box-shadow:0 12px 30px rgba(0,0,0,.20) !important;
+}
+
+/* Avoid nested-card overload: nested containers become subtle surfaces */
+.card .card,
+.clinical-card .clinical-card,
+.panel .panel,
+.card-body .card,
+.info-grid > div,
+.equipment-grid > div{
+  background:rgba(255,255,255,.025) !important;
+  border-color:rgba(148,163,184,.12) !important;
+  box-shadow:none !important;
+}
+
+/* Headers / section chrome */
+.card-header,
+.section-header,
+.panel-header{
+  background:rgba(4,12,23,.28) !important;
+  border-bottom:1px solid var(--uhs-border) !important;
+}
+
+/* Tabs: branded rather than white pills */
+.tab-bar{
+  background:rgba(3,10,20,.45) !important;
+  border:1px solid var(--uhs-border) !important;
+  border-radius:12px;
+  padding:5px;
+}
+.tab,
+button.tab{
+  background:transparent !important;
+  color:var(--uhs-muted) !important;
+  border:1px solid transparent !important;
+  box-shadow:none !important;
+}
+.tab:hover,
+button.tab:hover{
+  background:var(--uhs-accent-soft) !important;
+  color:var(--uhs-text) !important;
+}
+.tab.active,
+button.tab.active{
+  background:rgba(84,183,216,.14) !important;
+  color:#dff7ff !important;
+  border-color:rgba(84,183,216,.32) !important;
+}
+
+/* Inputs/selects: integrated into the dashboard */
+input,
+textarea,
+select{
+  background:#091626 !important;
+  color:var(--uhs-text) !important;
+  border:1px solid var(--uhs-border-strong) !important;
+  box-shadow:none !important;
+}
+input::placeholder,
+textarea::placeholder{
+  color:#708096 !important;
+}
+
+/* Buttons retain hierarchy without creating white blocks */
+button{
+  box-shadow:none;
+}
+button:not(.tab):not(.copy-action){
+  background:linear-gradient(180deg,#173149,#102438) !important;
+  color:#e7f4fb !important;
+  border:1px solid rgba(84,183,216,.25) !important;
+}
+button:not(.tab):not(.copy-action):hover{
+  background:linear-gradient(180deg,#1c3d59,#153047) !important;
+}
+
+/* Copy buttons */
+.copy-action{
+  background:rgba(84,183,216,.10) !important;
+  color:#bfefff !important;
+  border:1px solid rgba(84,183,216,.24) !important;
+}
+
+/* Lists and action rows */
+.action-row{
+  background:rgba(255,255,255,.018) !important;
+  border-color:rgba(148,163,184,.11) !important;
+}
+.action-row:hover{
+  background:rgba(84,183,216,.055) !important;
+}
+
+/* Chips / badges */
+.chip,
+.badge,
+.tag{
+  background:rgba(84,183,216,.08) !important;
+  color:#c8f0fa !important;
+  border-color:rgba(84,183,216,.22) !important;
+}
+
+/* Tables */
+table{
+  background:transparent !important;
+  color:var(--uhs-text) !important;
+}
+th{
+  background:#0a1727 !important;
+  color:#cfe0ef !important;
+}
+td{
+  background:rgba(255,255,255,.015) !important;
+  border-color:rgba(148,163,184,.10) !important;
+}
+
+/* Common white utility surfaces */
+.bg-white,
+.bg-light,
+.white,
+.surface-white,
+[class*="white-bg"]{
+  background:#0f1d2d !important;
+  color:var(--uhs-text) !important;
+}
+
+/* Links */
+a{ color:#79d2ec; }
+a:hover{ color:#b6ecf8; }
+
+/* Muted text */
+.muted,
+.text-muted,
+small{
+  color:var(--uhs-muted) !important;
+}
+
+/* Clinical headings */
+h1,h2,h3,h4{
+  color:#edf6ff;
+}
