@@ -11058,3 +11058,28 @@ document.addEventListener('click', (event) => {
   section.querySelectorAll('[data-doc-tab]').forEach(t => t.classList.toggle('active', t === tab));
   section.querySelectorAll('[data-doc-panel]').forEach(p => p.classList.toggle('active', p.getAttribute('data-doc-panel') === name));
 });
+
+// Dashboard Update Log navigation: use the site's existing section/navigation
+// behavior where possible, with a hash fallback.
+document.addEventListener('click', (event) => {
+  const link = event.target.closest('.update-log-item[data-update-target]');
+  if (!link) return;
+  const targetId = link.getAttribute('data-update-target');
+  const target = document.getElementById(targetId);
+  if (!target) return; // retain normal anchor behavior if the target is unavailable
+
+  event.preventDefault();
+
+  // Close any open menus/overlays if the app exposes a common close hook.
+  document.querySelectorAll('.section.active').forEach(section => {
+    if (section !== target) section.classList.remove('active');
+  });
+  target.classList.add('active');
+  target.scrollIntoView({behavior:'smooth', block:'start'});
+  history.pushState(null, '', '#' + targetId);
+
+  // Sync common nav controls that use data-target.
+  document.querySelectorAll('[data-target]').forEach(nav => {
+    nav.classList.toggle('active', nav.getAttribute('data-target') === targetId);
+  });
+});
