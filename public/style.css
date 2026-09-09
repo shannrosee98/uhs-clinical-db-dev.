@@ -835,3 +835,5 @@ button:focus-visible{outline:2px solid #41b6e6;outline-offset:2px}
 .abcde-enhanced .chip-list{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 18px}
 .abcde-enhanced .chip{padding:6px 10px;border-radius:999px;border:1px solid rgba(127,127,127,.22)}
 .abcde-tab-panel{display:none}.abcde-tab-panel.active{display:block}
+
+.abcde-enhanced .role-action-section{margin:20px 0}.abcde-enhanced .role-action-section h4{margin-bottom:10px}.abcde-enhanced .action-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.abcde-enhanced .action-row>span{flex:1;min-width:230px}.abcde-enhanced .f8-action{opacity:.9}

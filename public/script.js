@@ -11027,3 +11027,23 @@ document.addEventListener('click', (event) => {
   card.querySelectorAll('[data-abcde-tab]').forEach(t => t.classList.toggle('active', t === tab));
   card.querySelectorAll('[data-abcde-panel]').forEach(p => p.classList.toggle('active', p.getAttribute('data-abcde-panel') === name));
 });
+
+// ABCDE RP command copy buttons: /me for chat, me for F8.
+document.addEventListener('click', async (event) => {
+  const button = event.target.closest('.abcde-enhanced .copy-action');
+  if (!button) return;
+  const value = button.getAttribute('data-copy') || '';
+  try {
+    await navigator.clipboard.writeText(value);
+    const original = button.textContent;
+    button.textContent = 'Copied!';
+    setTimeout(() => { button.textContent = original; }, 900);
+  } catch (err) {
+    const area = document.createElement('textarea');
+    area.value = value;
+    document.body.appendChild(area);
+    area.select();
+    document.execCommand('copy');
+    area.remove();
+  }
+});
