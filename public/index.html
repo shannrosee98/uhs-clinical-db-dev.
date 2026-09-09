@@ -401,7 +401,148 @@
             </div>
             <p class="pdf-doc-note">Upload a PDF or PPTX file and it will be displayed here as a reference document.</p>
             <div id="pdfContent-abcde" class="pdf-content"></div>
-          </div></section>
+          </div>
+    <div class="clinical-card secondary-survey-card" id="secondary-survey">
+      <div class="card-header">
+        <div>
+          <h3>Secondary Survey</h3>
+          <p class="muted">Structured head-to-toe assessment after immediate life threats have been addressed and the patient is stabilised.</p>
+        </div>
+      </div>
+
+      <div class="tab-bar secondary-survey-tabs" role="tablist" aria-label="Secondary Survey sections">
+        <button type="button" class="tab active" data-secondary-tab="overview">Overview</button>
+        <button type="button" class="tab" data-secondary-tab="history">AMPLE History</button>
+        <button type="button" class="tab" data-secondary-tab="head">Head &amp; Face</button>
+        <button type="button" class="tab" data-secondary-tab="neck">Neck</button>
+        <button type="button" class="tab" data-secondary-tab="chest">Chest</button>
+        <button type="button" class="tab" data-secondary-tab="abdomen">Abdomen &amp; Pelvis</button>
+        <button type="button" class="tab" data-secondary-tab="limbs">Limbs</button>
+        <button type="button" class="tab" data-secondary-tab="back">Back &amp; Spine</button>
+        <button type="button" class="tab" data-secondary-tab="actions">RP Actions</button>
+        <button type="button" class="tab" data-secondary-tab="handover">Documentation &amp; Handover</button>
+      </div>
+
+      <div class="secondary-tab-panel active" data-secondary-panel="overview">
+        <h4>When to perform</h4>
+        <ul>
+          <li>Perform after the primary survey and immediate interventions have addressed life-threatening problems.</li>
+          <li>Expose systematically while preserving dignity, warmth and privacy.</li>
+          <li>Compare both sides where appropriate and reassess any abnormal primary-survey findings.</li>
+          <li>Record findings, interventions, trends and escalation clearly.</li>
+        </ul>
+        <div class="action-list">
+          <div class="action-row"><span>Confirm patient identity and explain the head-to-toe assessment.</span><button class="copy-action" data-copy="&amp;me confirms the patient's identity, explains the secondary survey and gains cooperation before proceeding.">Copy</button></div>
+          <div class="action-row"><span>Recheck observations and pain before moving the patient.</span><button class="copy-action" data-copy="&amp;me rechecks the patient's observations and pain score before continuing with the head-to-toe assessment.">Copy</button></div>
+          <div class="action-row"><span>Expose only the area being examined and maintain warmth/privacy.</span><button class="copy-action" data-copy="&amp;me exposes the area required for examination while maintaining the patient's dignity, privacy and body temperature.">Copy</button></div>
+        </div>
+      </div>
+
+      <div class="secondary-tab-panel" data-secondary-panel="history">
+        <h4>AMPLE History</h4>
+        <ul>
+          <li><strong>A</strong> — Allergies</li>
+          <li><strong>M</strong> — Medications</li>
+          <li><strong>P</strong> — Past medical history / pregnancy where relevant</li>
+          <li><strong>L</strong> — Last oral intake</li>
+          <li><strong>E</strong> — Events leading to illness or injury</li>
+        </ul>
+        <div class="action-list">
+          <div class="action-row"><span>Ask about allergies and reaction type.</span><button class="copy-action" data-copy="&amp;me asks the patient about known allergies and records the substance and reaction described.">Copy</button></div>
+          <div class="action-row"><span>Confirm prescribed, over-the-counter and relevant recreational medications.</span><button class="copy-action" data-copy="&amp;me confirms current medications, doses where known, and the timing of the patient's last relevant medication.">Copy</button></div>
+          <div class="action-row"><span>Establish relevant past medical/surgical history.</span><button class="copy-action" data-copy="&amp;me takes a focused past medical and surgical history relevant to the current presentation.">Copy</button></div>
+          <div class="action-row"><span>Ask when the patient last ate or drank.</span><button class="copy-action" data-copy="&amp;me asks when the patient last had food or fluids and documents the response.">Copy</button></div>
+          <div class="action-row"><span>Clarify the mechanism/events and symptom progression.</span><button class="copy-action" data-copy="&amp;me clarifies the events leading to the presentation, mechanism where applicable, and progression of symptoms.">Copy</button></div>
+        </div>
+      </div>
+
+      <div class="secondary-tab-panel" data-secondary-panel="head">
+        <h4>Head &amp; Face</h4>
+        <ul>
+          <li>Inspect scalp, skull, face and eyes for injury, swelling, bleeding or deformity.</li>
+          <li>Check pupils and neurological status as clinically appropriate.</li>
+          <li>Assess mouth, teeth, tongue and facial symmetry.</li>
+          <li>Look for signs of fluid or blood from the ears/nose when relevant.</li>
+        </ul>
+      </div>
+
+      <div class="secondary-tab-panel" data-secondary-panel="neck">
+        <h4>Neck</h4>
+        <ul>
+          <li>Inspect for wounds, swelling, bruising and penetrating injury.</li>
+          <li>Assess tracheal position and neck tenderness where appropriate.</li>
+          <li>Reassess cervical-spine concerns in trauma patients and maintain precautions where indicated.</li>
+        </ul>
+      </div>
+
+      <div class="secondary-tab-panel" data-secondary-panel="chest">
+        <h4>Chest</h4>
+        <ul>
+          <li>Inspect chest movement, wounds, bruising and deformity.</li>
+          <li>Palpate for tenderness, instability and crepitus where appropriate.</li>
+          <li>Auscultate breath sounds when indicated and compare sides.</li>
+          <li>Reassess oxygenation and respiratory effort.</li>
+        </ul>
+      </div>
+
+      <div class="secondary-tab-panel" data-secondary-panel="abdomen">
+        <h4>Abdomen &amp; Pelvis</h4>
+        <ul>
+          <li>Inspect for distension, bruising, wounds and visible bleeding.</li>
+          <li>Assess abdominal tenderness systematically and note guarding/rigidity where relevant.</li>
+          <li>Assess the pelvis cautiously in trauma and avoid repeated unnecessary manipulation.</li>
+          <li>Look for evidence of external bleeding or other injuries.</li>
+        </ul>
+      </div>
+
+      <div class="secondary-tab-panel" data-secondary-panel="limbs">
+        <h4>Limbs</h4>
+        <ul>
+          <li>Inspect each limb for deformity, swelling, wounds, burns and bleeding.</li>
+          <li>Assess distal circulation, sensation and movement.</li>
+          <li>Compare sides and document any neurovascular deficit.</li>
+          <li>Check for injuries that may be hidden by clothing/equipment.</li>
+        </ul>
+      </div>
+
+      <div class="secondary-tab-panel" data-secondary-panel="back">
+        <h4>Back &amp; Spine</h4>
+        <ul>
+          <li>Inspect the back when clinically necessary, using an appropriate team-assisted log roll.</li>
+          <li>Look for wounds, bruising, deformity and pressure-related injury.</li>
+          <li>Assess spinal tenderness and neurological symptoms where appropriate.</li>
+          <li>Minimise movement when spinal injury remains a concern.</li>
+        </ul>
+      </div>
+
+      <div class="secondary-tab-panel" data-secondary-panel="actions">
+        <h4>Secondary Survey RP Actions</h4>
+        <div class="action-list">
+          <div class="action-row"><span>Begin systematic head-to-toe examination.</span><button class="copy-action" data-copy="&amp;me begins a systematic secondary survey, working from the head down and reassessing for injuries not identified during the primary survey.">Copy</button></div>
+          <div class="action-row"><span>Perform a focused neurological reassessment.</span><button class="copy-action" data-copy="&amp;me reassesses level of consciousness, orientation, pupils and limb movement, comparing findings bilaterally.">Copy</button></div>
+          <div class="action-row"><span>Assess a limb neurovascularly.</span><button class="copy-action" data-copy="&amp;me checks distal pulses, capillary refill, sensation and movement in the affected limb and compares both sides.">Copy</button></div>
+          <div class="action-row"><span>Inspect posterior injuries with team assistance.</span><button class="copy-action" data-copy="&amp;me coordinates a controlled team-assisted log roll, maintaining alignment while inspecting the patient's back for injuries.">Copy</button></div>
+          <div class="action-row"><span>Reassess an abnormal finding.</span><button class="copy-action" data-copy="&amp;me pauses the examination to reassess the abnormal finding, records the change and escalates it to the clinical lead.">Copy</button></div>
+          <div class="action-row"><span>Complete reassessment after intervention.</span><button class="copy-action" data-copy="&amp;me repeats the relevant assessment following intervention and documents the patient's response.">Copy</button></div>
+        </div>
+      </div>
+
+      <div class="secondary-tab-panel" data-secondary-panel="handover">
+        <h4>Documentation &amp; Handover</h4>
+        <ul>
+          <li>Record positive and relevant negative findings.</li>
+          <li>Document observations, pain score, neurological/neurovascular findings and interventions.</li>
+          <li>Record changes over time and any escalation.</li>
+          <li>Handover using a structured format appropriate to the service.</li>
+        </ul>
+        <div class="action-list">
+          <div class="action-row"><span>Document the completed secondary survey.</span><button class="copy-action" data-copy="&amp;me documents the secondary survey findings, relevant negatives, interventions and patient response in the clinical record.">Copy</button></div>
+          <div class="action-row"><span>Give structured handover.</span><button class="copy-action" data-copy="&amp;me gives a structured clinical handover, highlighting mechanism, assessment findings, interventions, response and outstanding concerns.">Copy</button></div>
+        </div>
+      </div>
+    </div>
+
+</section>
 
       <section id="emergencies" class="section">
         <div class="section-head"><div class="tag">HIGH PRIORITY</div><h2>Emergency quick reference</h2></div>

@@ -10998,3 +10998,21 @@ function escapeHtml(value) {
       '&#039;'
     );
 }
+
+
+// Secondary Survey tab controller
+document.addEventListener('click', (event) => {
+  const tab = event.target.closest('[data-secondary-tab]');
+  if (!tab) return;
+  const card = tab.closest('#secondary-survey');
+  if (!card) return;
+
+  const name = tab.getAttribute('data-secondary-tab');
+  card.querySelectorAll('[data-secondary-tab]').forEach(t => {
+    t.classList.toggle('active', t === tab);
+    t.setAttribute('aria-selected', t === tab ? 'true' : 'false');
+  });
+  card.querySelectorAll('[data-secondary-panel]').forEach(panel => {
+    panel.classList.toggle('active', panel.getAttribute('data-secondary-panel') === name);
+  });
+});
