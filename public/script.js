@@ -11016,3 +11016,14 @@ document.addEventListener('click', (event) => {
     panel.classList.toggle('active', panel.getAttribute('data-secondary-panel') === name);
   });
 });
+
+// Enhanced ABCDE tab controller
+document.addEventListener('click', (event) => {
+  const tab = event.target.closest('[data-abcde-tab]');
+  if (!tab) return;
+  const card = tab.closest('#abcde-assessment');
+  if (!card) return;
+  const name = tab.getAttribute('data-abcde-tab');
+  card.querySelectorAll('[data-abcde-tab]').forEach(t => t.classList.toggle('active', t === tab));
+  card.querySelectorAll('[data-abcde-panel]').forEach(p => p.classList.toggle('active', p.getAttribute('data-abcde-panel') === name));
+});

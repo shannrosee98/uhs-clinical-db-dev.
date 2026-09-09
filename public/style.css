@@ -828,3 +828,10 @@ button:focus-visible{outline:2px solid #41b6e6;outline-offset:2px}
 .surgery-role-action .cmd{color:#dbe7ea;font-size:13px;line-height:1.45}
 .surgery-role-action button{white-space:nowrap}
 @media(max-width:700px){.surgery-role-action{grid-template-columns:26px 1fr}.surgery-role-action button{grid-column:2;justify-self:start}}
+
+/* ABCDE enhanced layout */
+.abcde-enhanced .info-grid,.abcde-enhanced .equipment-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.abcde-enhanced .info-grid>div,.abcde-enhanced .equipment-grid>div{padding:14px;border:1px solid rgba(127,127,127,.22);border-radius:10px}
+.abcde-enhanced .chip-list{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 18px}
+.abcde-enhanced .chip{padding:6px 10px;border-radius:999px;border:1px solid rgba(127,127,127,.22)}
+.abcde-tab-panel{display:none}.abcde-tab-panel.active{display:block}

@@ -383,166 +383,122 @@
             <div id="pdfContent-pain" class="pdf-content"></div>
           </div></section>
 
-      <section id="abcde" class="section">
-        <div class="section-head"><div class="tag">PRIMARY ASSESSMENT</div><h2>ABCDE</h2></div>
-        <div class="steps">
-          <article><b>A</b><h3>Airway</h3><p>Is the airway patent? Look/listen for obstruction. Consider airway positioning and appropriate basic airway measures.</p></article>
-          <article><b>B</b><h3>Breathing</h3><p>Assess respiratory rate, effort, chest movement, SpO₂ and signs of respiratory distress.</p></article>
-          <article><b>C</b><h3>Circulation</h3><p>Check pulse, BP, skin/perfusion, major haemorrhage and cardiac rhythm where appropriate.</p></article>
-          <article><b>D</b><h3>Disability</h3><p>Assess consciousness (e.g. AVPU/GCS), pupils and blood glucose where indicated.</p></article>
-          <article><b>E</b><h3>Exposure</h3><p>Look for injuries, rashes, bleeding or other findings while maintaining dignity, warmth and privacy.</p></article>
-        </div>
       
-          <div class="pdf-doc-section">
-            <div class="pdf-doc-head">
-              <div class="tag">PDF DOCUMENT</div>
-              <label class="pdf-upload-btn" for="pdfInput-abcde">📄 Add Document</label>
-              <input type="file" id="pdfInput-abcde" accept="application/pdf,.pdf,application/vnd.openxmlformats-officedocument.presentationml.presentation,.pptx" onchange="handleDocPdf('abcde', this)" hidden>
-            </div>
-            <p class="pdf-doc-note">Upload a PDF or PPTX file and it will be displayed here as a reference document.</p>
-            <div id="pdfContent-abcde" class="pdf-content"></div>
-          </div>
-    <div class="clinical-card secondary-survey-card" id="secondary-survey">
-      <div class="card-header">
-        <div>
-          <h3>Secondary Survey</h3>
-          <p class="muted">Structured head-to-toe assessment after immediate life threats have been addressed and the patient is stabilised.</p>
-        </div>
-      </div>
+<section id="abcde" class="section">
+<div class="clinical-card abcde-enhanced" id="abcde-assessment">
+<div class="card-header"><div><h2>ABCDE Primary Survey</h2><p class="muted">Structured primary assessment. Identify and treat immediate life threats as they are found, then reassess.</p></div></div>
+<div class="tab-bar" role="tablist" aria-label="ABCDE assessment tabs">
+<button class="tab active" type="button" data-abcde-tab="approach">Approach</button>
+<button class="tab" type="button" data-abcde-tab="a">A — Airway</button>
+<button class="tab" type="button" data-abcde-tab="b">B — Breathing</button>
+<button class="tab" type="button" data-abcde-tab="c">C — Circulation</button>
+<button class="tab" type="button" data-abcde-tab="d">D — Disability</button>
+<button class="tab" type="button" data-abcde-tab="e">E — Exposure</button>
+<button class="tab" type="button" data-abcde-tab="equipment">Equipment</button>
+<button class="tab" type="button" data-abcde-tab="actions">Advanced RP Actions</button>
+<button class="tab" type="button" data-abcde-tab="reassess">Reassessment</button>
+<button class="tab" type="button" data-abcde-tab="handover">Handover</button>
+</div>
 
-      <div class="tab-bar secondary-survey-tabs" role="tablist" aria-label="Secondary Survey sections">
-        <button type="button" class="tab active" data-secondary-tab="overview">Overview</button>
-        <button type="button" class="tab" data-secondary-tab="history">AMPLE History</button>
-        <button type="button" class="tab" data-secondary-tab="head">Head &amp; Face</button>
-        <button type="button" class="tab" data-secondary-tab="neck">Neck</button>
-        <button type="button" class="tab" data-secondary-tab="chest">Chest</button>
-        <button type="button" class="tab" data-secondary-tab="abdomen">Abdomen &amp; Pelvis</button>
-        <button type="button" class="tab" data-secondary-tab="limbs">Limbs</button>
-        <button type="button" class="tab" data-secondary-tab="back">Back &amp; Spine</button>
-        <button type="button" class="tab" data-secondary-tab="actions">RP Actions</button>
-        <button type="button" class="tab" data-secondary-tab="handover">Documentation &amp; Handover</button>
-      </div>
+<div class="abcde-tab-panel active" data-abcde-panel="approach">
+<h3>Initial Approach</h3><div class="info-grid">
+<div><b>Scene</b><p>Safety, PPE, mechanism, hazards, patient count and resources.</p></div>
+<div><b>First look</b><p>Appearance, responsiveness, catastrophic bleeding and obvious distress.</p></div>
+<div><b>ABCDE</b><p>Assess systematically and treat life threats immediately.</p></div>
+<div><b>Reassess</b><p>Repeat the relevant assessment after every major intervention or deterioration.</p></div></div>
+<div class="action-list">
+<div class="action-row"><span>Scene and PPE check</span><button class="copy-action" data-copy="&amp;me checks the scene for hazards, confirms appropriate PPE and identifies the mechanism and number of patients.">Copy</button></div>
+<div class="action-row"><span>Initial impression</span><button class="copy-action" data-copy="&amp;me forms an immediate clinical impression, checks responsiveness and looks for obvious life threats.">Copy</button></div>
+<div class="action-row"><span>Request resources</span><button class="copy-action" data-copy="&amp;me requests additional clinical support and equipment appropriate to the patient's presentation.">Copy</button></div>
+<div class="action-row"><span>Catastrophic haemorrhage check</span><button class="copy-action" data-copy="&amp;me rapidly checks for catastrophic external haemorrhage and directs immediate control before continuing the primary survey.">Copy</button></div>
+</div></div>
 
-      <div class="secondary-tab-panel active" data-secondary-panel="overview">
-        <h4>When to perform</h4>
-        <ul>
-          <li>Perform after the primary survey and immediate interventions have addressed life-threatening problems.</li>
-          <li>Expose systematically while preserving dignity, warmth and privacy.</li>
-          <li>Compare both sides where appropriate and reassess any abnormal primary-survey findings.</li>
-          <li>Record findings, interventions, trends and escalation clearly.</li>
-        </ul>
-        <div class="action-list">
-          <div class="action-row"><span>Confirm patient identity and explain the head-to-toe assessment.</span><button class="copy-action" data-copy="&amp;me confirms the patient's identity, explains the secondary survey and gains cooperation before proceeding.">Copy</button></div>
-          <div class="action-row"><span>Recheck observations and pain before moving the patient.</span><button class="copy-action" data-copy="&amp;me rechecks the patient's observations and pain score before continuing with the head-to-toe assessment.">Copy</button></div>
-          <div class="action-row"><span>Expose only the area being examined and maintain warmth/privacy.</span><button class="copy-action" data-copy="&amp;me exposes the area required for examination while maintaining the patient's dignity, privacy and body temperature.">Copy</button></div>
-        </div>
-      </div>
+<div class="abcde-tab-panel" data-abcde-panel="a"><h3>A — Airway</h3><p>Assess patency, obstruction, secretions and ability to maintain the airway. Consider spinal precautions where indicated.</p>
+<h4>Equipment</h4><div class="chip-list"><span class="chip">Suction</span><span class="chip">OPA</span><span class="chip">NPA</span><span class="chip">BVM</span><span class="chip">Oxygen</span><span class="chip">Airway adjuncts</span></div>
+<h4>Advanced RP Actions</h4><div class="action-list">
+<div class="action-row"><span>Open and assess airway</span><button class="copy-action" data-copy="&amp;me opens the airway using an appropriate manoeuvre, visually checks the mouth and listens for abnormal airway sounds.">Copy</button></div>
+<div class="action-row"><span>Prepare suction</span><button class="copy-action" data-copy="&amp;me prepares suction, clears visible secretions and reassesses airway patency and respiratory effort.">Copy</button></div>
+<div class="action-row"><span>Prepare airway adjunct</span><button class="copy-action" data-copy="&amp;me selects an appropriate airway adjunct, prepares it and inserts it while continuously reassessing the patient's response.">Copy</button></div>
+<div class="action-row"><span>Prepare assisted ventilation</span><button class="copy-action" data-copy="&amp;me prepares the bag-valve-mask and oxygen supply, checks the seal and stands ready to assist ventilation if required.">Copy</button></div>
+<div class="action-row"><span>Reassess airway</span><button class="copy-action" data-copy="&amp;me reassesses airway patency, chest movement, oxygenation and overall response following the airway intervention.">Copy</button></div>
+</div></div>
 
-      <div class="secondary-tab-panel" data-secondary-panel="history">
-        <h4>AMPLE History</h4>
-        <ul>
-          <li><strong>A</strong> — Allergies</li>
-          <li><strong>M</strong> — Medications</li>
-          <li><strong>P</strong> — Past medical history / pregnancy where relevant</li>
-          <li><strong>L</strong> — Last oral intake</li>
-          <li><strong>E</strong> — Events leading to illness or injury</li>
-        </ul>
-        <div class="action-list">
-          <div class="action-row"><span>Ask about allergies and reaction type.</span><button class="copy-action" data-copy="&amp;me asks the patient about known allergies and records the substance and reaction described.">Copy</button></div>
-          <div class="action-row"><span>Confirm prescribed, over-the-counter and relevant recreational medications.</span><button class="copy-action" data-copy="&amp;me confirms current medications, doses where known, and the timing of the patient's last relevant medication.">Copy</button></div>
-          <div class="action-row"><span>Establish relevant past medical/surgical history.</span><button class="copy-action" data-copy="&amp;me takes a focused past medical and surgical history relevant to the current presentation.">Copy</button></div>
-          <div class="action-row"><span>Ask when the patient last ate or drank.</span><button class="copy-action" data-copy="&amp;me asks when the patient last had food or fluids and documents the response.">Copy</button></div>
-          <div class="action-row"><span>Clarify the mechanism/events and symptom progression.</span><button class="copy-action" data-copy="&amp;me clarifies the events leading to the presentation, mechanism where applicable, and progression of symptoms.">Copy</button></div>
-        </div>
-      </div>
+<div class="abcde-tab-panel" data-abcde-panel="b"><h3>B — Breathing</h3><p>Assess respiratory rate, effort, chest movement, oxygenation, breath sounds and obvious chest injury.</p>
+<h4>Equipment</h4><div class="chip-list"><span class="chip">Pulse oximeter</span><span class="chip">Stethoscope</span><span class="chip">Oxygen</span><span class="chip">BVM</span><span class="chip">Chest seal</span><span class="chip">Monitor</span></div>
+<h4>Advanced RP Actions</h4><div class="action-list">
+<div class="action-row"><span>Assess respiratory effort</span><button class="copy-action" data-copy="&amp;me observes respiratory rate and effort, chest expansion, accessory muscle use and signs of respiratory distress.">Copy</button></div>
+<div class="action-row"><span>Apply pulse oximeter</span><button class="copy-action" data-copy="&amp;me applies the pulse oximeter, confirms a reliable reading and correlates oxygenation with the clinical picture.">Copy</button></div>
+<div class="action-row"><span>Auscultate both lungs</span><button class="copy-action" data-copy="&amp;me auscultates both sides of the chest systematically, comparing breath sounds and noting abnormalities.">Copy</button></div>
+<div class="action-row"><span>Prepare oxygen support</span><button class="copy-action" data-copy="&amp;me prepares the appropriate oxygen delivery device, checks the supply and applies oxygen while monitoring response.">Copy</button></div>
+<div class="action-row"><span>Manage chest wound</span><button class="copy-action" data-copy="&amp;me exposes the chest injury, prepares an appropriate occlusive dressing and secures it while monitoring respiratory status.">Copy</button></div>
+<div class="action-row"><span>Reassess breathing</span><button class="copy-action" data-copy="&amp;me repeats respiratory rate, effort, chest movement and oxygenation after intervention and documents the response.">Copy</button></div>
+</div></div>
 
-      <div class="secondary-tab-panel" data-secondary-panel="head">
-        <h4>Head &amp; Face</h4>
-        <ul>
-          <li>Inspect scalp, skull, face and eyes for injury, swelling, bleeding or deformity.</li>
-          <li>Check pupils and neurological status as clinically appropriate.</li>
-          <li>Assess mouth, teeth, tongue and facial symmetry.</li>
-          <li>Look for signs of fluid or blood from the ears/nose when relevant.</li>
-        </ul>
-      </div>
+<div class="abcde-tab-panel" data-abcde-panel="c"><h3>C — Circulation</h3><p>Assess major haemorrhage, pulse, perfusion, blood pressure and signs of shock. Control bleeding early.</p>
+<h4>Equipment</h4><div class="chip-list"><span class="chip">BP cuff</span><span class="chip">Cardiac monitor</span><span class="chip">IV access kit</span><span class="chip">Dressings</span><span class="chip">Tourniquet</span><span class="chip">Haemorrhage kit</span></div>
+<h4>Advanced RP Actions</h4><div class="action-list">
+<div class="action-row"><span>Assess pulse and perfusion</span><button class="copy-action" data-copy="&amp;me checks central and peripheral pulses, skin colour, temperature and capillary refill while assessing overall perfusion.">Copy</button></div>
+<div class="action-row"><span>Obtain blood pressure</span><button class="copy-action" data-copy="&amp;me applies the blood pressure cuff, obtains a reading and correlates it with the patient's clinical condition.">Copy</button></div>
+<div class="action-row"><span>Control major bleeding</span><button class="copy-action" data-copy="&amp;me identifies the bleeding source, applies direct pressure and prepares additional haemorrhage-control equipment as required.">Copy</button></div>
+<div class="action-row"><span>Prepare vascular access</span><button class="copy-action" data-copy="&amp;me prepares vascular access equipment using appropriate aseptic technique and establishes access when clinically indicated.">Copy</button></div>
+<div class="action-row"><span>Apply monitoring</span><button class="copy-action" data-copy="&amp;me connects appropriate monitoring, confirms reliable readings and watches for changes in circulatory status.">Copy</button></div>
+<div class="action-row"><span>Reassess circulation</span><button class="copy-action" data-copy="&amp;me reassesses pulse, perfusion, blood pressure and bleeding control following intervention and records the trend.">Copy</button></div>
+</div></div>
 
-      <div class="secondary-tab-panel" data-secondary-panel="neck">
-        <h4>Neck</h4>
-        <ul>
-          <li>Inspect for wounds, swelling, bruising and penetrating injury.</li>
-          <li>Assess tracheal position and neck tenderness where appropriate.</li>
-          <li>Reassess cervical-spine concerns in trauma patients and maintain precautions where indicated.</li>
-        </ul>
-      </div>
+<div class="abcde-tab-panel" data-abcde-panel="d"><h3>D — Disability</h3><p>Assess consciousness, pupils, glucose where indicated, seizures and acute neurological change.</p>
+<h4>Equipment</h4><div class="chip-list"><span class="chip">Pupil light</span><span class="chip">Glucose meter</span><span class="chip">Neurological assessment tools</span><span class="chip">Monitor</span></div>
+<h4>Advanced RP Actions</h4><div class="action-list">
+<div class="action-row"><span>Assess consciousness</span><button class="copy-action" data-copy="&amp;me assesses level of consciousness and orientation, noting any acute change from baseline.">Copy</button></div>
+<div class="action-row"><span>Check pupils</span><button class="copy-action" data-copy="&amp;me checks pupil size and reaction to light bilaterally and records any asymmetry or abnormal response.">Copy</button></div>
+<div class="action-row"><span>Check glucose when indicated</span><button class="copy-action" data-copy="&amp;me prepares the glucose meter, performs a bedside glucose check and documents the result with the clinical context.">Copy</button></div>
+<div class="action-row"><span>Assess movement and sensation</span><button class="copy-action" data-copy="&amp;me assesses movement and sensation in relevant limbs, comparing sides and documenting any deficit.">Copy</button></div>
+<div class="action-row"><span>Reassess neurological status</span><button class="copy-action" data-copy="&amp;me repeats the neurological assessment after intervention or any change in condition and escalates deterioration promptly.">Copy</button></div>
+</div></div>
 
-      <div class="secondary-tab-panel" data-secondary-panel="chest">
-        <h4>Chest</h4>
-        <ul>
-          <li>Inspect chest movement, wounds, bruising and deformity.</li>
-          <li>Palpate for tenderness, instability and crepitus where appropriate.</li>
-          <li>Auscultate breath sounds when indicated and compare sides.</li>
-          <li>Reassess oxygenation and respiratory effort.</li>
-        </ul>
-      </div>
+<div class="abcde-tab-panel" data-abcde-panel="e"><h3>E — Exposure &amp; Environment</h3><p>Expose enough to identify hidden injuries while preventing heat loss and preserving dignity and privacy.</p>
+<h4>Equipment</h4><div class="chip-list"><span class="chip">Trauma shears</span><span class="chip">Blankets</span><span class="chip">Warming equipment</span><span class="chip">Burns dressings</span><span class="chip">PPE</span></div>
+<h4>Advanced RP Actions</h4><div class="action-list">
+<div class="action-row"><span>Systematic exposure</span><button class="copy-action" data-copy="&amp;me exposes the patient systematically, checking for hidden injuries while maintaining privacy and minimising heat loss.">Copy</button></div>
+<div class="action-row"><span>Head-to-toe inspection</span><button class="copy-action" data-copy="&amp;me performs a systematic head-to-toe inspection for wounds, deformity, swelling, burns and other injuries.">Copy</button></div>
+<div class="action-row"><span>Prevent heat loss</span><button class="copy-action" data-copy="&amp;me covers unaffected areas and applies appropriate warming measures while keeping the patient exposed only as required.">Copy</button></div>
+<div class="action-row"><span>Posterior assessment</span><button class="copy-action" data-copy="&amp;me coordinates a controlled team-assisted turn when required, maintaining alignment while inspecting the posterior surfaces for injury.">Copy</button></div>
+</div></div>
 
-      <div class="secondary-tab-panel" data-secondary-panel="abdomen">
-        <h4>Abdomen &amp; Pelvis</h4>
-        <ul>
-          <li>Inspect for distension, bruising, wounds and visible bleeding.</li>
-          <li>Assess abdominal tenderness systematically and note guarding/rigidity where relevant.</li>
-          <li>Assess the pelvis cautiously in trauma and avoid repeated unnecessary manipulation.</li>
-          <li>Look for evidence of external bleeding or other injuries.</li>
-        </ul>
-      </div>
+<div class="abcde-tab-panel" data-abcde-panel="equipment"><h3>Equipment — Primary Survey Kit</h3><div class="equipment-grid">
+<div><h4>Airway</h4><p>Suction, airway adjuncts, BVM, oxygen, airway PPE.</p></div>
+<div><h4>Breathing</h4><p>Pulse oximeter, stethoscope, oxygen devices, chest dressings/seals, ventilation equipment.</p></div>
+<div><h4>Circulation</h4><p>BP cuff, monitor, vascular access kit, dressings, tourniquet, haemorrhage-control equipment.</p></div>
+<div><h4>Disability</h4><p>Glucose meter, pupil light, neurological assessment and observation equipment.</p></div>
+<div><h4>Exposure</h4><p>Trauma shears, blankets, warming equipment, burns dressings and PPE.</p></div>
+<div><h4>Transport</h4><p>Stretcher, monitoring equipment, appropriate immobilisation equipment and documentation kit.</p></div>
+</div><div class="action-list">
+<div class="action-row"><span>Prepare the primary survey kit</span><button class="copy-action" data-copy="&amp;me opens the clinical kit, lays out the primary survey equipment logically and checks that essential items are ready for use.">Copy</button></div>
+<div class="action-row"><span>Prepare monitoring</span><button class="copy-action" data-copy="&amp;me prepares the monitor, pulse oximeter and blood pressure equipment, checks the leads and positions the equipment for reassessment.">Copy</button></div>
+<div class="action-row"><span>Prepare airway equipment</span><button class="copy-action" data-copy="&amp;me lays out suction, airway adjuncts, BVM and oxygen equipment within immediate reach and checks the equipment before use.">Copy</button></div>
+<div class="action-row"><span>Prepare haemorrhage equipment</span><button class="copy-action" data-copy="&amp;me prepares dressings, haemorrhage-control equipment and a tourniquet so they are immediately available if bleeding worsens.">Copy</button></div>
+</div></div>
 
-      <div class="secondary-tab-panel" data-secondary-panel="limbs">
-        <h4>Limbs</h4>
-        <ul>
-          <li>Inspect each limb for deformity, swelling, wounds, burns and bleeding.</li>
-          <li>Assess distal circulation, sensation and movement.</li>
-          <li>Compare sides and document any neurovascular deficit.</li>
-          <li>Check for injuries that may be hidden by clothing/equipment.</li>
-        </ul>
-      </div>
+<div class="abcde-tab-panel" data-abcde-panel="actions"><h3>Advanced RP Actions</h3><div class="action-list">
+<div class="action-row"><span>Lead ABCDE</span><button class="copy-action" data-copy="&amp;me takes the clinical lead, delegates tasks and begins a structured ABCDE primary survey while the team prepares equipment.">Copy</button></div>
+<div class="action-row"><span>Delegate simultaneous tasks</span><button class="copy-action" data-copy="&amp;me delegates observations, monitoring, airway preparation and bleeding control while maintaining oversight of the primary survey.">Copy</button></div>
+<div class="action-row"><span>Announce life threat</span><button class="copy-action" data-copy="&amp;me identifies the immediate life threat, alerts the team and directs the appropriate intervention before reassessing.">Copy</button></div>
+<div class="action-row"><span>Request senior support</span><button class="copy-action" data-copy="&amp;me updates the clinical lead and requests additional senior support or specialist resources based on the patient's condition.">Copy</button></div>
+<div class="action-row"><span>Prepare for transfer</span><button class="copy-action" data-copy="&amp;me confirms the patient is ready for movement, secures essential equipment and coordinates the team for safe transfer while continuing reassessment.">Copy</button></div>
+</div></div>
 
-      <div class="secondary-tab-panel" data-secondary-panel="back">
-        <h4>Back &amp; Spine</h4>
-        <ul>
-          <li>Inspect the back when clinically necessary, using an appropriate team-assisted log roll.</li>
-          <li>Look for wounds, bruising, deformity and pressure-related injury.</li>
-          <li>Assess spinal tenderness and neurological symptoms where appropriate.</li>
-          <li>Minimise movement when spinal injury remains a concern.</li>
-        </ul>
-      </div>
+<div class="abcde-tab-panel" data-abcde-panel="reassess"><h3>Reassessment</h3><ol><li>Repeat the relevant ABCDE element after intervention.</li><li>Trend observations.</li><li>Escalate deterioration.</li><li>Repeat the full primary survey after significant change.</li></ol><div class="action-list">
+<div class="action-row"><span>Full ABCDE reassessment</span><button class="copy-action" data-copy="&amp;me repeats the ABCDE assessment, comparing findings with the previous set and identifying deterioration or improvement.">Copy</button></div>
+<div class="action-row"><span>Trend observations</span><button class="copy-action" data-copy="&amp;me reviews the latest observations against the previous set, notes the trend and communicates clinically important change.">Copy</button></div>
+<div class="action-row"><span>Escalate deterioration</span><button class="copy-action" data-copy="&amp;me recognises deterioration, alerts the clinical lead and requests additional support while continuing immediate reassessment.">Copy</button></div>
+</div></div>
 
-      <div class="secondary-tab-panel" data-secondary-panel="actions">
-        <h4>Secondary Survey RP Actions</h4>
-        <div class="action-list">
-          <div class="action-row"><span>Begin systematic head-to-toe examination.</span><button class="copy-action" data-copy="&amp;me begins a systematic secondary survey, working from the head down and reassessing for injuries not identified during the primary survey.">Copy</button></div>
-          <div class="action-row"><span>Perform a focused neurological reassessment.</span><button class="copy-action" data-copy="&amp;me reassesses level of consciousness, orientation, pupils and limb movement, comparing findings bilaterally.">Copy</button></div>
-          <div class="action-row"><span>Assess a limb neurovascularly.</span><button class="copy-action" data-copy="&amp;me checks distal pulses, capillary refill, sensation and movement in the affected limb and compares both sides.">Copy</button></div>
-          <div class="action-row"><span>Inspect posterior injuries with team assistance.</span><button class="copy-action" data-copy="&amp;me coordinates a controlled team-assisted log roll, maintaining alignment while inspecting the patient's back for injuries.">Copy</button></div>
-          <div class="action-row"><span>Reassess an abnormal finding.</span><button class="copy-action" data-copy="&amp;me pauses the examination to reassess the abnormal finding, records the change and escalates it to the clinical lead.">Copy</button></div>
-          <div class="action-row"><span>Complete reassessment after intervention.</span><button class="copy-action" data-copy="&amp;me repeats the relevant assessment following intervention and documents the patient's response.">Copy</button></div>
-        </div>
-      </div>
+<div class="abcde-tab-panel" data-abcde-panel="handover"><h3>Documentation &amp; Handover</h3><div class="action-list">
+<div class="action-row"><span>Document ABCDE findings</span><button class="copy-action" data-copy="&amp;me documents significant ABCDE findings, observations, interventions, response and reassessment trends in the clinical record.">Copy</button></div>
+<div class="action-row"><span>Structured handover</span><button class="copy-action" data-copy="&amp;me gives a structured handover covering presentation, key ABCDE findings, interventions, response, observations and outstanding concerns.">Copy</button></div>
+<div class="action-row"><span>Confirm ongoing plan</span><button class="copy-action" data-copy="&amp;me confirms the immediate ongoing plan with the receiving clinician and highlights treatment, monitoring or reassessment still required.">Copy</button></div>
+</div></div>
+</div></section>
 
-      <div class="secondary-tab-panel" data-secondary-panel="handover">
-        <h4>Documentation &amp; Handover</h4>
-        <ul>
-          <li>Record positive and relevant negative findings.</li>
-          <li>Document observations, pain score, neurological/neurovascular findings and interventions.</li>
-          <li>Record changes over time and any escalation.</li>
-          <li>Handover using a structured format appropriate to the service.</li>
-        </ul>
-        <div class="action-list">
-          <div class="action-row"><span>Document the completed secondary survey.</span><button class="copy-action" data-copy="&amp;me documents the secondary survey findings, relevant negatives, interventions and patient response in the clinical record.">Copy</button></div>
-          <div class="action-row"><span>Give structured handover.</span><button class="copy-action" data-copy="&amp;me gives a structured clinical handover, highlighting mechanism, assessment findings, interventions, response and outstanding concerns.">Copy</button></div>
-        </div>
-      </div>
-    </div>
-
-</section>
 
       <section id="emergencies" class="section">
         <div class="section-head"><div class="tag">HIGH PRIORITY</div><h2>Emergency quick reference</h2></div>
