@@ -11049,38 +11049,45 @@ document.addEventListener('click', async (event) => {
 });
 
 // Documentation / HART / HEMS tab controller
-
-  target.classList.add('active');
-  target.scrollIntoView({behavior:'smooth', block:'start'});
-  history.pushState(null, '', '#' + targetId);
-
-  // Sync common nav controls that use data-target.
-  document.querySelectorAll('[data-target]').forEach(nav => {
-    nav.classList.toggle('active', nav.getAttribute('data-target') === targetId);
-  });
+document.addEventListener('click', (event) => {
+  const tab = event.target.closest('[data-doc-tab]');
+  if (!tab) return;
+  const section = tab.closest('#documentation');
+  if (!section) return;
+  const name = tab.getAttribute('data-doc-tab');
+  section.querySelectorAll('[data-doc-tab]').forEach(t => t.classList.toggle('active', t === tab));
+  section.querySelectorAll('[data-doc-panel]').forEach(p => p.classList.toggle('active', p.getAttribute('data-doc-panel') === name));
 });
 
-// Dashboard Update Log: direct navigation to real section elements.
-document.addEventListener('click', function(event) {
+// Dashboard Update Log navigation
+document.addEventListener('click', (event) => {
   const item = event.target.closest('.update-log-item[data-update-target]');
   if (!item) return;
-  const id = item.dataset.updateTarget;
-  const target = document.getElementById(id);
+
+  const targetId = item.getAttribute('data-update-target');
+  const target = document.getElementById(targetId);
   if (!target) return;
+
   event.preventDefault();
-  event.stopImmediatePropagation();
 
-  document.querySelectorAll('section.section').forEach(s => s.classList.remove('active'));
-  target.classList.add('active');
+  // Use the application's real navigation function when available.
+  if (typeof window.showSection === 'function') {
+    window.showSection(targetId);
+  } else {
+    document.querySelectorAll('.section').forEach(section => {
+      section.classList.toggle('active', section.id === targetId);
+    });
+  }
 
-  document.querySelectorAll('[data-target],[data-section]').forEach(n => {
-    const v = n.dataset.target || n.dataset.section;
-    if (v) n.classList.toggle('active', v === id);
-  });
+  const subTargetId = item.getAttribute('data-update-subtarget');
+  const subTarget = subTargetId ? document.getElementById(subTargetId) : null;
+  const destination = subTarget || target;
 
-  const sub = item.dataset.updateSubtarget ? document.getElementById(item.dataset.updateSubtarget) : null;
-  const destination = sub || target;
-  if (sub) sub.classList.add('active');
-  setTimeout(() => destination.scrollIntoView({behavior:'smooth', block:'start'}), 20);
-  try { history.replaceState(null, '', '#' + id); } catch (_) {}
+  setTimeout(() => {
+    destination.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 30);
+
+  try {
+    history.replaceState(null, '', '#' + (subTargetId || targetId));
+  } catch (_) {}
 });
