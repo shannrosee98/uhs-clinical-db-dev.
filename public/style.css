@@ -1041,3 +1041,5 @@ h1,h2,h3,h4{
 .update-log-item small{display:block;color:#9eacbd;margin-top:3px;line-height:1.4}
 .update-log-icon{width:38px;height:38px;display:grid;place-items:center;border-radius:9px;background:rgba(84,183,216,.10);border:1px solid rgba(84,183,216,.20);color:#bfefff;font-size:.72rem;font-weight:800}
 .update-log-arrow{color:#79d2ec;font-size:1.1rem}
+
+.dashboard-update-log .update-log-item{width:100%;text-align:left;font:inherit;cursor:pointer}.dashboard-update-log .update-log-item:focus-visible{outline:2px solid #79d2ec;outline-offset:2px}

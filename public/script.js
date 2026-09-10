@@ -11049,31 +11049,7 @@ document.addEventListener('click', async (event) => {
 });
 
 // Documentation / HART / HEMS tab controller
-document.addEventListener('click', (event) => {
-  const tab = event.target.closest('[data-doc-tab]');
-  if (!tab) return;
-  const section = tab.closest('#documentation');
-  if (!section) return;
-  const name = tab.getAttribute('data-doc-tab');
-  section.querySelectorAll('[data-doc-tab]').forEach(t => t.classList.toggle('active', t === tab));
-  section.querySelectorAll('[data-doc-panel]').forEach(p => p.classList.toggle('active', p.getAttribute('data-doc-panel') === name));
-});
 
-// Dashboard Update Log navigation: use the site's existing section/navigation
-// behavior where possible, with a hash fallback.
-document.addEventListener('click', (event) => {
-  const link = event.target.closest('.update-log-item[data-update-target]');
-  if (!link) return;
-  const targetId = link.getAttribute('data-update-target');
-  const target = document.getElementById(targetId);
-  if (!target) return; // retain normal anchor behavior if the target is unavailable
-
-  event.preventDefault();
-
-  // Close any open menus/overlays if the app exposes a common close hook.
-  document.querySelectorAll('.section.active').forEach(section => {
-    if (section !== target) section.classList.remove('active');
-  });
   target.classList.add('active');
   target.scrollIntoView({behavior:'smooth', block:'start'});
   history.pushState(null, '', '#' + targetId);
@@ -11082,4 +11058,29 @@ document.addEventListener('click', (event) => {
   document.querySelectorAll('[data-target]').forEach(nav => {
     nav.classList.toggle('active', nav.getAttribute('data-target') === targetId);
   });
+});
+
+// Dashboard Update Log: direct navigation to real section elements.
+document.addEventListener('click', function(event) {
+  const item = event.target.closest('.update-log-item[data-update-target]');
+  if (!item) return;
+  const id = item.dataset.updateTarget;
+  const target = document.getElementById(id);
+  if (!target) return;
+  event.preventDefault();
+  event.stopImmediatePropagation();
+
+  document.querySelectorAll('section.section').forEach(s => s.classList.remove('active'));
+  target.classList.add('active');
+
+  document.querySelectorAll('[data-target],[data-section]').forEach(n => {
+    const v = n.dataset.target || n.dataset.section;
+    if (v) n.classList.toggle('active', v === id);
+  });
+
+  const sub = item.dataset.updateSubtarget ? document.getElementById(item.dataset.updateSubtarget) : null;
+  const destination = sub || target;
+  if (sub) sub.classList.add('active');
+  setTimeout(() => destination.scrollIntoView({behavior:'smooth', block:'start'}), 20);
+  try { history.replaceState(null, '', '#' + id); } catch (_) {}
 });
