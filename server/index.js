@@ -31,6 +31,10 @@ const app = express();
 
 const { Pool } = pg;
 
+if (!process.env.DATABASE_URL) {
+  throw new Error('DATABASE_URL is required before the server can start.');
+}
+
 const LEGACY_CMS_WRITES = String(process.env.CMS_LEGACY_WRITE_ENABLED || '').toLowerCase() === 'true';
 
 
@@ -230,24 +234,14 @@ async function ensureBodycamSchema() {
   /* =========================================================
      DOCUMENTS TABLE (multi-file per section)
      Stores uploaded documents with a section key so each
-     section (hart, hems, training, staff-handbook) can hold
-     multiple files. Auto-incrementing ID per document.
+     section can hold multiple files.
 
-     The old singular "documents" table is dropped defensively
-     in its own try/catch — if a leftover foreign key from an
-     earlier schema iteration ever blocks this drop, that
-     failure must not prevent document_files/document_folders
-     below from being created. Every /api/documents/:section
-     request depends on those two tables existing.
+     Document storage is additive. The legacy "documents" table
+     is intentionally NOT dropped during startup because an
+     existing database may contain data or foreign keys that
+     depend on it. The current document API uses
+     document_files/document_folders.
   ========================================================= */
-  try {
-    await pool.query(`DROP TABLE IF EXISTS documents`);
-  } catch (error) {
-    console.error(
-      'Non-fatal: could not drop legacy documents table:',
-      error.message
-    );
-  }
 
   await pool.query(`
     CREATE TABLE IF NOT EXISTS document_files (
@@ -271,7 +265,7 @@ async function ensureBodycamSchema() {
     them on a live database that already has the table.
   */
   await pool.query(`
-    ALTER TABLE document_files ADD COLUMN IF NOT EXISTS folder_id INT
+    ALTER TABLE document_files ADD COLUMN IF NOT EXISTS folder_id BIGINT
   `);
   await pool.query(`
     ALTER TABLE document_files ADD COLUMN IF NOT EXISTS description TEXT DEFAULT ''
@@ -318,10 +312,26 @@ async function ensureBodycamSchema() {
     it too predates one of these columns on a live database.
   */
   await pool.query(`
-    ALTER TABLE document_folders ADD COLUMN IF NOT EXISTS parent_id INT REFERENCES document_folders(id)
+    ALTER TABLE document_folders ADD COLUMN IF NOT EXISTS parent_id BIGINT REFERENCES document_folders(id)
   `);
   await pool.query(`
     ALTER TABLE document_folders ADD COLUMN IF NOT EXISTS sort_order INT NOT NULL DEFAULT 0
+  `);
+
+  /*
+    Older databases may have created these reference columns as
+    INT while the primary keys are BIGSERIAL/BIGINT. Normalize
+    them to BIGINT so foreign keys and joins use matching types.
+  */
+  await pool.query(`
+    ALTER TABLE document_files
+    ALTER COLUMN folder_id TYPE BIGINT
+    USING folder_id::BIGINT
+  `);
+  await pool.query(`
+    ALTER TABLE document_folders
+    ALTER COLUMN parent_id TYPE BIGINT
+    USING parent_id::BIGINT
   `);
 
   /* Soft delete support for documents and folders (part of the
@@ -4148,22 +4158,29 @@ const port = Number(
   process.env.PORT || 3000
 );
 
-ensureCoreSchema()
-  .then(() => ensureBodycamSchema())
-  .catch(error => {
-    console.error(
-      'SCHEMA SETUP ERROR:',
-      error
-    );
-  })
-  .finally(() => {
-    app.listen(
-      port,
-      '0.0.0.0',
-      () => {
-        console.log(
-          `NHS Clinical Desk listening on ${port}`
-        );
-      }
-    );
-  });
+async function startServer() {
+  /*
+    Verify database connectivity before running schema setup.
+    A DB/DNS failure must prevent the web process from starting
+    instead of leaving a half-initialised service returning 500s.
+  */
+  await pool.query('SELECT 1');
+  await ensureCoreSchema();
+  await ensureBodycamSchema();
+
+  app.listen(
+    port,
+    '0.0.0.0',
+    () => {
+      console.log(`NHS Clinical Desk listening on ${port}`);
+    }
+  );
+}
+
+startServer().catch(error => {
+  console.error(
+    'SCHEMA SETUP ERROR — server will not start:',
+    error
+  );
+  process.exit(1);
+});
