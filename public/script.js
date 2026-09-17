@@ -8428,9 +8428,9 @@ async function cmsLoadSurgeries() {
       var key = it._cmsKey.replace(/^surgery-/, '');
       if (surgeriesData[key]) {
         /* Merge CMS fields into the hardcoded data */
-        if (it.checklist) surgeriesData[key].checklist = it.checklist;
-        if (it.questions) surgeriesData[key].questions = it.questions;
-        if (it.rp) surgeriesData[key].rp = it.rp;
+        if (Array.isArray(it.checklist) && it.checklist.length) surgeriesData[key].checklist = it.checklist;
+        if (Array.isArray(it.questions) && it.questions.length) surgeriesData[key].questions = it.questions;
+        if (Array.isArray(it.rp) && it.rp.length) surgeriesData[key].rp = it.rp;
         if (it.name) surgeriesData[key].name = it.name;
         if (it.indications) surgeriesData[key].indications = it.indications;
         if (it.risks) surgeriesData[key].risks = it.risks;
@@ -8594,7 +8594,7 @@ function renderSurgeryRP() {
   var container = document.getElementById('surgeryRPList');
   if (!container) return;
   var surgery = surgeriesData[currentSurgery];
-  if (!surgery || !surgery.rp) {
+  if (!surgery || !Array.isArray(surgery.rp) || surgery.rp.length === 0) {
     container.innerHTML = '<p class="muted">No RP actions for this surgery.</p>';
     return;
   }
@@ -8606,7 +8606,7 @@ function renderSurgeryRP() {
     return '<div class="rp-item staff-row" style="grid-template-columns:auto 1fr auto">'
       + '<span style="color:#41b6e6;font-weight:800;font-size:11px;min-width:55px;white-space:nowrap">' + modeLabel + '</span>'
       + '<p style="color:#c9d6da;font-size:13px;margin:0" id="surgeryRP-' + index + '">' + escapeHtml(command) + '</p>'
-      + '<button class="edit-small" onclick="copyText(\'surgeryRP-' + index + '\')">Copy</button>'
+      + '<button class="edit-small surgery-rp-copy" type="button" data-copy-target="surgeryRP-' + index + '">Copy</button>'
       + '</div>';
   }).join('');
 }
@@ -8645,6 +8645,23 @@ function showBurnDepth(depth) {
     if (onclick.indexOf("'" + depth + "'") >= 0 || onclick.indexOf('"' + depth + '"') >= 0) btn.classList.add('active');
   });
 }
+
+document.addEventListener('click', function(event) {
+  var btn = event.target.closest('.surgery-rp-copy');
+  if (!btn) return;
+  var id = btn.getAttribute('data-copy-target');
+  var el = id ? document.getElementById(id) : null;
+  if (!el) return;
+  var text = el.textContent || '';
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(function() {
+      var old = btn.textContent; btn.textContent = 'Copied!';
+      setTimeout(function(){ btn.textContent = old; }, 900);
+    }).catch(function(){ if (typeof copyText === 'function') copyText(id); });
+  } else if (typeof copyText === 'function') {
+    copyText(id);
+  }
+});
 
 function setSurgeryRPMode(mode) {
   if (mode !== 'slash' && mode !== 'f8') mode = 'slash';
