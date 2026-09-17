@@ -7503,6 +7503,764 @@ document.addEventListener(
 );
 
 /* =========================================================
+   VITAL SIGN CALCULATORS (Observations page)
+
+   Each function reads its slider(s), updates the numeric
+   display, and writes a plain-language clinical meaning into
+   the matching .meaning element. Matches the reference bands
+   already printed on the Observations/Pain pages.
+========================================================= */
+
+function updateBP() {
+  var sysEl = document.getElementById('sys');
+  var diaEl = document.getElementById('dia');
+  if (!sysEl || !diaEl) return;
+
+  var sys = Number(sysEl.value);
+  var dia = Number(diaEl.value);
+
+  var sysDisplay = document.getElementById('sysDisplay');
+  var diaDisplay = document.getElementById('diaDisplay');
+  if (sysDisplay) sysDisplay.textContent = sys;
+  if (diaDisplay) diaDisplay.textContent = dia;
+
+  var meaning = document.getElementById('bpMeaning');
+  if (!meaning) return;
+
+  if (sys >= 180 || dia >= 120) {
+    meaning.textContent = 'Severely raised — needs urgent clinical assessment, particularly with concerning symptoms or signs of acute organ damage.';
+  } else if (sys >= 140 || dia >= 90) {
+    meaning.textContent = 'High BP — NICE uses this as the clinic threshold for further assessment/confirmation.';
+  } else if (sys >= 120 || dia >= 80) {
+    meaning.textContent = 'Raised / above ideal — not automatically hypertension; repeat and consider the clinical context.';
+  } else if (sys < 90 || dia < 60) {
+    meaning.textContent = 'Low BP / hypotension — may be significant if symptomatic: dizziness, weakness, confusion or fainting.';
+  } else {
+    meaning.textContent = 'Common reference range — often regarded as a healthy/ideal range, but context matters.';
+  }
+}
+
+function updateHR() {
+  var el = document.getElementById('hrRange');
+  if (!el) return;
+  var hr = Number(el.value);
+
+  var display = document.getElementById('hrDisplay');
+  if (display) display.textContent = hr;
+
+  var meaning = document.getElementById('hrMeaning');
+  if (!meaning) return;
+
+  if (hr < 40) {
+    meaning.textContent = 'Marked bradycardia — significantly slow heart rate, reassess urgently.';
+  } else if (hr < 60) {
+    meaning.textContent = 'Bradycardia — below the typical adult resting range.';
+  } else if (hr <= 100) {
+    meaning.textContent = 'Normal adult resting range.';
+  } else if (hr <= 130) {
+    meaning.textContent = 'Tachycardia — above the typical adult resting range.';
+  } else {
+    meaning.textContent = 'Marked tachycardia — significant, reassess urgently.';
+  }
+}
+
+function updateRR() {
+  var el = document.getElementById('rrRange');
+  if (!el) return;
+  var rr = Number(el.value);
+
+  var display = document.getElementById('rrDisplay');
+  if (display) display.textContent = rr;
+
+  var meaning = document.getElementById('rrMeaning');
+  if (!meaning) return;
+
+  if (rr < 12) {
+    meaning.textContent = 'Bradypnoea — below the typical adult resting range.';
+  } else if (rr <= 20) {
+    meaning.textContent = 'Normal adult resting range.';
+  } else if (rr <= 24) {
+    meaning.textContent = 'Raised respiratory rate — reassess and monitor closely.';
+  } else {
+    meaning.textContent = 'Marked tachypnoea — significant, escalate.';
+  }
+}
+
+function updateSpO2() {
+  var el = document.getElementById('spo2Range');
+  if (!el) return;
+  var spo2 = Number(el.value);
+
+  var display = document.getElementById('spo2Display');
+  if (display) display.textContent = spo2;
+
+  var meaning = document.getElementById('spo2Meaning');
+  if (!meaning) return;
+
+  if (spo2 < 92) {
+    meaning.textContent = 'Low oxygen saturation — significant hypoxia, escalate urgently.';
+  } else if (spo2 < 96) {
+    meaning.textContent = 'Mildly low — monitor closely and reassess.';
+  } else {
+    meaning.textContent = 'Normal oxygen saturation range.';
+  }
+}
+
+function updateTemp() {
+  var el = document.getElementById('tempRange');
+  if (!el) return;
+  var temp = Number(el.value);
+
+  var display = document.getElementById('tempDisplay');
+  if (display) display.textContent = temp.toFixed(1);
+
+  var meaning = document.getElementById('tempMeaning');
+  if (!meaning) return;
+
+  if (temp < 35) {
+    meaning.textContent = 'Hypothermia — significantly low body temperature.';
+  } else if (temp < 36.1) {
+    meaning.textContent = 'Mildly low — below the typical normal range.';
+  } else if (temp <= 37.9) {
+    meaning.textContent = 'Normal body temperature range.';
+  } else if (temp <= 39) {
+    meaning.textContent = 'Fever — raised body temperature.';
+  } else {
+    meaning.textContent = 'High fever — significant, escalate.';
+  }
+}
+
+function updateBGL() {
+  var el = document.getElementById('bglRange');
+  if (!el) return;
+  var bgl = Number(el.value);
+
+  var display = document.getElementById('bglDisplay');
+  if (display) display.textContent = bgl.toFixed(1);
+
+  var meaning = document.getElementById('bglMeaning');
+  if (!meaning) return;
+
+  if (bgl < 4) {
+    meaning.textContent = 'Hypoglycaemia — low blood glucose.';
+  } else if (bgl <= 7) {
+    meaning.textContent = 'Normal fasting reference range.';
+  } else if (bgl <= 11) {
+    meaning.textContent = 'Slightly raised — acceptable in a non-fasting reading, but note the context.';
+  } else {
+    meaning.textContent = 'Hyperglycaemia — high blood glucose.';
+  }
+}
+
+function updateGCS() {
+  var eEl = document.getElementById('gcsE');
+  var vEl = document.getElementById('gcsV');
+  var mEl = document.getElementById('gcsM');
+  if (!eEl || !vEl || !mEl) return;
+
+  var e = Number(eEl.value);
+  var v = Number(vEl.value);
+  var m = Number(mEl.value);
+  var total = e + v + m;
+
+  var eDisplay = document.getElementById('gcsEDisplay');
+  var vDisplay = document.getElementById('gcsVDisplay');
+  var mDisplay = document.getElementById('gcsMDisplay');
+  var totalDisplay = document.getElementById('gcsDisplay');
+  if (eDisplay) eDisplay.textContent = e;
+  if (vDisplay) vDisplay.textContent = v;
+  if (mDisplay) mDisplay.textContent = m;
+  if (totalDisplay) totalDisplay.textContent = total;
+
+  var meaning = document.getElementById('gcsMeaning');
+  if (!meaning) return;
+
+  if (total >= 15) {
+    meaning.textContent = 'Fully alert — normal Glasgow Coma Scale score.';
+  } else if (total >= 13) {
+    meaning.textContent = 'Mild impairment of consciousness.';
+  } else if (total >= 9) {
+    meaning.textContent = 'Moderate impairment of consciousness.';
+  } else {
+    meaning.textContent = 'Severe impairment — often considered for airway protection and urgent escalation.';
+  }
+}
+
+function updatePain() {
+  var el = document.getElementById('painRange');
+  if (!el) return;
+  var pain = Number(el.value);
+
+  var value = document.getElementById('painValue');
+  if (value) value.textContent = pain + '/10';
+
+  var meaning = document.getElementById('painMeaning');
+  if (meaning) {
+    if (pain === 0) {
+      meaning.textContent = 'No pain.';
+    } else if (pain <= 3) {
+      meaning.textContent = 'Mild pain.';
+    } else if (pain <= 6) {
+      meaning.textContent = 'Moderate pain.';
+    } else if (pain <= 9) {
+      meaning.textContent = 'Severe pain.';
+    } else {
+      meaning.textContent = 'Worst pain imaginable.';
+    }
+  }
+
+  var medication = document.getElementById('painMedication');
+  if (medication) {
+    if (pain === 0) {
+      medication.textContent = '';
+    } else if (pain <= 3) {
+      medication.textContent = 'Mild: paracetamol 500 mg–1 g PO (≥4 hours apart, max 4 g/24h), ± ibuprofen 200–400 mg PO where an NSAID is appropriate.';
+    } else if (pain <= 6) {
+      medication.textContent = 'Moderate: paracetamol as above; consider co-codamol (1–2 tablets, 4–6 hours apart, max 8 tablets/24h) for appropriate acute injuries.';
+    } else {
+      medication.textContent = 'Severe: for major trauma, NICE recommends IV morphine as first-line, titrated to effect by an appropriately trained clinician.';
+    }
+  }
+}
+
+/* =========================================================
+   CLIPBOARD COPY HELPERS
+
+   copyText(id) copies the text content of a specific element
+   (used by inline onclick="copyText('someId')" buttons).
+   copyRPButton(button) is the generic delegated-click handler
+   for RP copy buttons that don't carry their own onclick —
+   it copies the nearest .rp-text sibling within the same item.
+========================================================= */
+
+async function copyText(id) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  var text = el.textContent.trim();
+  try {
+    await navigator.clipboard.writeText(text);
+    showToast('Copied to clipboard', 'success');
+  } catch (_) {
+    fallbackCopy(text);
+    showToast('Copied to clipboard', 'success');
+  }
+}
+
+async function copyRPButton(button) {
+  if (!button) return;
+  var item = button.closest('.rp-item, .scene-rp-item, .rp-card');
+  if (!item) return;
+  var textEl = item.querySelector('.rp-text, p');
+  if (!textEl) return;
+  var text = textEl.textContent.trim();
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch (_) {
+    fallbackCopy(text);
+  }
+  var original = button.textContent;
+  button.textContent = 'Copied!';
+  setTimeout(function() {
+    button.textContent = original;
+  }, 1200);
+}
+
+/* =========================================================
+   MEDICATION RP TOGGLE
+========================================================= */
+
+function toggleMed(button) {
+  var card = button?.closest('.med-card');
+  if (!card) return;
+
+  var rp = card.querySelector('.med-rp');
+  if (!rp) return;
+
+  var open = rp.style.display === 'block';
+  rp.style.display = open ? 'none' : 'block';
+  button.textContent = open ? 'Show RP /me' : 'Hide RP /me';
+}
+
+/* =========================================================
+   PROFILE TABS (Overview / Training / Private Journal)
+========================================================= */
+
+function showProfileTab(tab) {
+  var validTabs = ['overview', 'adminjournal', 'privatejournal'];
+  if (!validTabs.includes(tab)) tab = 'overview';
+
+  document.querySelectorAll('.profile-tab-panel').forEach(function(panel) {
+    var map = {
+      overview: 'profileOverviewTab',
+      adminjournal: 'profileAdminJournalTab',
+      privatejournal: 'profilePrivateJournalTab'
+    };
+    panel.style.display = panel.id === map[tab] ? 'block' : 'none';
+  });
+
+  document.querySelectorAll('.profile-tab').forEach(function(btn) {
+    btn.classList.toggle('active', btn.dataset.profileTab === tab);
+  });
+
+  if (tab === 'adminjournal') {
+    loadStaffDevelopment();
+  }
+
+  if (tab === 'privatejournal') {
+    loadJournalEntries();
+  }
+}
+
+/* =========================================================
+   TRAINING & DEVELOPMENT CHECKLIST
+
+   Backed by GET/PUT /api/staff/:id/development. Students can
+   tick their own checklist; strengths/development/admin notes
+   are supervisor feedback and are only writable by an admin
+   (the server preserves the existing values for a self-save).
+========================================================= */
+
+var DEFAULT_TRAINING_CHECKLIST = [
+  'Blue Light Trained',
+  'Professional Radio Communications',
+  'MDT',
+  'Assisting a Paramedic',
+  'Uniform Standards',
+  'Command Structure & Escalation Procedures',
+  'Patient Assessment (ABCDE)',
+  'X-Ray & MRI',
+  'Patient Observation — HR, BP, RR, SpO₂, BM, Temp: basic HIGH/LOW',
+  'ECG',
+  'CPR',
+  'Airway Management — Head Tilt, OPA & NPA',
+  'Medication Management — correct medications (dose not required)',
+  'Burn Assessment & Burn Care',
+  'Wound Assessment & Wound Care',
+  'Bleeding & Haemorrhage Management',
+  'Management of Unconscious Patients',
+  'Scope of Clinical Practice',
+  'Clinical Handover (ATMIST/SBAR)',
+  'Professional Standards & Conduct',
+  'Recognition of Life Extinct Procedures (ROLE/DOA)',
+  'Major Incident Awareness',
+  'Ten Second Triage'
+];
+
+var currentTrainingChecklist = [];
+var currentDevelopmentRecord = null;
+
+async function loadStaffDevelopment() {
+  var gate = document.getElementById('adminJournalGate');
+  var content = document.getElementById('adminJournalContent');
+
+  if (!currentUser) {
+    if (gate) gate.style.display = 'block';
+    if (content) content.style.display = 'none';
+    return;
+  }
+
+  if (gate) gate.style.display = 'none';
+  if (content) content.style.display = 'block';
+
+  try {
+    var result = await api('/api/staff/' + encodeURIComponent(currentUser.id) + '/development');
+    currentDevelopmentRecord = result.development || {};
+  } catch (err) {
+    console.error('Unable to load training record:', err);
+    currentDevelopmentRecord = {};
+  }
+
+  var checklist = currentDevelopmentRecord.checklist;
+  currentTrainingChecklist = (Array.isArray(checklist) && checklist.length)
+    ? checklist.map(function(item) { return { text: item.text || '', done: !!item.done }; })
+    : DEFAULT_TRAINING_CHECKLIST.map(function(text) { return { text: text, done: false }; });
+
+  renderTrainingChecklist();
+
+  var strengths = document.getElementById('staffStrengths');
+  var development = document.getElementById('staffDevelopment');
+  if (strengths) strengths.value = currentDevelopmentRecord.strengths || '';
+  if (development) development.value = currentDevelopmentRecord.development || '';
+}
+
+function renderTrainingChecklist() {
+  var container = document.getElementById('trainingChecklist');
+  if (!container) return;
+
+  container.innerHTML = currentTrainingChecklist.map(function(item, i) {
+    return (
+      '<div class="training-item">' +
+        '<input type="checkbox" ' + (item.done ? 'checked' : '') + ' onchange="toggleTrainingItem(' + i + ')">' +
+        '<input type="text" value="' + escapeHtml(item.text) + '" onchange="updateTrainingItemText(' + i + ', this.value)">' +
+        '<button type="button" class="danger-small" onclick="removeTrainingItem(' + i + ')">✖</button>' +
+      '</div>'
+    );
+  }).join('');
+}
+
+function addTrainingItem() {
+  currentTrainingChecklist.push({ text: 'New competency', done: false });
+  renderTrainingChecklist();
+}
+
+function toggleTrainingItem(index) {
+  if (!currentTrainingChecklist[index]) return;
+  currentTrainingChecklist[index].done = !currentTrainingChecklist[index].done;
+}
+
+function updateTrainingItemText(index, value) {
+  if (!currentTrainingChecklist[index]) return;
+  currentTrainingChecklist[index].text = value;
+}
+
+function removeTrainingItem(index) {
+  currentTrainingChecklist.splice(index, 1);
+  renderTrainingChecklist();
+}
+
+async function saveStaffDevelopment() {
+  if (!currentUser) return;
+
+  var strengths = document.getElementById('staffStrengths')?.value || '';
+  var development = document.getElementById('staffDevelopment')?.value || '';
+
+  try {
+    await api('/api/staff/' + encodeURIComponent(currentUser.id) + '/development', {
+      method: 'PUT',
+      body: {
+        checklist: currentTrainingChecklist,
+        strengths: strengths,
+        development: development,
+        adminNotes: currentDevelopmentRecord?.admin_notes || ''
+      }
+    });
+    showToast('Training & development saved', 'success');
+  } catch (err) {
+    showToast(err.message || 'Unable to save training record', 'error');
+  }
+}
+
+/* =========================================================
+   PRIVATE JOURNAL
+========================================================= */
+
+async function loadJournalEntries() {
+  var container = document.getElementById('privateJournalEntries');
+  if (!container || !currentUser) return;
+
+  try {
+    var result = await api('/api/journal');
+    var entries = result.entries || [];
+
+    if (!entries.length) {
+      container.innerHTML = '<p class="muted" style="font-size:12px">No journal entries yet.</p>';
+      return;
+    }
+
+    container.innerHTML = entries.map(function(entry) {
+      var date = entry.created_at ? new Date(entry.created_at).toLocaleString() : '';
+      return (
+        '<div class="journal-entry">' +
+          '<div class="journal-entry-meta">' + escapeHtml(date) + (entry.sent_to ? ' — sent to admin' : ' — private') + '</div>' +
+          '<p>' + escapeHtml(entry.body) + '</p>' +
+        '</div>'
+      );
+    }).join('');
+  } catch (err) {
+    console.error('Unable to load journal entries:', err);
+    container.innerHTML = '<p class="muted" style="font-size:12px">Unable to load journal entries.</p>';
+  }
+}
+
+async function savePrivateJournal() {
+  var text = document.getElementById('privateJournalText')?.value.trim();
+  if (!text) return;
+
+  try {
+    await api('/api/journal', {
+      method: 'POST',
+      body: { body: text, sendTo: null }
+    });
+    document.getElementById('privateJournalText').value = '';
+    showToast('Journal entry saved privately', 'success');
+    loadJournalEntries();
+  } catch (err) {
+    showToast(err.message || 'Unable to save journal entry', 'error');
+  }
+}
+
+async function sendPrivateJournalToAdmin() {
+  var text = document.getElementById('privateJournalText')?.value.trim();
+  var adminId = document.getElementById('journalAdminRecipient')?.value;
+
+  if (!text) return;
+  if (!adminId) {
+    showToast('Choose an admin to send this to first', 'error');
+    return;
+  }
+
+  try {
+    await api('/api/journal', {
+      method: 'POST',
+      body: { body: text, sendTo: adminId }
+    });
+    document.getElementById('privateJournalText').value = '';
+    showToast('Journal entry sent to admin', 'success');
+    loadJournalEntries();
+  } catch (err) {
+    showToast(err.message || 'Unable to send journal entry', 'error');
+  }
+}
+
+/* =========================================================
+   ADMIN — STAFF DIRECTORY
+
+   Read-only searchable staff directory backed by the existing
+   GET /api/staff endpoint. Full profile editing already exists
+   for a user's own profile (editOwnProfile/saveProfile); an
+   admin "edit another user" flow is a separate, larger feature
+   and isn't wired up here.
+========================================================= */
+
+var adminStaffCache = [];
+
+async function refreshAdmin() {
+  try {
+    var result = await api('/api/staff');
+    adminStaffCache = result.staff || [];
+  } catch (err) {
+    console.error('Unable to load staff directory:', err);
+    adminStaffCache = [];
+  }
+  renderAdmin();
+}
+
+function renderAdmin() {
+  var container = document.getElementById('staffList');
+  if (!container) return;
+
+  var query = (document.getElementById('adminSearch')?.value || '').toLowerCase();
+
+  var filtered = adminStaffCache.filter(function(u) {
+    if (!query) return true;
+    return [u.display_name, u.callsign, u.rank, u.specialty]
+      .filter(Boolean)
+      .some(function(field) { return String(field).toLowerCase().includes(query); });
+  });
+
+  if (!filtered.length) {
+    container.innerHTML = '<div class="notice">No staff found.</div>';
+    return;
+  }
+
+  container.innerHTML = filtered.map(function(u) {
+    return (
+      '<article class="staff-card">' +
+        (u.picture_url
+          ? '<img class="staff-avatar" src="' + escapeHtml(u.picture_url) + '" alt="">'
+          : '<div class="staff-avatar staff-avatar-empty">👤</div>') +
+        '<div>' +
+          '<h3>' + escapeHtml(u.display_name || 'NHS Member') + '</h3>' +
+          '<p>' + escapeHtml(u.rank || 'Rank pending') + '</p>' +
+          '<div class="profile-badge">' + escapeHtml(u.callsign || 'CALLSIGN') + '</div>' +
+          '<small>' + escapeHtml(u.specialty || 'No specialty assigned') + '</small>' +
+        '</div>' +
+      '</article>'
+    );
+  }).join('');
+}
+
+/* =========================================================
+   CARDIAC ASSESSMENT & CARE — RP LIBRARY
+
+   Mirrors the scene/procedure RP pattern (rp / rp_bed /
+   rp_floor arrays rendered through the shared bed/floor
+   context switch and copy/edit-mode helpers).
+========================================================= */
+
+var cardiacData = {
+  assessment: {
+    rp: [
+      'introduces themselves to the patient and asks about their chest pain using SOCRATES.',
+      'attaches continuous cardiac monitoring and takes a full set of observations.',
+      'checks SpO₂ before deciding whether supplemental oxygen is needed.',
+      'applies the 12-lead ECG and reviews it for ST changes or a new bundle branch block.',
+      'asks about aspirin allergies before considering aspirin administration.',
+      'compares the current ECG against any previous ECG available.',
+      'escalates to a senior clinician after finding a dynamic or abnormal ECG.'
+    ],
+    rp_bed: [
+      formatRpWithEmote('sits beside the bed and asks the patient about their chest pain using SOCRATES.', 'talk'),
+      formatRpWithEmote('attaches continuous cardiac monitoring at the bedside and takes a full set of observations.', 'check'),
+      formatRpWithEmote('checks the patient\'s SpO₂ at the bedside before deciding whether supplemental oxygen is needed.', 'check'),
+      formatRpWithEmote('applies the 12-lead ECG at the bedside and reviews it for ST changes or a new bundle branch block.', 'check'),
+      formatRpWithEmote('asks the patient about aspirin allergies before considering aspirin administration.', 'talk'),
+      formatRpWithEmote('compares the current ECG against any previous ECG available on the chart.', 'notepad'),
+      formatRpWithEmote('steps away from the bedside to escalate to a senior clinician after finding an abnormal ECG.', 'radio')
+    ],
+    rp_floor: [
+      formatRpWithEmote('kneels beside the patient on the ground and asks about their chest pain using SOCRATES.', 'talk'),
+      formatRpWithEmote('attaches continuous cardiac monitoring while kneeling on the ground and takes a full set of observations.', 'check'),
+      formatRpWithEmote('checks the patient\'s SpO₂ while kneeling on the ground before deciding whether supplemental oxygen is needed.', 'check'),
+      formatRpWithEmote('applies the 12-lead ECG while kneeling beside the patient on the ground.', 'check'),
+      formatRpWithEmote('asks the patient about aspirin allergies before considering aspirin administration.', 'talk'),
+      formatRpWithEmote('compares the current ECG against any previous ECG available.', 'notepad'),
+      formatRpWithEmote('stands up from beside the patient to escalate to a senior clinician after finding an abnormal ECG.', 'radio')
+    ]
+  },
+  care: {
+    rp: [
+      'checks for a response and normal breathing for no more than 10 seconds before starting CPR.',
+      'starts chest compressions at the centre of the chest, rate 100-120 per minute.',
+      'attaches the AED/defibrillator as soon as it is available and follows its prompts.',
+      'stands clear during rhythm analysis and shock delivery, then resumes compressions immediately.',
+      'swaps the compressor role roughly every 2 minutes to maintain compression quality.',
+      'considers the 4 Hs and 4 Ts while resuscitation continues.',
+      'obtains a 12-lead ECG and arranges urgent cardiology referral after return of spontaneous circulation.'
+    ],
+    rp_bed: [
+      formatRpWithEmote('checks for a response and normal breathing at the bedside for no more than 10 seconds before starting CPR.', 'check'),
+      formatRpWithEmote('starts chest compressions on the patient in the bed, rate 100-120 per minute.', 'cpr'),
+      formatRpWithEmote('attaches the AED/defibrillator at the bedside as soon as it is available and follows its prompts.', 'check'),
+      formatRpWithEmote('stands clear of the bed during rhythm analysis and shock delivery, then resumes compressions immediately.', 'press'),
+      formatRpWithEmote('swaps the compressor role at the bedside roughly every 2 minutes to maintain compression quality.', 'cpr'),
+      formatRpWithEmote('considers the 4 Hs and 4 Ts at the bedside while resuscitation continues.', 'notepad'),
+      formatRpWithEmote('obtains a 12-lead ECG at the bedside after return of spontaneous circulation.', 'check')
+    ],
+    rp_floor: [
+      formatRpWithEmote('checks for a response and normal breathing on the ground for no more than 10 seconds before starting CPR.', 'check'),
+      formatRpWithEmote('kneels over the patient on the ground and starts chest compressions, rate 100-120 per minute.', 'cpr'),
+      formatRpWithEmote('attaches the AED/defibrillator on the ground as soon as it is available and follows its prompts.', 'check'),
+      formatRpWithEmote('stands clear during rhythm analysis and shock delivery, then resumes compressions immediately.', 'press'),
+      formatRpWithEmote('swaps the compressor role on the ground roughly every 2 minutes to maintain compression quality.', 'cpr'),
+      formatRpWithEmote('considers the 4 Hs and 4 Ts while resuscitation continues on the ground.', 'notepad'),
+      formatRpWithEmote('obtains a 12-lead ECG on the ground after return of spontaneous circulation.', 'check')
+    ]
+  }
+};
+
+var currentCardiacCategory = 'assessment';
+var currentCardiacRPMode = 'slash';
+
+var cardiacChecklistData = {
+  assessment: [
+    'Introduce yourself and gain consent',
+    'SOCRATES chest pain history',
+    'Full set of observations including SpO₂',
+    '12-lead ECG within 10 minutes of contact',
+    'Oxygen only if SpO₂ below target range',
+    'Escalate red flags early'
+  ],
+  care: [
+    'Confirm unresponsive, not breathing normally',
+    'Start high-quality chest compressions immediately',
+    'Attach AED/defibrillator as soon as available',
+    'Minimise interruptions to compressions',
+    'Swap compressor role every 2 minutes',
+    'Consider the 4 Hs and 4 Ts',
+    'Post-ROSC: target SpO₂ 94-98%, 12-lead ECG'
+  ]
+};
+
+var cardiacQuestionsData = {
+  assessment: [
+    'Can you describe the pain — sharp, heavy, tight or crushing?',
+    'Does the pain move anywhere, such as your arm, jaw or back?',
+    'When did the pain start, and has anything made it better or worse?',
+    'Have you had chest pain like this before?',
+    'Are you allergic to aspirin?'
+  ],
+  care: [
+    'Can you hear me? Are you okay? (checking for a response)',
+    'Bystander: how long ago did they collapse?',
+    'Bystander: has anyone started CPR or used a defibrillator yet?',
+    'Does the patient have any known heart conditions?'
+  ]
+};
+
+function showCardiacCategory(category) {
+  if (!cardiacData[category]) category = 'assessment';
+  currentCardiacCategory = category;
+
+  document.querySelectorAll('.cardiac-panel').forEach(function(panel) {
+    panel.classList.toggle('active', panel.id === 'cardiac-' + category);
+  });
+
+  document.querySelectorAll('.cardcat').forEach(function(btn) {
+    var onclick = btn.getAttribute('onclick') || '';
+    btn.classList.toggle('active', onclick.indexOf("'" + category + "'") >= 0);
+  });
+
+  renderCardiacChecklist();
+  renderCardiacQuestions();
+  renderCardiacRP();
+}
+
+function renderCardiacChecklist() {
+  var container = document.getElementById('cardiacChecklist');
+  if (!container) return;
+  var items = cardiacChecklistData[currentCardiacCategory] || [];
+  container.innerHTML = items.map(function(item) {
+    return '<div class="check-row"><input type="checkbox"><span>' + escapeHtml(item) + '</span></div>';
+  }).join('');
+}
+
+function renderCardiacQuestions() {
+  var container = document.getElementById('cardiacQuestions');
+  if (!container) return;
+  var items = cardiacQuestionsData[currentCardiacCategory] || [];
+  container.innerHTML = items.map(function(q) {
+    return '<div class="question-row"><p>' + escapeHtml(q) + '</p></div>';
+  }).join('');
+}
+
+function setCardiacRPMode(mode) {
+  if (mode !== 'slash' && mode !== 'f8') mode = 'slash';
+  currentCardiacRPMode = mode;
+
+  document.querySelectorAll('.crpt').forEach(function(btn) {
+    var onclick = btn.getAttribute('onclick') || '';
+    btn.classList.toggle('active', onclick.indexOf("'" + mode + "'") >= 0);
+  });
+
+  renderCardiacRP();
+}
+
+function renderCardiacRP() {
+  var container = document.getElementById('cardiacRPList');
+  if (!container) return;
+
+  var category = cardiacData[currentCardiacCategory];
+  if (!category) { container.innerHTML = ''; return; }
+
+  var context = (typeof currentContext !== 'undefined' && currentContext) || 'bed';
+  var rpList = category['rp_' + context] || category.rp || [];
+
+  if (!rpList.length) {
+    container.innerHTML = '<p class="muted">No RP actions for this category.</p>';
+    return;
+  }
+
+  var mode = currentCardiacRPMode;
+  container.innerHTML = rpList.map(function(action, index) {
+    var prefix = mode === 'f8' ? 'ME ' : '/me ';
+    return (
+      '<div class="rp-item scene-rp-item">' +
+        '<span>' + (mode === 'f8' ? 'ME • F8' : '/me') + '</span>' +
+        '<p id="cardiacRP-' + index + '" class="rp-text">' + escapeHtml(prefix + action) + '</p>' +
+        '<button type="button" onclick="copyText(\'cardiacRP-' + index + '\')">Copy</button>' +
+      '</div>'
+    );
+  }).join('');
+}
+
+function initialiseCardiac() {
+  currentCardiacCategory = 'assessment';
+  currentCardiacRPMode = 'slash';
+  showCardiacCategory('assessment');
+}
+
+/* =========================================================
    STARTUP
 ========================================================= */
 
@@ -7775,9 +8533,6 @@ window.closeEdit =
 
 window.saveProfile =
   saveProfile;
-
-window.editStaff =
-  editStaff;
 
 window.refreshAdmin =
   refreshAdmin;
