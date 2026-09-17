@@ -9238,23 +9238,42 @@ var surgeryRoleActions = {
     "assists with transfer and gives the receiving team a concise summary of the procedure, dressings and immediate concerns."
   ],
   scrub: [
+    "washes and scrubs in for " + "{SURGERY} using a timed surgical scrub technique, then dries hands with a sterile towel.",
+    "gowns and gloves using a closed-glove technique, keeping hands above waist level and within the sterile zone.",
     "checks the sterile packs, instrument trays, indicator strips and specialist equipment for " + "{SURGERY} before opening.",
+    "opens each sterile pack using an aseptic non-touch technique, checking the sterility indicator has changed colour and the expiry date is valid.",
+    "sets up the back table and Mayo stand, arranging instruments in a logical sequence by stage of the procedure.",
+    "lays out packaged sutures, blades, swabs and specialist disposables onto the sterile field without breaking sterility.",
+    "tests the diathermy/cautery lead and suction tubing on the sterile field before connecting them to theatre equipment.",
+    "performs the initial instrument, swab and sharps count aloud with the circulating nurse before the surgeon starts.",
     "arranges the sterile field in a logical sequence and confirms critical instruments with the surgeon before incision.",
     "participates in the surgical time-out and confirms the sterile setup matches the planned procedure.",
     "passes instruments cleanly and anticipates the next stage while maintaining awareness of the sterile field.",
     "keeps used instruments organised, manages sharps safely and communicates when additional sterile equipment is required.",
     "maintains an accurate running count and raises any discrepancy immediately rather than allowing the procedure to continue unnoticed.",
+    "receives any excised tissue onto a sterile dish and confirms the specimen details with the surgeon before it leaves the field.",
     "prepares the closure instruments and requested dressings, then completes the final count with the circulating nurse.",
-    "helps secure and organise the final sterile dressing setup and confirms the field is clear before leaving theatre."
+    "helps secure and organise the final sterile dressing setup and confirms the field is clear before leaving theatre.",
+    "breaks down the instrument trays after " + "{SURGERY}, separating sharps for safe disposal before instruments go for decontamination.",
+    "double-checks no instruments, swabs or sharps remain on the trolley before it is wheeled out for cleaning."
   ],
   circulator: [
+    "checks the theatre is clean, equipment is in place and the correct case notes are available before " + "{SURGERY} begins.",
+    "confirms the patient's identity, consent and marked site against the notes on arrival in the anaesthetic room.",
     "checks the theatre environment, equipment, patient identity and documentation before the start of " + "{SURGERY}.",
     "confirms required equipment, implants, blood products or specialist items are available and records relevant checks.",
+    "helps position the patient and pads pressure points before the sterile field is established.",
+    "ties the scrub nurse's gown and adjusts theatre lighting and equipment positioning without entering the sterile field.",
     "supports the time-out by reading back patient, procedure and site details and documenting the team confirmation.",
     "opens additional sterile supplies without breaking the sterile field and responds to requests from the scrub team.",
     "monitors theatre workflow, equipment status and documentation while remaining ready to obtain additional supplies.",
     "records key procedural events and specimen or implant details as directed by the theatre team.",
+    "receives the labelled specimen container, checks the label against the request form and completes specimen documentation for pathology.",
+    "packages the specimen for transport per local protocol and arranges prompt collection by the lab.",
     "coordinates the final count, specimen labelling, documentation and transfer paperwork before the patient leaves theatre.",
+    "segregates sharps, clinical waste and used linen into the correct bins at the end of " + "{SURGERY}.",
+    "sends used instruments for decontamination and confirms replacement trays are ready for the next case.",
+    "coordinates the terminal clean of theatre and equipment between cases, checking surfaces and floors are decontaminated.",
     "helps coordinate safe transfer and communicates the documented procedure and outstanding tasks to recovery."
   ],
   anaesthetist: [
