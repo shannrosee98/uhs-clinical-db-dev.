@@ -29,14 +29,11 @@
     max-height: 90vh;
     overflow-y: auto;
   }
-  #headerSignupBtn, #headerLoginBtn {
-    position: relative !important;
-    z-index: 1000 !important;
-    pointer-events: auto !important;
-    cursor: pointer !important;
-  }
 </style>
 
+<style>
+.nav-group{margin:0 0 14px}.nav-group-title{padding:8px 12px 5px;font-size:10px;font-weight:800;letter-spacing:.12em;opacity:.6}.nav-group .nav{width:100%;margin:2px 0}.nav-group:first-child .nav-group-title{padding-top:0}
+</style>
 </head>
 <body class="uhs-branding-v2">
   <header class="topbar">
@@ -53,10 +50,7 @@
         <button id="topHandbookBtn" class="top-staff-btn" onclick="showSection('handbook-page')">📖 Handbook</button>
         <button id="editModeToggle" class="top-staff-btn edit-mode-btn" onclick="toggleEditMode()" style="display:none">🔧 Edit Mode</button>
         <div class="header-auth">
-          <button type="button" id="headerLoginBtn" class="header-btn login-btn" onclick="openAuth('login')">🔐 Login</button>
-          <button type="button" id="headerSignupBtn" class="header-btn signup-btn" onclick="openAuth('signup')">✨ Sign Up</button>
-          <button id="headerProfileBtn" class="header-btn profile-btn" onclick="showSection('account')" style="display:none">👤 My Profile</button>
-          <button id="headerAdminBtn" class="header-btn admin-btn" onclick="showSection('admin')" style="display:none">⚙ Admin</button>
+          <button id="headerAdminBtn" class="header-btn admin-btn" onclick="openAdminOrLogin()">⚙ Admin</button>
           <button id="headerLogoutBtn" class="header-btn logout-btn" onclick="logout()" style="display:none">🚪 Logout</button>
         </div>
       </div>
@@ -68,26 +62,41 @@
     <aside class="sidebar">
       <input id="search" type="search" placeholder="Search clinical topics…">
       <nav>
-        <button class="nav active" role="button" tabindex="0" data-section="dashboard">⌂ Dashboard</button>
-        <button class="nav" role="button" tabindex="0" data-section="abcde">✚ ABCDE</button>
-        <button class="nav" role="button" tabindex="0" data-section="blood">🩸 Blood & Transfusion</button>
-        <button class="nav" role="button" tabindex="0" data-section="cardiac">♥ Cardiac</button>
-        <button class="nav" role="button" tabindex="0" data-section="documentation">▤ Documentation</button>
-        <button class="nav" role="button" tabindex="0" data-section="emergencies">⚠ Emergencies</button>
-        <button class="nav" role="button" tabindex="0" data-section="emergency-mode">🚨 Emergency Mode</button>
-        <button class="nav" role="button" tabindex="0" data-section="fluids">💧 Fluids</button>
-        <button class="nav" role="button" tabindex="0" data-section="scenes">🚨 Incident Scenes</button>
-        <button class="nav" role="button" tabindex="0" data-section="meds">💊 Medications</button>
-        <button class="nav" role="button" tabindex="0" data-section="neuro">◎ Neurological</button>
-        <button class="nav" role="button" tabindex="0" data-section="observations">◉ Observations</button>
-        <button class="nav" role="button" tabindex="0" data-section="pain">🩹 Pain</button>
-        <button class="nav" role="button" tabindex="0" data-section="procedures">🩺 Procedures</button>
-        <button class="nav" role="button" tabindex="0" data-section="surgeries">🏥 Surgeries</button>
-        <button class="nav" role="button" tabindex="0" data-section="equipment">💰 Equipment</button>
-        <button class="nav" role="button" tabindex="0" data-section="respiratory">◌ Respiratory</button>
-        <button class="nav" role="button" tabindex="0" data-section="rp">/me RP Actions</button>
-        <button class="nav" role="button" tabindex="0" data-section="documents">📁 Documents</button>
-        <button class="nav" role="button" tabindex="0" data-section="trauma">✚ Trauma</button>
+        <div class="nav-group">
+          <div class="nav-group-title">HOME</div>
+          <button class="nav active" role="button" tabindex="0" data-section="dashboard">⌂ Dashboard</button>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-title">CLINICAL</div>
+          <button class="nav" role="button" tabindex="0" data-section="abcde">✚ ABCDE</button>
+          <button class="nav" role="button" tabindex="0" data-section="observations">◉ Observations</button>
+          <button class="nav" role="button" tabindex="0" data-section="cardiac">♥ Cardiac</button>
+          <button class="nav" role="button" tabindex="0" data-section="respiratory">◌ Respiratory</button>
+          <button class="nav" role="button" tabindex="0" data-section="trauma">✚ Trauma</button>
+          <button class="nav" role="button" tabindex="0" data-section="neuro">◎ Neurological</button>
+          <button class="nav" role="button" tabindex="0" data-section="pain">🩹 Pain</button>
+          <button class="nav" role="button" tabindex="0" data-section="blood">🩸 Blood &amp; Transfusion</button>
+          <button class="nav" role="button" tabindex="0" data-section="fluids">💧 Fluids</button>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-title">EMERGENCY &amp; PROCEDURES</div>
+          <button class="nav" role="button" tabindex="0" data-section="emergencies">⚠ Emergencies</button>
+          <button class="nav" role="button" tabindex="0" data-section="emergency-mode">🚨 Emergency Mode</button>
+          <button class="nav" role="button" tabindex="0" data-section="scenes">🚨 Incident Scenes</button>
+          <button class="nav" role="button" tabindex="0" data-section="procedures">🩺 Procedures</button>
+          <button class="nav" role="button" tabindex="0" data-section="surgeries">🏥 Surgeries</button>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-title">MEDICATIONS &amp; EQUIPMENT</div>
+          <button class="nav" role="button" tabindex="0" data-section="meds">💊 Medications</button>
+          <button class="nav" role="button" tabindex="0" data-section="equipment">🧰 Equipment</button>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-title">RP &amp; DOCUMENTS</div>
+          <button class="nav" role="button" tabindex="0" data-section="rp">/me RP Actions</button>
+          <button class="nav" role="button" tabindex="0" data-section="documentation">▤ Documentation</button>
+          <button class="nav" role="button" tabindex="0" data-section="documents">📁 Documents</button>
+        </div>
       </nav>
       <div class="side-note">
         <strong>RP only</strong>
@@ -2957,89 +2966,16 @@
 </section>
 
 
-<section id="account" class="section">
-  <div class="section-head">
-    <div class="tag">ACCOUNT</div><h2>My EMS RP Profile</h2>
-    <p>Your RP identity, rank, callsign, speciality and training.</p>
-  </div>
-  <div id="accountLoggedOut" class="account-box">
-    <h3>You're not signed in</h3>
-    <p>Create an account or sign in to access your profile.</p>
-    <button class="primary" onclick="openAuth('login')">Sign in</button>
-    <button class="secondary" onclick="openAuth('signup')">Create account</button>
-  </div>
-  <div id="profileView" class="profile-layout" style="display:none">
-    <article class="profile-card">
-      <img id="profilePicture" class="avatar" alt="Profile picture">
-      <h3 id="profileName">EMS Member</h3>
-      <p id="profileRank">Rank pending</p>
-      <div class="profile-badge" id="profileCallsign">CALLSIGN</div>
-      <p id="profileSpecialty"></p>
-    </article>
-    <article class="info">
-      <h3>Profile details</h3>
-      <div id="profileDetails"></div>
-      <div class="profile-tabs">
-        <button class="profile-tab active" data-profile-tab="overview" onclick="showProfileTab('overview')">👤 Overview</button>
-        <button class="profile-tab" data-profile-tab="adminjournal" onclick="showProfileTab('adminjournal')">🎓 Training</button>
-        <button class="profile-tab" data-profile-tab="privatejournal" onclick="showProfileTab('privatejournal')">🔒 Private Journal</button>
-      </div>
-      <div id="profileOverviewTab" class="profile-tab-panel">
-        <p class="profile-note">Your profile information and assigned competencies.</p>
-      </div>
-      <div id="profileAdminJournalTab" class="profile-tab-panel" style="display:none">
-        <div id="adminJournalGate" class="warning">Sign in to see your training record.</div>
-        <div id="adminJournalContent" style="display:none">
-          <div class="journal-header"><h3>My Training &amp; Development</h3><span class="private-label">STUDENT CHECKLIST</span></div>
-          <p class="muted">Tick off competencies as you complete them. This is pre-filled with the standard Pathway to Paramedic checklist — admins can also add feedback below.</p>
-          <div class="training-checklist">
-            <div class="checklist-heading"><strong>Training checklist</strong><button class="secondary" onclick="addTrainingItem()">+ Add item</button></div>
-            <div id="trainingChecklist"></div>
-          </div>
-          <div class="development-grid">
-            <div><label>What they are doing well<textarea id="staffStrengths" placeholder="Positive feedback, strengths and progress..."></textarea></label></div>
-            <div><label>What they need to work on<textarea id="staffDevelopment" placeholder="Skills, knowledge or behaviours to develop..."></textarea></label></div>
-          </div>
-          <button class="primary" onclick="saveStaffDevelopment()">Save training & development</button>
-        </div>
-      </div>
-      <div id="profilePrivateJournalTab" class="profile-tab-panel" style="display:none">
-        <div class="journal-header"><h3>🔒 My Private Journal</h3><span class="private-label">PRIVATE</span></div>
-        <p class="muted">This journal belongs to you. You choose whether an entry is kept private or sent to a selected admin.</p>
-        <textarea id="privateJournalText" class="journal-editor" placeholder="Write what you're feeling, how your shift went, what you're proud of, what is worrying you, or anything you want to get off your mind..."></textarea>
-        <div class="journal-actions">
-          <button class="primary" onclick="savePrivateJournal()">🔒 Save privately</button>
-          <select id="journalAdminRecipient"><option value="">Choose an admin to send to...</option></select>
-          <button class="secondary" onclick="sendPrivateJournalToAdmin()">✉ Send this entry to admin</button>
-        </div>
-        <div id="privateJournalEntries" class="journal-entries"></div>
-      </div>
-      <button class="primary" onclick="editOwnProfile()">Edit my profile</button>
-      <button class="secondary" onclick="logout()">Sign out</button>
-    </article>
-  </div>
-
-          <div class="pdf-doc-section">
-            <div class="pdf-doc-head">
-              <div class="tag">PDF DOCUMENT</div>
-              <label class="pdf-upload-btn" for="pdfInput-account">📄 Add Document</label>
-              <input type="file" id="pdfInput-account" accept="application/pdf,.pdf,application/vnd.openxmlformats-officedocument.presentationml.presentation,.pptx" onchange="handleDocPdf('account', this)" hidden>
-            </div>
-            <p class="pdf-doc-note">Upload a PDF or PPTX file and it will be displayed here as a reference document.</p>
-            <div id="pdfContent-account" class="pdf-content"></div>
-          </div></section>
-
 <section id="admin" class="section">
   <div class="section-head">
     <div class="tag">ADMIN PORTAL</div><h2>🛡 Admin Portal</h2>
-    <p>Manage all site content, staff, and settings from one place.</p>
+    <p>Manage site content and settings from one place.</p>
   </div>
   <div id="adminGate" class="warning">Admin access required. Sign in with an admin account.</div>
   <div id="adminPanel" style="display:none">
     
     <div class="scenario-tabs" style="margin-bottom:16px">
       <button class="admintab active" onclick="showAdminTab('dashboard')">📊 Dashboard</button>
-      <button class="admintab" onclick="showAdminTab('staff')">👥 Staff</button>
       <button class="admintab" onclick="showAdminTab('content')">📝 Content</button>
       <button class="admintab" onclick="showAdminTab('rp')">🎭 RP Actions</button>
       <button class="admintab" onclick="showAdminTab('medications')">💊 Medications</button>
@@ -3053,8 +2989,7 @@
     <!-- Dashboard -->
     <div id="adminDashTab" class="admin-panel active">
       <div class="dash-grid" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr))">
-        <div class="dash-card" onclick="showAdminTab('staff')"><span class="dash-icon">👥</span><h3>Staff</h3><p>Manage users, roles and permissions</p></div>
-        <div class="dash-card" onclick="showAdminTab('content')"><span class="dash-icon">📝</span><h3>Content</h3><p>Edit site content and guides</p></div>
+<div class="dash-card" onclick="showAdminTab('content')"><span class="dash-icon">📝</span><h3>Content</h3><p>Edit site content and guides</p></div>
         <div class="dash-card" onclick="showAdminTab('rp')"><span class="dash-icon">🎭</span><h3>RP Actions</h3><p>Manage default RP library</p></div>
         <div class="dash-card" onclick="showAdminTab('medications')"><span class="dash-icon">💊</span><h3>Medications</h3><p>Update medication information</p></div>
         <div class="dash-card" onclick="showAdminTab('equipment')"><span class="dash-icon">💰</span><h3>Equipment</h3><p>Manage equipment library</p></div>
@@ -3063,17 +2998,6 @@
         <div class="dash-card" onclick="showAdminTab('backup')"><span class="dash-icon">📥</span><h3>Backup</h3><p>Export/import site data</p></div>
       </div>
     </div>
-
-    <!-- Staff -->
-    <div id="adminStaffTab" class="admin-panel" style="display:none">
-      <div class="section-head"><h2>Staff Management</h2><p>Search and manage user profiles.</p></div>
-      <div class="admin-toolbar">
-        <input id="adminSearch" type="search" placeholder="Search staff by name, email, callsign or city">
-        <button class="primary" onclick="refreshAdmin()">Refresh</button>
-      </div>
-      <div id="staffList" class="staff-list"></div>
-    </div>
-
     <!-- Content Editor -->
     <div id="adminContentTab" class="admin-panel" style="display:none">
       <div class="section-head"><h2>Content Editor</h2><p>Click any section below to open the rich text editor and edit its content.</p></div>
@@ -3321,48 +3245,13 @@
         <label>Email<input id="loginEmail" type="email" autocomplete="email"></label>
         <label>Password<input id="loginPassword" type="password" autocomplete="current-password"></label>
         <button class="primary full" type="submit">Sign in</button>
-        <p>New member? <button class="link-btn" type="button" onclick="openAuth('signup')">Create an account</button></p>
       </form>
     </div>
-    <div id="authSignup">
-      <form onsubmit="signup();return false">
-        <div class="tag">NEW STAFF ACCOUNT</div><h2>Create account</h2>
-        <label>Discord username<input id="signupDiscord" type="text" placeholder="e.g. username or user#1234"></label>
-        <label>Email<input id="signupEmail" type="email" autocomplete="email"></label>
-        <label>Password<input id="signupPassword" type="password" autocomplete="new-password"></label>
-        <label>Date of birth<input id="signupDob" type="date"></label>
-        <label>RP display name<input id="signupName" type="text" placeholder="Your character/staff name"></label>
-        <button class="primary full" type="submit">Create account</button>
-        <p>Already registered? <button class="link-btn" type="button" onclick="openAuth('login')">Sign in</button></p>
-      </form>
-    </div>
-    <div id="authMessage" class="auth-message"></div>
+<div id="authMessage" class="auth-message"></div>
   </div>
 </div>
 
-<div id="editModal" class="modal" aria-hidden="true">
-  <div class="modal-card wide">
-    <button class="modal-close" onclick="closeEdit()">×</button>
-    <div class="tag">PROFILE EDITOR</div><h2>Edit Staff Profile</h2>
-    <input id="editId" type="hidden">
-    <div class="form-grid">
-      <label>Display name<input id="editName"></label>
-      <label>Email<input id="editEmail" type="email"></label>
-      <label>Date of birth<input id="editDob" type="date"></label>
-      <label>Side<select id="editStaffSide"><option value="paramedic">🚑 Paramedic</option><option value="hospital">🏥 Hospital Staff</option></select></label>
-      <label>Rank<select id="editRank"><option value="">Select rank</option></select></label>
-      <label>Callsign<input id="editCallsign" placeholder="e.g. A12"></label>
-      <label>Specialty<input id="editSpecialty" placeholder="e.g. Emergency Care"></label>
-      <label>Discord username<input id="editDiscord" placeholder="e.g. username or user#1234"></label>
-      <label>Profile picture URL<input id="editPicture" placeholder="https://..."></label>
-      <label>Role<select id="editRole"><option value="member">Member</option><option value="admin">Admin</option></select></label>
-    </div>
-    <label>Training / competencies<textarea id="editTraining" placeholder="One item per line"></textarea></label>
-    <label>Notes<textarea id="editNotes" placeholder="Internal RP staff notes"></textarea></label>
-    <button class="primary" onclick="saveProfile()">Save profile</button>
-    <button class="secondary" onclick="closeEdit()">Cancel</button>
-  </div>
-</div>
+
 
       
 <section id="handbook-page" class="section">

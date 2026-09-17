@@ -86,19 +86,11 @@ async function api(url, options = {}) {
 function openAuth(mode = 'login') {
   const modal = document.getElementById('authModal');
   const loginBox = document.getElementById('authLogin');
-  const signupBox = document.getElementById('authSignup');
   const message = document.getElementById('authMessage');
 
   if (!modal) return;
 
-  if (loginBox) {
-    loginBox.style.display = mode === 'login' ? '' : 'none';
-  }
-
-  if (signupBox) {
-    signupBox.style.display = mode === 'signup' ? '' : 'none';
-  }
-
+  if (loginBox) loginBox.style.display = '';
   if (message) {
     message.textContent = '';
     message.className = 'auth-message';
@@ -108,10 +100,7 @@ function openAuth(mode = 'login') {
   modal.setAttribute('aria-hidden', 'false');
 
   setTimeout(() => {
-    const field = document.getElementById(
-      mode === 'login' ? 'loginEmail' : 'signupDiscord'
-    );
-
+    const field = document.getElementById('loginEmail');
     if (field) field.focus();
   }, 50);
 }
@@ -140,84 +129,12 @@ function setAuthMessage(message, type = '') {
   el.textContent = message;
   el.className = `auth-message ${type}`.trim();
 }
-
-async function signup() {
-  const email =
-    (document.getElementById('signupEmail')?.value || '').trim();
-
-  const password =
-    document.getElementById('signupPassword')?.value || '';
-
-  const dob =
-    document.getElementById('signupDob')?.value || '';
-
-  const displayName =
-    (document.getElementById('signupName')?.value || '').trim();
-
-  const discordUsername =
-    (document.getElementById('signupDiscord')?.value || '').trim();
-
-  if (!email || !password || !dob || !displayName) {
-    setAuthMessage('Please complete all fields.', 'error');
-    return;
-  }
-
-  if (password.length < 10) {
-    setAuthMessage(
-      'Password must be at least 10 characters.',
-      'error'
-    );
-    return;
-  }
-
-  setAuthMessage('Creating your account...');
-
-  try {
-    const result = await api('/api/auth/signup', {
-      method: 'POST',
-      body: {
-        email,
-        password,
-        displayName,
-        dob,
-        discordUsername: discordUsername || undefined
-      }
-    });
-
-    currentUser = result.user || null;
-
-    closeAuth();
-    updateAuthUI();
-    renderProfile();
-
-    showSection('account');
-
-    if (currentUser) {
-      await loadStaff();
-      await loadAdminList();
-      initRpSystem();
-    }
-
-  } catch (err) {
-    setAuthMessage(
-      err.message || 'Unable to create account.',
-      'error'
-    );
-  }
-}
-
 async function login() {
-  const email =
-    (document.getElementById('loginEmail')?.value || '').trim();
-
-  const password =
-    document.getElementById('loginPassword')?.value || '';
+  const email = (document.getElementById('loginEmail')?.value || '').trim();
+  const password = document.getElementById('loginPassword')?.value || '';
 
   if (!email || !password) {
-    setAuthMessage(
-      'Enter your email and password.',
-      'error'
-    );
+    setAuthMessage('Enter your email and password.', 'error');
     return;
   }
 
@@ -226,32 +143,27 @@ async function login() {
   try {
     const result = await api('/api/auth/login', {
       method: 'POST',
-      body: {
-        email,
-        password
-      }
+      body: { email, password }
     });
 
     currentUser = result.user || null;
-
     closeAuth();
     updateAuthUI();
-    renderProfile();
-
-    showSection('account');
 
     if (currentUser) {
+      if (currentUser.role === 'admin') showSection('admin');
       await loadStaff();
       await loadAdminList();
       initRpSystem();
     }
-
   } catch (err) {
-    setAuthMessage(
-      err.message || 'Email or password is incorrect.',
-      'error'
-    );
+    setAuthMessage(err.message || 'Email or password is incorrect.', 'error');
   }
+}
+
+function openAdminOrLogin() {
+  if (currentUser?.role === 'admin') showSection('admin');
+  else openAuth('login');
 }
 
 async function logout() {
@@ -286,7 +198,6 @@ async function loadCurrentUser() {
   updateAuthUI();
 
   if (currentUser) {
-    renderProfile();
     await loadStaff();
     await loadAdminList();
     initRpSystem();
@@ -295,56 +206,21 @@ async function loadCurrentUser() {
 
 function updateAuthUI() {
   const loggedIn = !!currentUser;
-  const admin =
-    loggedIn && currentUser.role === 'admin';
+  const admin = loggedIn && currentUser.role === 'admin';
 
   const setVisible = (id, visible) => {
     const el = document.getElementById(id);
-
-    if (el) {
-      el.style.display = visible ? '' : 'none';
-    }
+    if (el) el.style.display = visible ? '' : 'none';
   };
 
-  setVisible('headerLoginBtn', !loggedIn);
-  setVisible('headerSignupBtn', !loggedIn);
+  setVisible('headerAdminBtn', true);
+  setVisible('headerLogoutBtn', admin);
 
-  setVisible('headerProfileBtn', loggedIn);
-  setVisible('headerLogoutBtn', loggedIn);
+  const gate = document.getElementById('adminGate');
+  const panel = document.getElementById('adminPanel');
 
-  setVisible('headerAdminBtn', admin);
-
-  const loggedOut =
-    document.getElementById('accountLoggedOut');
-
-  const profile =
-    document.getElementById('profileView');
-
-  if (loggedOut) {
-    loggedOut.style.display =
-      loggedIn ? 'none' : '';
-  }
-
-  if (profile) {
-    profile.style.display =
-      loggedIn ? '' : 'none';
-  }
-
-  const gate =
-    document.getElementById('adminGate');
-
-  const panel =
-    document.getElementById('adminPanel');
-
-  if (gate) {
-    gate.style.display =
-      admin ? 'none' : '';
-  }
-
-  if (panel) {
-    panel.style.display =
-      admin ? '' : 'none';
-  }
+  if (gate) gate.style.display = admin ? 'none' : '';
+  if (panel) panel.style.display = admin ? '' : 'none';
 }
 
 /* =========================================================
@@ -376,19 +252,8 @@ function showSection(id) {
 
     });
 
-  if (id === 'account') {
-    renderProfile();
-  }
-
   if (id === 'staff' && currentUser) {
     loadStaff();
-  }
-
-  if (
-    id === 'admin' &&
-    currentUser?.role === 'admin'
-  ) {
-    refreshAdmin();
   }
 
   if (id === 'scenes') {
@@ -436,316 +301,6 @@ function showSection(id) {
     initRichEditor('handbook-editor', '/api/handbook');
   }
 }
-
-/* =========================================================
-   PROFILE
-========================================================= */
-
-function renderProfile() {
-  if (!currentUser) return;
-
-  const setText = (id, value) => {
-    const el = document.getElementById(id);
-
-    if (el) {
-      el.textContent = value || '';
-    }
-  };
-
-  setText(
-    'profileName',
-    currentUser.displayName ||
-    currentUser.display_name ||
-    'NHS Member'
-  );
-
-  setText(
-    'profileRank',
-    currentUser.rank ||
-    'Rank pending'
-  );
-
-  setText(
-    'profileCallsign',
-    currentUser.callsign ||
-    'CALLSIGN'
-  );
-
-  setText(
-    'profileSpecialty',
-    currentUser.specialty || ''
-  );
-
-  const picture =
-    document.getElementById('profilePicture');
-
-  if (picture) {
-    const pictureUrl =
-      currentUser.pictureUrl ||
-      currentUser.picture_url;
-
-    if (pictureUrl) {
-      picture.src = pictureUrl;
-      picture.style.display = '';
-
-    } else {
-      picture.removeAttribute('src');
-      picture.style.display = 'none';
-    }
-  }
-
-  const details =
-    document.getElementById('profileDetails');
-
-  if (details) {
-    details.innerHTML = `
-      <p>
-        <strong>Discord username:</strong>
-        ${escapeHtml(currentUser.discordUsername || 'Not set')}
-      </p>
-
-      <p>
-        <strong>Date of birth:</strong>
-        ${escapeHtml(currentUser.dob || '')}
-      </p>
-
-      <p>
-        <strong>Role:</strong>
-        ${escapeHtml(currentUser.role || '')}
-      </p>
-
-      <p>
-        <strong>Rank:</strong>
-        ${escapeHtml(currentUser.rank || 'Pending')}
-      </p>
-
-      <p>
-        <strong>Callsign:</strong>
-        ${escapeHtml(
-          currentUser.callsign || 'Not assigned'
-        )}
-      </p>
-
-      <p>
-        <strong>Specialty:</strong>
-        ${escapeHtml(
-          currentUser.specialty || 'Not assigned'
-        )}
-      </p>
-    `;
-  }
-}
-
-function editOwnProfile() {
-  if (!currentUser) return;
-
-  openEditWithUser(currentUser);
-}
-
-function openEditWithUser(user) {
-  const setValue = (id, value) => {
-    const el = document.getElementById(id);
-
-    if (el) {
-      el.value = value ?? '';
-    }
-  };
-
-  setValue(
-    'editId',
-    user.id
-  );
-
-  setValue(
-    'editName',
-    user.displayName ||
-    user.display_name
-  );
-
-  setValue(
-    'editEmail',
-    user.email
-  );
-
-  setValue(
-    'editDob',
-    user.dob
-  );
-
-  setValue('editStaffSide', user.staff_side || user.staffSide || 'paramedic');
-  populateRankSelect(user.rank || '', user.staff_side || user.staffSide || 'paramedic');
-  setValue(
-    'editRank',
-    user.rank
-  );
-
-  setValue(
-    'editCallsign',
-    user.callsign
-  );
-
-  setValue(
-    'editSpecialty',
-    user.specialty
-  );
-
-  setValue(
-    'editDiscord',
-    user.discordUsername ||
-    user.discord_username
-  );
-
-  setValue(
-    'editPicture',
-    user.pictureUrl ||
-    user.picture_url
-  );
-
-  setValue(
-    'editRole',
-    user.role || 'member'
-  );
-
-  setValue(
-    'editTraining',
-    Array.isArray(user.training)
-      ? user.training.join('\n')
-      : ''
-  );
-
-  const modal =
-    document.getElementById('editModal');
-
-  if (modal) {
-    modal.style.display = 'flex';
-
-    modal.setAttribute(
-      'aria-hidden',
-      'false'
-    );
-  }
-}
-
-function closeEdit() {
-  const modal =
-    document.getElementById('editModal');
-
-  if (!modal) return;
-
-  modal.style.display = 'none';
-
-  modal.setAttribute(
-    'aria-hidden',
-    'true'
-  );
-}
-
-async function saveProfile() {
-  const id =
-    document.getElementById('editId')?.value;
-
-  if (!id || !currentUser) return;
-
-  const training =
-    (
-      document.getElementById('editTraining')
-        ?.value || ''
-    )
-      .split('\n')
-      .map(x => x.trim())
-      .filter(Boolean);
-
-  const body = {
-    displayName:
-      document
-        .getElementById('editName')
-        ?.value.trim() || '',
-
-    email:
-      document
-        .getElementById('editEmail')
-        ?.value.trim() || '',
-
-    dob:
-      document
-        .getElementById('editDob')
-        ?.value || '',
-
-    rank:
-      document
-        .getElementById('editRank')
-        ?.value.trim() || '',
-
-    staffSide:
-      document
-        .getElementById('editStaffSide')
-        ?.value || 'paramedic',
-
-    callsign:
-      document
-        .getElementById('editCallsign')
-        ?.value.trim() || '',
-
-    specialty:
-      document
-        .getElementById('editSpecialty')
-        ?.value.trim() || '',
-
-    discordUsername:
-      document
-        .getElementById('editDiscord')
-        ?.value.trim() || null,
-
-    pictureUrl:
-      document
-        .getElementById('editPicture')
-        ?.value.trim() || null,
-
-    role:
-      currentUser.role === 'admin'
-        ? (
-            document
-              .getElementById('editRole')
-              ?.value || 'member'
-          )
-        : currentUser.role,
-
-    training
-  };
-
-  try {
-    const result =
-      await api(
-        `/api/staff/${encodeURIComponent(id)}`,
-        {
-          method: 'PATCH',
-          body
-        }
-      );
-
-    currentUser =
-      result.user || currentUser;
-
-    closeEdit();
-
-    updateAuthUI();
-    renderProfile();
-
-    await loadStaff();
-
-    alert('Profile saved.');
-
-  } catch (err) {
-    alert(
-      err.message ||
-      'Unable to save profile.'
-    );
-  }
-}
-
-/* =========================================================
-   STAFF
-========================================================= */
 
 async function loadStaff() {
   if (!currentUser) return;
@@ -3126,7 +2681,7 @@ function initialiseDocGuides() {
    Only admins can delete. Files survive redeploys.
 ========================================================= */
 
-const DOC_SECTIONS = ["hart", "hems", "training", "staff-handbook", "equipment", "docs", "slides", "abcde", "blood", "cardiac", "dashboard", "emergencies", "fluids", "meds", "neuro", "observations", "pain", "procedures", "respiratory", "rp", "scenes", "trauma", "account", "admin"];
+const DOC_SECTIONS = ["hart", "hems", "training", "staff-handbook", "equipment", "docs", "slides", "abcde", "blood", "cardiac", "dashboard", "emergencies", "fluids", "meds", "neuro", "observations", "pain", "procedures", "respiratory", "rp", "scenes", "trauma", "admin"];
 
 function arrayBufferToBase64(buffer) {
   const bytes = new Uint8Array(buffer);
@@ -7134,7 +6689,6 @@ async function loadAdminList() {
   }
 
   populateAdminSelect('bodycamRecipient');
-  populateAdminSelect('journalAdminRecipient');
 }
 
 function populateAdminSelect(id) {
@@ -7782,295 +7336,6 @@ function toggleMed(button) {
 }
 
 /* =========================================================
-   PROFILE TABS (Overview / Training / Private Journal)
-========================================================= */
-
-function showProfileTab(tab) {
-  var validTabs = ['overview', 'adminjournal', 'privatejournal'];
-  if (!validTabs.includes(tab)) tab = 'overview';
-
-  document.querySelectorAll('.profile-tab-panel').forEach(function(panel) {
-    var map = {
-      overview: 'profileOverviewTab',
-      adminjournal: 'profileAdminJournalTab',
-      privatejournal: 'profilePrivateJournalTab'
-    };
-    panel.style.display = panel.id === map[tab] ? 'block' : 'none';
-  });
-
-  document.querySelectorAll('.profile-tab').forEach(function(btn) {
-    btn.classList.toggle('active', btn.dataset.profileTab === tab);
-  });
-
-  if (tab === 'adminjournal') {
-    loadStaffDevelopment();
-  }
-
-  if (tab === 'privatejournal') {
-    loadJournalEntries();
-  }
-}
-
-/* =========================================================
-   TRAINING & DEVELOPMENT CHECKLIST
-
-   Backed by GET/PUT /api/staff/:id/development. Students can
-   tick their own checklist; strengths/development/admin notes
-   are supervisor feedback and are only writable by an admin
-   (the server preserves the existing values for a self-save).
-========================================================= */
-
-var DEFAULT_TRAINING_CHECKLIST = [
-  'Blue Light Trained',
-  'Professional Radio Communications',
-  'MDT',
-  'Assisting a Paramedic',
-  'Uniform Standards',
-  'Command Structure & Escalation Procedures',
-  'Patient Assessment (ABCDE)',
-  'X-Ray & MRI',
-  'Patient Observation — HR, BP, RR, SpO₂, BM, Temp: basic HIGH/LOW',
-  'ECG',
-  'CPR',
-  'Airway Management — Head Tilt, OPA & NPA',
-  'Medication Management — correct medications (dose not required)',
-  'Burn Assessment & Burn Care',
-  'Wound Assessment & Wound Care',
-  'Bleeding & Haemorrhage Management',
-  'Management of Unconscious Patients',
-  'Scope of Clinical Practice',
-  'Clinical Handover (ATMIST/SBAR)',
-  'Professional Standards & Conduct',
-  'Recognition of Life Extinct Procedures (ROLE/DOA)',
-  'Major Incident Awareness',
-  'Ten Second Triage'
-];
-
-var currentTrainingChecklist = [];
-var currentDevelopmentRecord = null;
-
-async function loadStaffDevelopment() {
-  var gate = document.getElementById('adminJournalGate');
-  var content = document.getElementById('adminJournalContent');
-
-  if (!currentUser) {
-    if (gate) gate.style.display = 'block';
-    if (content) content.style.display = 'none';
-    return;
-  }
-
-  if (gate) gate.style.display = 'none';
-  if (content) content.style.display = 'block';
-
-  try {
-    var result = await api('/api/staff/' + encodeURIComponent(currentUser.id) + '/development');
-    currentDevelopmentRecord = result.development || {};
-  } catch (err) {
-    console.error('Unable to load training record:', err);
-    currentDevelopmentRecord = {};
-  }
-
-  var checklist = currentDevelopmentRecord.checklist;
-  currentTrainingChecklist = (Array.isArray(checklist) && checklist.length)
-    ? checklist.map(function(item) { return { text: item.text || '', done: !!item.done }; })
-    : DEFAULT_TRAINING_CHECKLIST.map(function(text) { return { text: text, done: false }; });
-
-  renderTrainingChecklist();
-
-  var strengths = document.getElementById('staffStrengths');
-  var development = document.getElementById('staffDevelopment');
-  if (strengths) strengths.value = currentDevelopmentRecord.strengths || '';
-  if (development) development.value = currentDevelopmentRecord.development || '';
-}
-
-function renderTrainingChecklist() {
-  var container = document.getElementById('trainingChecklist');
-  if (!container) return;
-
-  container.innerHTML = currentTrainingChecklist.map(function(item, i) {
-    return (
-      '<div class="training-item">' +
-        '<input type="checkbox" ' + (item.done ? 'checked' : '') + ' onchange="toggleTrainingItem(' + i + ')">' +
-        '<input type="text" value="' + escapeHtml(item.text) + '" onchange="updateTrainingItemText(' + i + ', this.value)">' +
-        '<button type="button" class="danger-small" onclick="removeTrainingItem(' + i + ')">✖</button>' +
-      '</div>'
-    );
-  }).join('');
-}
-
-function addTrainingItem() {
-  currentTrainingChecklist.push({ text: 'New competency', done: false });
-  renderTrainingChecklist();
-}
-
-function toggleTrainingItem(index) {
-  if (!currentTrainingChecklist[index]) return;
-  currentTrainingChecklist[index].done = !currentTrainingChecklist[index].done;
-}
-
-function updateTrainingItemText(index, value) {
-  if (!currentTrainingChecklist[index]) return;
-  currentTrainingChecklist[index].text = value;
-}
-
-function removeTrainingItem(index) {
-  currentTrainingChecklist.splice(index, 1);
-  renderTrainingChecklist();
-}
-
-async function saveStaffDevelopment() {
-  if (!currentUser) return;
-
-  var strengths = document.getElementById('staffStrengths')?.value || '';
-  var development = document.getElementById('staffDevelopment')?.value || '';
-
-  try {
-    await api('/api/staff/' + encodeURIComponent(currentUser.id) + '/development', {
-      method: 'PUT',
-      body: {
-        checklist: currentTrainingChecklist,
-        strengths: strengths,
-        development: development,
-        adminNotes: currentDevelopmentRecord?.admin_notes || ''
-      }
-    });
-    showToast('Training & development saved', 'success');
-  } catch (err) {
-    showToast(err.message || 'Unable to save training record', 'error');
-  }
-}
-
-/* =========================================================
-   PRIVATE JOURNAL
-========================================================= */
-
-async function loadJournalEntries() {
-  var container = document.getElementById('privateJournalEntries');
-  if (!container || !currentUser) return;
-
-  try {
-    var result = await api('/api/journal');
-    var entries = result.entries || [];
-
-    if (!entries.length) {
-      container.innerHTML = '<p class="muted" style="font-size:12px">No journal entries yet.</p>';
-      return;
-    }
-
-    container.innerHTML = entries.map(function(entry) {
-      var date = entry.created_at ? new Date(entry.created_at).toLocaleString() : '';
-      return (
-        '<div class="journal-entry">' +
-          '<div class="journal-entry-meta">' + escapeHtml(date) + (entry.sent_to ? ' — sent to admin' : ' — private') + '</div>' +
-          '<p>' + escapeHtml(entry.body) + '</p>' +
-        '</div>'
-      );
-    }).join('');
-  } catch (err) {
-    console.error('Unable to load journal entries:', err);
-    container.innerHTML = '<p class="muted" style="font-size:12px">Unable to load journal entries.</p>';
-  }
-}
-
-async function savePrivateJournal() {
-  var text = document.getElementById('privateJournalText')?.value.trim();
-  if (!text) return;
-
-  try {
-    await api('/api/journal', {
-      method: 'POST',
-      body: { body: text, sendTo: null }
-    });
-    document.getElementById('privateJournalText').value = '';
-    showToast('Journal entry saved privately', 'success');
-    loadJournalEntries();
-  } catch (err) {
-    showToast(err.message || 'Unable to save journal entry', 'error');
-  }
-}
-
-async function sendPrivateJournalToAdmin() {
-  var text = document.getElementById('privateJournalText')?.value.trim();
-  var adminId = document.getElementById('journalAdminRecipient')?.value;
-
-  if (!text) return;
-  if (!adminId) {
-    showToast('Choose an admin to send this to first', 'error');
-    return;
-  }
-
-  try {
-    await api('/api/journal', {
-      method: 'POST',
-      body: { body: text, sendTo: adminId }
-    });
-    document.getElementById('privateJournalText').value = '';
-    showToast('Journal entry sent to admin', 'success');
-    loadJournalEntries();
-  } catch (err) {
-    showToast(err.message || 'Unable to send journal entry', 'error');
-  }
-}
-
-/* =========================================================
-   ADMIN — STAFF DIRECTORY
-
-   Read-only searchable staff directory backed by the existing
-   GET /api/staff endpoint. Full profile editing already exists
-   for a user's own profile (editOwnProfile/saveProfile); an
-   admin "edit another user" flow is a separate, larger feature
-   and isn't wired up here.
-========================================================= */
-
-var adminStaffCache = [];
-
-async function refreshAdmin() {
-  try {
-    var result = await api('/api/staff');
-    adminStaffCache = result.staff || [];
-  } catch (err) {
-    console.error('Unable to load staff directory:', err);
-    adminStaffCache = [];
-  }
-  renderAdmin();
-}
-
-function renderAdmin() {
-  var container = document.getElementById('staffList');
-  if (!container) return;
-
-  var query = (document.getElementById('adminSearch')?.value || '').toLowerCase();
-
-  var filtered = adminStaffCache.filter(function(u) {
-    if (!query) return true;
-    return [u.display_name, u.callsign, u.rank, u.specialty]
-      .filter(Boolean)
-      .some(function(field) { return String(field).toLowerCase().includes(query); });
-  });
-
-  if (!filtered.length) {
-    container.innerHTML = '<div class="notice">No staff found.</div>';
-    return;
-  }
-
-  container.innerHTML = filtered.map(function(u) {
-    return (
-      '<article class="staff-card">' +
-        (u.picture_url
-          ? '<img class="staff-avatar" src="' + escapeHtml(u.picture_url) + '" alt="">'
-          : '<div class="staff-avatar staff-avatar-empty">👤</div>') +
-        '<div>' +
-          '<h3>' + escapeHtml(u.display_name || 'NHS Member') + '</h3>' +
-          '<p>' + escapeHtml(u.rank || 'Rank pending') + '</p>' +
-          '<div class="profile-badge">' + escapeHtml(u.callsign || 'CALLSIGN') + '</div>' +
-          '<small>' + escapeHtml(u.specialty || 'No specialty assigned') + '</small>' +
-        '</div>' +
-      '</article>'
-    );
-  }).join('');
-}
-
-/* =========================================================
    CARDIAC ASSESSMENT & CARE — RP LIBRARY
 
    Mirrors the scene/procedure RP pattern (rp / rp_bed /
@@ -8395,15 +7660,6 @@ document.addEventListener(
         renderStaff
       );
 
-    document
-      .getElementById(
-        'adminSearch'
-      )
-      ?.addEventListener(
-        'input',
-        renderAdmin
-      );
-
     /*
       Auth modal background click
     */
@@ -8423,27 +7679,6 @@ document.addEventListener(
 
         }
       );
-
-    /*
-      Edit modal background click
-    */
-
-    document
-      .getElementById('editModal')
-      ?.addEventListener(
-        'click',
-        event => {
-
-          if (
-            event.target.id ===
-            'editModal'
-          ) {
-            closeEdit();
-          }
-
-        }
-      );
-
     /*
       Escape closes modals
     */
@@ -8456,7 +7691,6 @@ document.addEventListener(
           event.key === 'Escape'
         ) {
           closeAuth();
-          closeEdit();
         }
 
       }
@@ -8513,8 +7747,6 @@ window.openAuth =
 window.closeAuth =
   closeAuth;
 
-window.signup =
-  signup;
 
 window.login =
   login;
@@ -8525,44 +7757,23 @@ window.logout =
 window.showSection =
   showSection;
 
-window.editOwnProfile =
-  editOwnProfile;
+window.openAdminOrLogin =
+  openAdminOrLogin;
 
-window.closeEdit =
-  closeEdit;
 
-window.saveProfile =
-  saveProfile;
 
-window.refreshAdmin =
-  refreshAdmin;
+
 
 window.showStaffTab =
   showStaffTab;
 
-window.addTrainingItem =
-  addTrainingItem;
 
-window.toggleTrainingItem =
-  toggleTrainingItem;
 
-window.updateTrainingItemText =
-  updateTrainingItemText;
 
-window.removeTrainingItem =
-  removeTrainingItem;
 
-window.saveStaffDevelopment =
-  saveStaffDevelopment;
 
-window.showProfileTab =
-  showProfileTab;
 
-window.savePrivateJournal =
-  savePrivateJournal;
 
-window.sendPrivateJournalToAdmin =
-  sendPrivateJournalToAdmin;
 
 window.toggleMed =
   toggleMed;
