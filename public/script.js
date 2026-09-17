@@ -868,6 +868,601 @@ window.cmsApply = cmsApply;
 
 /* ---- Google Slides URL helper ---- */
 
+/* =========================================================
+   INCIDENT SCENE DATA
+   Restored after the Phase 1 scene UI cleanup. The scene
+   renderer still depends on this built-in data set.
+========================================================= */
+
+const sceneData = {
+
+  rtc: {
+    slideUrl: '',
+
+    checklist: [
+      'Confirm the scene is safe before approaching — check for traffic, fuel leaks, fire, airbag deployment and electrical hazards.',
+      'Assess the mechanism of injury and vehicle damage — estimate speed, direction of impact, rollover/ejection and occupant position.',
+      'Check for catastrophic external bleeding and apply direct pressure, haemostatic gauze or tourniquet as appropriate.',
+      'Begin a structured <C>ABCDE assessment and reassess after every intervention.',
+      'Assess airway and consider cervical-spine risk — manually stabilise the head if spinal injury is suspected.',
+      'Assess breathing, chest movement, respiratory effort and signs of tension/pneumothorax or flail segment.',
+      'Check pulse, blood pressure, skin colour, temperature, capillary refill and signs of shock — do not rely on a single BP reading.',
+      'Assess disability: GCS/AVPU, pupil size and reaction, limb movement, glucose level.',
+      'Expose only as required to identify injuries while maintaining dignity and preventing hypothermia.',
+      'Systematically assess head, neck, chest, abdomen, pelvis and all four limbs — logroll if spinal precautions allow.',
+      'Apply splints to suspected fractures and recheck distal neurovascular status after splinting.',
+      'Record a full set of observations (HR, BP, RR, SpO2, GCS, temperature, pain score) and repeat after every intervention.',
+      'Reassess observations and clinical status after treatment — watch for deterioration trends.',
+      'Prepare a structured trauma handover including mechanism, injuries, observations, treatment given and response.'
+    ],
+
+    questions: [
+      'Can you tell me your name and what happened today?',
+      'Were you the driver or a passenger in the vehicle?',
+      'Were you wearing a seatbelt at the time of the crash?',
+      'Approximately how fast was the vehicle travelling when the crash happened?',
+      'Did the vehicle roll over or were you ejected from it?',
+      'Did you hit your head inside the vehicle?',
+      'Did you lose consciousness at any point, even briefly?',
+      'Do you have any neck or back pain, numbness or tingling?',
+      'Where exactly is your pain — point to every place that hurts?',
+      'Do you feel short of breath or is it painful to breathe deeply?',
+      'Do you feel dizzy, faint or sick to your stomach?',
+      'Do you have any pain or discomfort in your tummy or pelvis?',
+      'Are you taking any regular medication — especially blood thinners like warfarin, apixaban or clopidogrel?',
+      'Do you have any allergies to medications or anything else?',
+      'Do you have any medical conditions like diabetes, epilepsy or heart problems?',
+      'What is your pain level on a scale of 0 to 10 right now?'
+    ],
+
+    rp: [
+      'approaches the RTC scene after confirming it is safe to enter and begins assessing the mechanism of injury and vehicle damage.',
+      'checks the patient for catastrophic external bleeding before beginning a structured ABCDE assessment with spinal precautions.',
+      'manually stabilises the patient\'s head and neck while assessing their airway and considering possible cervical-spine injury.',
+      'observes the patient\'s chest movement, respiratory effort and breathing pattern — notes equal rise and absence of obvious chest trauma.',
+      'checks the patient\'s radial pulse, skin colour, temperature and capillary refill time, then applies the BP cuff and obtains a reading.',
+      'applies the blood pressure cuff and obtains a reading of 118/76 while continuing to monitor the patient\'s perfusion status.',
+      'assesses the patient\'s level of consciousness using AVPU and checks their pupils for size, equality and reaction to light.',
+      'systematically assesses the patient for head, chest, abdominal, pelvic and limb injuries, palpating each region in turn.',
+      'suspected right femoral shaft fracture — applies a traction splint and rechecks distal pulse, sensation and movement.',
+      'repeats a full set of observations — HR 92, BP 118/76, RR 20, SpO2 97%, GCS 15, pain 6/10 — and documents the trends.',
+      'administrates oral paracetamol 1g for pain management and reassesses the pain score after 15 minutes.',
+      'calls ahead to the receiving trauma unit with an SBAR handover including mechanism, injuries, vital signs and treatment given.',
+      'prepares a structured handover for the emergency department — driver in a 40 mph frontal collision, seatbelt worn, no LOC, right femur fracture, observations stable, analgesia given.'
+    ],
+
+    rp_floor: [
+      formatRpWithEmote('kneels down beside the patient on the road surface after confirming the scene is safe, and begins assessing the mechanism of injury and vehicle damage.', 'mechanic'),
+      formatRpWithEmote('checks the patient for catastrophic external bleeding while kneeling on the ground beside them, before beginning a structured ABCDE assessment with spinal precautions.', 'check'),
+      formatRpWithEmote('kneels at the patient\'s head on the road, manually stabilising their head and neck while assessing airway and considering cervical-spine injury.', 'hold'),
+      formatRpWithEmote('leans over the patient on the ground, observing chest movement, respiratory effort and breathing pattern — notes equal rise and absence of obvious chest trauma.', 'lean'),
+      formatRpWithEmote('kneels beside the patient and checks their radial pulse, skin colour, temperature and capillary refill time on the road surface.', 'check'),
+      formatRpWithEmote('applies the blood pressure cuff while kneeling beside the patient on the ground and obtains a reading of 118/76.', 'treat'),
+      formatRpWithEmote('kneels at eye level with the patient on the ground, assessing their level of consciousness using AVPU and checking pupil reaction.', 'examine'),
+      formatRpWithEmote('systematically palpates the patient for head, chest, abdominal, pelvic and limb injuries while kneeling on the road surface beside them.', 'check'),
+      formatRpWithEmote('kneels beside the patient\'s leg on the ground — suspected right femoral shaft fracture — applies a traction splint and rechecks distal pulse.', 'treat'),
+      formatRpWithEmote('crouches beside the patient on the ground to repeat a full set of observations — HR 92, BP 118/76, RR 20, SpO2 97%, GCS 15, pain 6/10.', 'notepad'),
+      formatRpWithEmote('kneels beside the patient on the road and administers oral paracetamol 1g for pain management.', 'inject'),
+      formatRpWithEmote('steps back from the patient on the ground to radio ahead to the receiving trauma unit with an SBAR handover.', 'radio'),
+      formatRpWithEmote('kneels back down beside the patient to prepare a structured handover for the crew taking over on scene.', 'notepad')
+    ],
+
+    rp_bed: [
+      formatRpWithEmote('stands beside the stretcher, reviewing the mechanism of injury and vehicle damage now the patient has been extracted and moved to the ambulance.', 'doctor'),
+      formatRpWithEmote('stands at the side of the stretcher and rechecks for catastrophic external bleeding before continuing the ABCDE assessment.', 'check'),
+      formatRpWithEmote('stands at the head of the stretcher, maintaining manual in-line stabilisation while reassessing the patient\'s airway.', 'hold'),
+      formatRpWithEmote('stands over the stretcher, observing the patient\'s chest movement and respiratory effort under the ambulance lighting.', 'examine'),
+      formatRpWithEmote('stands beside the stretcher and rechecks the patient\'s radial pulse, skin colour and capillary refill time.', 'check'),
+      formatRpWithEmote('reapplies the blood pressure cuff at the patient\'s arm on the stretcher and obtains an updated reading.', 'treat'),
+      formatRpWithEmote('stands beside the stretcher, reassessing the patient\'s level of consciousness and pupil response under better lighting.', 'examine'),
+      formatRpWithEmote('stands over the stretcher, re-palpating the patient\'s chest, abdomen, pelvis and limbs now they are secured.', 'check'),
+      formatRpWithEmote('stands at the foot of the stretcher, rechecking the traction splint and confirming distal pulse, sensation and movement are intact.', 'treat'),
+      formatRpWithEmote('stands beside the stretcher to repeat a full set of observations before departing for the trauma unit.', 'notepad'),
+      formatRpWithEmote('stands beside the stretcher and administers oral paracetamol 1g, securing the patient for transport.', 'inject'),
+      formatRpWithEmote('stands beside the stretcher and radios ahead to the receiving trauma unit with a full SBAR handover.', 'radio'),
+      formatRpWithEmote('stands beside the stretcher, preparing a structured handover ready for the trauma team on arrival.', 'notepad')
+  ]
+  },
+
+  explosion: {
+    slideUrl: '',
+
+    checklist: [
+      'Confirm fire, fuel and explosion hazards are controlled — do not enter an unstable scene.',
+      'Consider additional explosions, secondary devices and structural collapse risk.',
+      'Check for catastrophic bleeding and apply direct pressure, haemostatic gauze or tourniquet as appropriate.',
+      'Begin a structured <C>ABCDE assessment immediately and reassess after every intervention.',
+      'Assess airway for facial burns, soot, carbonaceous sputum, stridor, hoarseness or supraglottic swelling suggesting inhalation injury.',
+      'Assess breathing — respiratory rate, chest movement, oxygen saturation and signs of blast lung (hypoxia, cough, haemoptysis).',
+      'Check for blast-related chest injury — pneumothorax, haemothorax, pulmonary contusion or rib fractures.',
+      'Assess circulation and signs of shock — check pulse, BP, capillary refill, skin colour and temperature.',
+      'Assess burns — estimate percentage using the rule of nines, assess depth and cover with appropriate dressings.',
+      'Assess for other traumatic injuries — blunt force from blast wave, penetrating injury from debris, fractures.',
+      'Consider hearing injury — ringing in ears, reduced hearing, tinnitus from blast overpressure.',
+      'Consider eye injury — foreign bodies, burns, blast effect on the globe.',
+      'Prevent heat loss — cover burns, use blankets, warm fluids if available, and limit exposure.',
+      'Reassess observations and clinical status frequently — blast lung and inhalation injury can deteriorate rapidly.',
+      'Escalate significant burns (>10% TBSA), airway compromise, blast lung or major trauma urgently.'
+    ],
+
+    questions: [
+      'Were you inside or outside the vehicle when it exploded?',
+      'How close were you to the explosion when it happened?',
+      'Were you thrown by the blast wave or struck by any debris?',
+      'Did you lose consciousness at any point, even briefly?',
+      'Are you having any difficulty breathing or is your chest painful?',
+      'Do you have ringing in your ears or reduced hearing since the explosion?',
+      'Where have you been burned — show me every affected area?',
+      'Did you inhale smoke or fumes before, during or after the explosion?',
+      'Do you have any pain or discomfort anywhere else?',
+      'Do you have any medical conditions or take any regular medication?',
+      'Do you have any allergies to medications or anything else?',
+      'On a scale of 0 to 10, how would you rate your pain right now?'
+    ],
+
+    rp: [
+      'confirms the explosion scene is safe before approaching and checks for ongoing fire, fuel and secondary hazards.',
+      'checks the patient for catastrophic bleeding and begins a rapid ABCDE assessment while noting blast proximity.',
+      'examines the patient\'s mouth and airway for soot, carbonaceous sputum, burns, swelling and signs of inhalation injury.',
+      'assesses respiratory effort, chest movement and oxygen saturation — notes any hypoxia, cough or haemoptysis suggesting blast lung.',
+      'checks the patient for chest trauma, burns, penetrating injuries and other blast-related injuries.',
+      'assesses circulation by palpating radial pulse, checking capillary refill, skin colour and applying the BP cuff.',
+      'obtains a BP of 124/78, HR 96, RR 22, SpO2 94% — notes the hypoxia and applies oxygen via non-rebreather mask at 15 L/min.',
+      'estimates the affected burn areas using the rule of nines — approximately 12% TBSA to the arms and face.',
+      'cools the thermal burns with cool running water for 20 minutes and protects the patient from further heat loss.',
+      'covers the burns with cling film or appropriate burn dressings and monitors for hypothermia.',
+      'reassesses respiratory status — SpO2 improving to 98% on oxygen, chest clear to auscultation bilaterally.',
+      'prepares an urgent trauma handover including blast mechanism, burn percentage, respiratory status and vital signs.'
+  ]
+  },
+
+
+  gunshot: {
+    slideUrl: '',
+
+    checklist: [
+      'Confirm the scene is safe and any weapon threat is controlled before approaching — use appropriate PPE.',
+      'Identify catastrophic haemorrhage immediately — check for arterial bleeding, massive haemorrhage from the wound site.',
+      'Control severe external bleeding with direct pressure, haemostatic gauze, wound packing or tourniquet for limb injuries.',
+      'Begin a structured <C>ABCDE assessment and identify the wound location without unnecessarily disturbing the wound.',
+      'Check for entry and exit wounds — mark the locations and do not probe the wound tract.',
+      'Assess airway and breathing, especially if the torso, neck or head is involved — high-flow oxygen if available.',
+      'Assess circulation and signs of shock — check pulse, BP, capillary refill, skin colour — do not assume normal BP rules out haemorrhage.',
+      'Record a full set of observations and reassess frequently — HR, BP, RR, SpO2, GCS, pain score, temperature.',
+      'Immobilise fractures if present and recheck distal neurovascular status after any splinting.',
+      'Prepare urgent trauma escalation and handover — include wound location(s), estimated blood loss, vital signs and treatment given.',
+      'Document the number of wounds, entry/exit locations, estimated time of injury and all interventions.'
+    ],
+
+    questions: [
+      'Where were you shot — point to every wound location you know of?',
+      'How many shots did you hear and do you know how many times you were hit?',
+      'Do you know how long ago this happened?',
+      'Are you having any difficulty breathing?',
+      'Do you have any chest or abdominal pain?',
+      'Do you feel dizzy, lightheaded or faint?',
+      'Can you move and feel your arms and legs normally?',
+      'Are you taking any blood-thinning medication like warfarin, apixaban or clopidogrel?',
+      'Do you have any allergies to any medications?',
+      'Do you have any medical conditions like diabetes, heart problems or epilepsy?',
+      'On a scale of 0 to 10, how bad is your pain right now?',
+      'Do you feel like you\'re losing consciousness or are you struggling to stay awake?'
+    ],
+
+    rp: [
+      'confirms the scene is safe before approaching the patient and applies appropriate PPE including gloves and eye protection.',
+      'performs a rapid check for catastrophic haemorrhage and immediately addresses significant external bleeding with direct pressure and haemostatic gauze.',
+      'applies a tourniquet to the actively bleeding limb wound and notes the time of application clearly.',
+      'begins a structured ABCDE assessment while identifying the location of the entry and any exit wounds.',
+      'marks the entry and exit wound locations on the dressings and avoids probing the wound tract.',
+      'assesses chest movement and respiratory effort — applies an occlusive dressing to any penetrating chest wound with a three-way taped edge.',
+      'checks the patient\'s pulse — finds a rapid, thready radial pulse at 112/min and BP of 104/68 suggesting hypovolaemia.',
+      'cannulates an antecubital vein with a grey (14G) or green (18G) cannula and begins fluid resuscitation per local protocols.',
+      'administers IV morphine 5mg for severe pain — checks pulse, respiration and sedation level before and after administration.',
+      'repeats observations — HR 104, BP 108/70, RR 22, SpO2 97%, GCS 15, pain 4/10 — and documents downward trends in pulse.',
+      'splints the associated femoral fracture with a traction splint and rechecks distal pulse, sensation and movement.',
+      'prepares an urgent trauma team handover — gunshot wound to the right thigh with exit wound, estimated 500ml blood loss, two large-bore IVs, tourniquet applied at 14:32, last observations HR 104 / BP 108/70.'
+  ]
+  },
+
+
+  stab: {
+    slideUrl: '',
+
+    checklist: [
+      'Confirm the scene is safe and any weapon threat is controlled before approaching — use appropriate PPE.',
+      'Identify catastrophic haemorrhage immediately — check for arterial bleeding, massive haemorrhage from the wound site.',
+      'Control severe external bleeding with direct pressure — do not remove any embedded object, stabilise it in place.',
+      'Begin a structured <C>ABCDE assessment and identify the wound location without unnecessarily disturbing the wound.',
+      'Assess for entry and exit wounds — mark the location(s) and do not probe the wound tract.',
+      'Assess airway and breathing, especially if the neck or chest is involved — consider occlusive dressing for chest wounds.',
+      'Assess circulation and signs of shock — check pulse, BP, capillary refill, skin colour and temperature.',
+      'Record a full set of observations and reassess frequently — HR, BP, RR, SpO2, GCS, pain score.',
+      'Prepare urgent trauma escalation — stab wounds to the neck, chest, abdomen or groin are high-risk.',
+      'Document the mechanism, wound locations, estimated time of injury, treatment given and all observations.'
+    ],
+
+    questions: [
+      'Where were you stabbed — point to every wound you know of?',
+      'What type of weapon was used, and how long ago did this happen?',
+      'Do you know if the weapon is still in place or was it removed?',
+      'Are you having any difficulty breathing or any chest pain?',
+      'Do you have any abdominal pain, tenderness or feeling of fullness?',
+      'Do you feel dizzy, lightheaded or faint?',
+      'Can you move and feel your arms and legs normally?',
+      'Are you taking any blood-thinning medication like warfarin, apixaban or clopidogrel?',
+      'Do you have any allergies to any medications?',
+      'Do you have any medical conditions like diabetes or heart problems?',
+      'On a scale of 0 to 10, how bad is your pain right now?',
+      'Do you feel like you\'re losing consciousness or struggling to stay awake?'
+    ],
+
+    rp: [
+      'confirms the scene is safe before approaching the patient and applies appropriate PPE including gloves.',
+      'identifies a stab wound to the left anterior chest and notes there is no embedded object, but there is active bleeding.',
+      'applies direct pressure with haemostatic gauze to the bleeding wound and monitors for ongoing haemorrhage.',
+      'applies an occlusive dressing with a three-way taped edge to the penetrating chest wound to prevent tension pneumothorax.',
+      'begins a structured ABCDE assessment — airway clear, breathing laboured with reduced air entry on the left side.',
+      'checks the patient\'s pulse — radial pulse present but rapid at 106/min, BP 110/72, skin pale and cool.',
+      'cannulates an antecubital vein with a green (18G) cannula for IV access.',
+      'administers oxygen via non-rebreather at 15 L/min and administers IV morphine 5mg for severe pain.',
+      'repeats observations — HR 102, BP 112/74, RR 24, SpO2 96% on oxygen, pain 5/10 — and documents trends.',
+      'reassesses chest — air entry improving on the left after the occlusive dressing, SpO2 stable at 96%.',
+      'prepares an urgent trauma handover — single stab wound to the left anterior chest, occlusive dressing applied, IV access established.'
+  ]
+  },
+
+
+  burns: {
+    slideUrl: '',
+
+    checklist: [
+      'Confirm the scene is safe — check for ongoing fire, electrical, chemical or structural hazards before approaching.',
+      'Stop the burning process — remove the patient from the source and extinguish any flames by stop, drop and roll or use of a fire blanket.',
+      'Perform a primary survey using <C>ABCDE — burns are not the first priority if there is catastrophic haemorrhage or airway compromise.',
+      'Assess airway for facial burns, soot, stridor, hoarseness or carbonaceous sputum suggesting inhalation injury — this can deteriorate rapidly.',
+      'Assess breathing — respiratory rate, chest movement, oxygen saturation and signs of respiratory distress.',
+      'Assess circulation and signs of shock — check pulse, BP, capillary refill, skin colour — burns can cause hypovolaemic shock.',
+      'Estimate the total body surface area burned using the rule of nines or Lund and Browder chart for children.',
+      'Assess burn depth — superficial (epidermal), partial thickness (blistering, painful) or full thickness (waxy, painless).',
+      'Cool thermal burns with cool running water for 20 minutes within 3 hours of injury — take care to avoid hypothermia.',
+      'Cover burns with cling film or sterile non-adherent dressings — do not apply creams, lotions or ice.',
+      'Provide analgesia — paracetamol/ibuprofen for mild pain; IV morphine or Entonox for severe burn pain.',
+      'Monitor for hypothermia and maintain body temperature with blankets and warm fluids.',
+      'Reassess frequently — burns and inhalation injury can evolve over time.',
+      'Escalate serious burns (>10% TBSA in adults), facial/airway burns, circumferential burns or burns in children.'
+    ],
+
+    questions: [
+      'How did you get burned — was it fire, hot liquid, electricity or chemicals?',
+      'How long ago did the burn happen and how long were you exposed?',
+      'Were you in an enclosed space with smoke or flames — did you breathe in smoke or fumes?',
+      'Do you have any difficulty breathing, coughing or a hoarse voice?',
+      'Where exactly are your burns — show me everywhere you were burned?',
+      'Do you have any other injuries besides the burns?',
+      'Have you passed out or felt dizzy at any point?',
+      'Are you taking any regular medication or do you have any medical conditions?',
+      'Do you have any allergies?',
+      'On a scale of 0 to 10, how bad is your pain right now?'
+    ],
+
+    rp: [
+      'confirms the scene is safe before approaching and checks for ongoing fire, chemical or electrical hazards.',
+      'stops the burning process by removing the patient from the source and extinguishing any remaining flames.',
+      'performs a primary survey using <C>ABCDE and begins a systematic assessment of the patient.',
+      'examines the patient\'s face and airway for signs of facial burns, singed nasal hair, soot in the mouth or hoarseness.',
+      'listens for stridor or respiratory distress — high suspicion of inhalation injury given the enclosed space.',
+      'assesses respiratory rate, chest movement and applies pulse oximetry — SpO2 95% on room air.',
+      'checks circulation — radial pulse 104/min, BP 118/76, skin warm and pink, capillary refill <2 seconds.',
+      'estimates the burn area using the rule of nines — approximately 15% TBSA to the anterior chest and left arm.',
+      'assesses burn depth — partial thickness burns to the chest with blistering and intact capillary refill; full thickness to the left forearm.',
+      'cools the thermal burns under cool running water for 20 minutes and monitors for hypothermia during cooling.',
+      'covers the burns with cling film and administers IV morphine 5mg for severe burn pain — checks respiration and sedation level.',
+      'repeats observations — HR 100, BP 120/78, RR 20, SpO2 97%, pain 4/10 after analgesia — and documents improvement.',
+      'prepares an urgent transfer to the burns unit with full details of the mechanism, TBSA, depth, treatment and vital signs.'
+  ]
+  },
+
+
+  smoke: {
+    slideUrl: '',
+
+    checklist: [
+      'Confirm the scene is safe — check for ongoing fire, smoke, structural collapse or toxic gas hazards.',
+      'Remove the patient from the smoke-filled environment to fresh air as soon as it is safe to do so.',
+      'Perform a primary survey using <C>ABCDE with a high index of suspicion for inhalation injury.',
+      'Assess airway — look for facial burns, singed nasal hairs, carbonaceous sputum, stridor, hoarseness or altered voice.',
+      'Assess breathing — respiratory rate, chest movement, accessory muscle use, wheeze, cough, oxygen saturation.',
+      'Administer high-flow oxygen via non-rebreather mask at 15 L/min — monitor SpO2 response carefully.',
+      'Assess circulation — pulse, BP, capillary refill — smoke inhalation rarely causes shock alone but check for associated burns or trauma.',
+      'Assess disability — headache, confusion, drowsiness or reduced consciousness may suggest carbon monoxide poisoning or hypoxia.',
+      'Expose and examine for associated burns or other injuries from the fire or evacuation.',
+      'Monitor for deterioration — airway swelling and pulmonary oedema can evolve over hours, even with initially normal observations.',
+      'Arrange appropriate specialist assessment — inhalation injury requires specialist respiratory assessment even if the patient looks well.'
+    ],
+
+    questions: [
+      'Were you in an enclosed space with smoke or flames — how long were you exposed?',
+      'Are you having any difficulty breathing or is your throat feeling tight?',
+      'Do you have a cough, hoarse voice or any burning sensation in your throat?',
+      'Do you have a headache, feel dizzy or confused?',
+      'Did you lose consciousness at any point?',
+      'Do you have any burns or other injuries?',
+      'Do you have any known heart or lung conditions like asthma or COPD?',
+      'Are you taking any regular medication?',
+      'Do you have any allergies?'
+    ],
+
+    rp: [
+      'confirms the scene is safe before approaching and checks for ongoing fire, smoke and structural hazards.',
+      'removes the patient from the smoke-filled environment to fresh air with the help of the fire service.',
+      'begins a primary survey using <C>ABCDE with a high index of suspicion for inhalation injury.',
+      'examines the patient\'s face and airway — finds singed nasal hairs, soot around the nose and mouth, and a hoarse voice.',
+      'listens to the chest — auscultates wheeze and reduced air entry bilaterally with a frequent cough.',
+      'applies pulse oximetry — SpO2 91% on room air — and administers high-flow oxygen via non-rebreather mask at 15 L/min.',
+      'monitors the patient\'s response — SpO2 rises to 97% with supplemental oxygen, respiratory rate 24.',
+      'checks circulation — HR 104, BP 126/78, capillary refill <3 seconds, skin warm and pink.',
+      'assesses the patient for any associated burns or other traumatic injuries from the fire.',
+      'reassesses respiratory status every 5 minutes — monitors for stridor, increasing distress or declining SpO2.',
+      'calls ahead to the receiving emergency department with a pre-alert for potential inhalation injury.',
+      'continues to monitor the patient closely and prepares a handover detailing smoke exposure time, symptoms, observations and oxygen requirement.'
+  ]
+  },
+
+
+  allergy: {
+    slideUrl: '',
+
+    checklist: [
+      'Assess the patient immediately using ABCDE — identify any airway, breathing or circulation compromise.',
+      'Ask about known allergies, the suspected trigger, onset time and previous reactions — distinguish mild allergy from anaphylaxis.',
+      'Check airway — look for lip/tongue/throat swelling, stridor, hoarseness, difficulty swallowing or a sensation of throat tightness.',
+      'Assess breathing — respiratory rate, wheeze, accessory muscle use, oxygen saturation — anaphylaxis often presents with respiratory distress.',
+      'Assess circulation — check pulse, BP, capillary refill, skin colour and temperature — look for signs of distributive shock.',
+      'Assess skin — look for urticaria (hives), erythema, angioedema (swelling of lips, eyelids, face) and pruritus.',
+      'Assess disability — confusion, anxiety, sense of impending doom or reduced consciousness can accompany anaphylaxis.',
+      'If airway, breathing or circulation are compromised, administer IM adrenaline (1:1000, 0.5mg) into the anterolateral thigh immediately.',
+      'Position the patient appropriately — lying flat with legs raised if circulatory compromise, sitting up if respiratory distress.',
+      'Administer high-flow oxygen via non-rebreather mask and monitor SpO2, pulse and BP continuously.',
+      'Repeat observations and reassess frequently — anaphylaxis can improve then deteriorate again (biphasic reaction).',
+      'Arrange urgent transfer to hospital — all patients with anaphylaxis should be observed in an emergency department.',
+      'Document the suspected trigger, time of onset, all treatment given and the patient\'s response to each intervention.'
+    ],
+
+    questions: [
+      'Do you know what caused this reaction — what did you eat, take or come into contact with?',
+      'How long ago did the reaction start and how quickly did it come on?',
+      'Have you had an allergic reaction like this before?',
+      'Do you have any difficulty breathing, throat tightness or a feeling that your throat is closing?',
+      'Do you feel dizzy, lightheaded or faint?',
+      'Do you have an adrenaline auto-injector (EpiPen) with you and have you used it?',
+      'Have you taken any medication for this reaction such as antihistamines?',
+      'Do you have any other medical conditions like asthma or heart problems?',
+      'Are you taking any regular medication?'
+    ],
+
+    rp: [
+      'begins assessing the patient using ABCDE and identifies immediate airway, breathing and circulation compromise.',
+      'notes widespread urticaria, facial angioedema, audible wheeze and the patient reporting throat tightness.',
+      'identifies stridor and respiratory distress with SpO2 92% — calls for urgent help and prepares IM adrenaline.',
+      'administers IM adrenaline 1:1000 (0.5mg) into the patient\'s right anterolateral thigh and notes the time of administration.',
+      'positions the patient sitting upright to optimise breathing and administers oxygen via non-rebreather mask at 15 L/min.',
+      'assesses the patient\'s response — stridor improving, SpO2 rising to 96%, wheeze less prominent after adrenaline.',
+      'checks the patient\'s pulse — HR 112, BP 100/64 — and monitors for signs of improving perfusion.',
+      'records a full set of observations — HR 108, BP 106/68, RR 24, SpO2 96%, GCS 15 — and repeats every 5 minutes.',
+      'continues to monitor the patient closely for signs of biphasic reaction or deterioration after initial improvement.',
+      'prepares a structured handover — suspected peanut anaphylaxis, IM adrenaline given at 15:22 with good initial response, observations improving.'
+  ]
+  },
+
+
+  waterrescue: {
+    slideUrl: '',
+
+    checklist: [
+      'Confirm your own safety first — do not enter the water unless trained and equipped; use reach, throw, row or wade techniques.',
+      'Remove the patient from the water as safely and quickly as possible while maintaining spinal precautions if a diving or impact mechanism is suspected.',
+      'Check responsiveness and breathing for no more than 10 seconds once out of the water.',
+      'If not breathing normally, give 5 initial rescue breaths before starting chest compressions, given the likely hypoxic cause of arrest.',
+      'Begin CPR if there are no signs of life, following standard compression ratios (30:2).',
+      'Remove wet clothing and begin gentle rewarming — avoid rapid rewarming or rough handling which can cause cardiac arrhythmias.',
+      'Protect the airway and monitor for vomiting — the patient may regurgitate water or stomach contents.',
+      'Give high-flow oxygen if available and continuously monitor SpO2, pulse, BP and temperature.',
+      'Treat any associated injuries — from diving, rocks, entrapment or rescue process — alongside the main assessment.',
+      'Monitor for delayed deterioration — aspiration pneumonitis or pulmonary oedema can develop hours after an apparently good recovery.',
+      'Reassess regularly and prepare a structured handover including submersion time, water type (fresh/salt/cold), treatment given and response.'
+    ],
+
+    questions: [
+      'How long were you in the water or submerged, if you know?',
+      'Was the water cold, and roughly what temperature would you say it was?',
+      'Did you hit anything or injure yourself before or during going into the water?',
+      'Have you vomited or coughed up any water since being rescued?',
+      'Do you know if you can swim, or was this an accidental submersion?',
+      'Do you have any medical conditions such as epilepsy, a heart condition or diabetes?',
+      'Are you on any medications?',
+      'Do you have any difficulty breathing or chest discomfort now?'
+    ],
+
+    rp: [
+      'confirms their own safety and uses a reach or throw technique rather than entering the water themselves.',
+      'with the help of bystanders, carefully removes the patient from the water.',
+      'checks the patient\'s responsiveness and breathing for no more than 10 seconds — the patient is unconscious and not breathing normally.',
+      'gives 5 initial rescue breaths before starting chest compressions, given the likely hypoxic cause.',
+      'begins CPR at a ratio of 30 compressions to 2 breaths and continues with minimal interruptions.',
+      'after the return of spontaneous circulation, carefully removes the patient\'s wet clothing.',
+      'begins gentle rewarming using blankets and warm air, avoiding rapid rewarming techniques.',
+      'monitors for vomiting and positions the patient in the recovery position to protect their airway.',
+      'administers high-flow oxygen via non-rebreather mask and continuously monitors SpO2, pulse and BP.',
+      'assesses for any associated injuries from the incident and the rescue process.',
+      'repeats observations — HR 88, BP 124/76, RR 18, SpO2 98%, GCS 14, temperature 35.2C — and documents trends.',
+      'continues to monitor the patient closely for any delayed deterioration from aspiration.',
+      'prepares a structured handover — approximately 5 minutes submersion in cold freshwater, brief resuscitation, now self-ventilating on oxygen.'
+  ]
+  },
+
+
+
+  mountainlion: {
+    slideUrl: '',
+
+    checklist: [
+      'Confirm the animal threat has been neutralised or is no longer present before approaching the patient.',
+      'Perform a primary survey and control any catastrophic bleeding first — direct pressure, haemostatic gauze or tourniquet if appropriate for a limb.',
+      'Expose and examine all bite and claw wounds systematically, including less obvious areas like the scalp, armpits and behind the knees.',
+      'Assess the depth of puncture wounds carefully — they can hide deeper tissue, tendon or vessel damage despite a small external entry.',
+      'Check distal circulation, sensation and movement for any limb wounds, and reassess after any intervention.',
+      'Irrigate and clean wounds thoroughly once bleeding is controlled — use warmed saline or clean water where available.',
+      'Cover wounds with an appropriate clean dressing or sterile non-adherent pad; do not close puncture wounds in the field.',
+      'Prioritise urgent assessment for any facial, scalp or neck wounds — these bleed heavily and may need rapid haemorrhage control.',
+      'Assess for signs of infection — warmth, erythema, swelling or discharge around older wounds.',
+      'Offer appropriate analgesia — paracetamol or ibuprofen for mild pain; consider oral morphine or IV opioids for significant pain.',
+      'Monitor for signs of shock — tachycardia, hypotension, pale/clammy skin, delayed capillary refill, especially with significant bleeding.',
+      'Reassess observations (HR, BP, RR, SpO2, GCS) after every intervention and document trends.',
+      'Escalate for wound exploration, possible surgical closure and infection-risk management — document the animal species if known (dog, cat, wild animal).',
+      'Document the mechanism, wound locations, treatment given, and whether the animal was domestic or wild — rabies risk may need public health notification.'
+    ],
+
+    questions: [
+      'Can you tell me exactly how the attack happened — what animal was it?',
+      'Where are all the places you were bitten or scratched? Please show me every spot.',
+      'Do you feel any numbness, weakness or reduced movement anywhere?',
+      'Are you up to date with tetanus vaccination, if you know?',
+      'Do you have any allergies, particularly to antibiotics or pain relief?',
+      'Do you have any medical conditions that affect your immune system, like diabetes or medications?',
+      'Are you taking any blood-thinning medication like warfarin, apixaban or clopidogrel?',
+      'Have you passed out or felt dizzy at any point since the attack?',
+      'Do you feel short of breath or lightheaded?',
+      'On a scale of 0 to 10, how bad is your pain right now?',
+      'Did the animal seem aggressive or sick — was it behaving unusually?',
+      'Has anyone else been attacked or is anyone else injured?'
+    ],
+
+    rp: [
+      'confirms the animal threat has been neutralised before approaching the patient and ensuring scene safety.',
+      'performs a primary survey using <C>ABCDE and controls any catastrophic bleeding with direct pressure.',
+      'applies a tourniquet to the bleeding limb wound and notes the time of application.',
+      'exposes and systematically examines all bite and claw wounds, including less obvious areas like the scalp and armpits.',
+      'carefully assesses the depth of puncture wounds, noting that small external wounds can hide significant deeper damage.',
+      'checks distal circulation, sensation and movement for each limb wound and documents the findings.',
+      'prepares warmed saline and begins irrigating the wound sites to remove gross contamination.',
+      'covers each wound with sterile non-adherent dressings and secures them with bandaging.',
+      'assesses the facial and neck injuries for airway involvement and major vessel proximity.',
+      'applies a haemostatic dressing to the heavily bleeding neck wound and maintains direct pressure.',
+      'administers oral paracetamol 1g for mild pain and reassesses the pain score after 15 minutes.',
+      'prepares IV morphine 5mg for significant pain — checks pulse, respiration and sedation level before and after.',
+      'cannulates an antecubital vein with a green (18G) cannula for IV access in case of deterioration.',
+      'repeats a full set of observations — HR 98, BP 128/74, RR 18, SpO2 98%, GCS 15, pain 5/10 — and documents trends.',
+      'reassesses the wounds for any ongoing bleeding or swelling and reinforces dressings as needed.',
+      'applies a cervical collar and spinal precautions due to the mechanism of the attack.',
+      'calls ahead to the receiving trauma unit with a full SBAR handover including the animal species and wound locations.',
+      'documents the mechanism of injury, all wound locations, treatments given, and the patient response in the PCR.',
+      'prepares a structured handover for the emergency department staff — mechanism, injuries, vital signs, treatment and analgesia given.',
+      'notes the time of the last tetanus booster and escalates for a booster if due or unknown.'
+  ]
+  },
+
+  heightfall: {
+    slideUrl: '',
+
+    checklist: [
+      'Confirm the scene is safe, including checking for any ongoing fall risk, unstable structures or environmental hazards.',
+      'Approach with spinal precautions given the mechanism — manually stabilise the head and minimise unnecessary movement.',
+      'Perform a primary survey using <C>ABCDE and control any catastrophic bleeding first.',
+      'Assess for spinal tenderness, deformity, step-off or neurological symptoms — do not logroll until spinal injury is assessed.',
+      'Assess the pelvis gently for instability or pain without excessive manipulation.',
+      'Check for lower-limb and other fractures — assess distal circulation, sensation and movement in all four limbs.',
+      'Assess for head injury — check GCS, pupil size and reaction, and monitor level of consciousness closely.',
+      'Assess the chest and abdomen for signs of internal injury — pain, tenderness, bruising or distension.',
+      'Splint any fractures identified and reassess neurovascular status after splinting.',
+      'Record a full set of observations and repeat them regularly — HR, BP, RR, SpO2, GCS, pain score, temperature.',
+      'Escalate urgently for suspected spinal, pelvic or multi-system injury.',
+      'Document the estimated height, landing surface, body position on landing, mechanism and all clinical findings.'
+    ],
+
+    questions: [
+      'Can you tell me what happened and how you fell?',
+      'Approximately how high did you fall from?',
+      'What surface did you land on and what part of your body hit first?',
+      'Did you hit your head during the fall or landing?',
+      'Did you lose consciousness at any point, even briefly?',
+      'Do you have any neck or back pain, numbness, tingling or weakness?',
+      'Can you feel and move your arms and legs?',
+      'Do you have any pain in your hips, pelvis or lower back?',
+      'Do you feel short of breath or have any chest or abdominal pain?',
+      'Are you taking any blood-thinning medication?',
+      'Do you have any medical conditions or allergies?',
+      'On a scale of 0 to 10, how bad is your pain right now?'
+    ],
+
+    rp: [
+      'confirms the scene is safe and approaches the patient with spinal precautions, manually stabilising the head.',
+      'introduces themselves and begins a primary survey using <C>ABCDE while maintaining manual in-line stabilisation.',
+      'checks for catastrophic bleeding and controls any external haemorrhage found.',
+      'assesses the airway while maintaining spinal alignment — airway is patent.',
+      'assesses breathing — respiratory rate 20, chest movement symmetrical, oxygen saturation 97% on room air.',
+      'checks circulation — radial pulse 96/min, BP 130/84, capillary refill <2 seconds, skin warm and dry.',
+      'assesses disability — GCS 15, pupils equal and reactive, patient alert and orientated.',
+      'palpates the cervical and thoracic spine gently for tenderness or step-off — no midline tenderness reported.',
+      'assesses the pelvis gently for pain or instability — no pelvic tenderness or crepitus detected.',
+      'assesses the lower limbs — no deformity, distal pulse strong, sensation and movement intact bilaterally.',
+      'applies a cervical collar and prepares for a logroll to assess the back and complete spinal assessment.',
+      'repeats observations — HR 92, BP 124/78, RR 18, SpO2 98%, GCS 15, pain 4/10 — and documents the fall mechanism.',
+      'prepares a structured handover — 4m fall landing on feet, no LOC, no spinal tenderness, observations stable, ongoing spinal precautions.'
+  ]
+  },
+
+
+
+  melee: {
+    slideUrl: '',
+
+    checklist: [
+      'Confirm the scene is safe and any assailant risk has passed before approaching the patient.',
+      'Perform a primary survey using <C>ABCDE and control any catastrophic bleeding first.',
+      'Assess level of consciousness and look for signs of head injury — GCS, pupils, focal neurological signs.',
+      'Examine the chest for signs of blunt injury — bruising, rib tenderness, respiratory effort and oxygenation.',
+      'Examine the abdomen for tenderness, guarding or distension suggesting internal organ injury.',
+      'Fully expose the patient and check systematically for bruising, swelling, deformity and wounds from strikes or weapons.',
+      'Assess the neck carefully for any signs of strangulation — bruising, petechiae, voice change, difficulty swallowing.',
+      'Assess and splint any suspected fractures, checking distal neurovascular status before and after.',
+      'Do not be falsely reassured by a lack of visible external injury — blunt trauma can hide serious internal injury.',
+      'Record a full set of observations and repeat them regularly — watch for trends suggesting deterioration.',
+      'Offer appropriate analgesia based on pain severity and reassess after treatment.',
+      'Document the mechanism, number of blows or assailants where known, weapon type and all clinical findings.'
+    ],
+
+    questions: [
+      'Can you tell me exactly what happened and how many times you were hit?',
+      'Were you hit with a weapon like a bat or pipe, or with fists and feet?',
+      'Did you lose consciousness at any point, even briefly?',
+      'Where does it hurt the most — point to every place that hurts?',
+      'Do you have any pain in your tummy, or does it hurt to breathe?',
+      'Were you grabbed or squeezed around your neck at any point?',
+      'Do you feel any numbness, tingling or weakness anywhere?',
+      'Do you feel dizzy, lightheaded or sick to your stomach?',
+      'Are you taking any blood-thinning medication?',
+      'Do you have any medical conditions or allergies?',
+      'On a scale of 0 to 10, how bad is your pain right now?'
+    ],
+
+    rp: [
+      'confirms the scene is safe before approaching the patient.',
+      'performs a primary survey using <C>ABCDE and controls any catastrophic bleeding first.',
+      'assesses the patient\'s level of consciousness — GCS 15, alert and orientated, pupils equal and reactive.',
+      'examines the chest for signs of blunt injury — bruising and tenderness over the left ribcage, symmetrical chest movement.',
+      'examines the abdomen — no tenderness, guarding or distension noted.',
+      'fully exposes the patient and systematically checks for bruising, swelling and deformity across the torso and limbs.',
+      'carefully assesses the neck for any signs of strangulation — no bruising, voice clear, no difficulty swallowing.',
+      'assesses and splints a suspected right forearm fracture — checks distal pulse, sensation and movement before and after splinting.',
+      'administers oral paracetamol 1g for pain and reassesses the pain score after 15 minutes.',
+      'repeats observations — HR 88, BP 126/78, RR 18, SpO2 98%, GCS 15, pain 3/10 after analgesia.',
+      'stays alert for signs of internal injury despite the lack of obvious external wounds given the blunt mechanism.',
+      'prepares a structured handover — assaulted with a bat, blunt chest trauma, right forearm fracture, observations stable, analgesia given.'
+  ]
+  }
+};
+
 const proceduresData = {
 
   colonoscopy: {
