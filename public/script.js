@@ -9216,6 +9216,874 @@ function showSurgery(name) {
 }
 
 
+/* =========================================================
+   PROCEDURE-SPECIFIC SURGERY ROLE ACTIONS
+
+   Each surgery gets its own surgeon/assistant/scrub/circulator/
+   anaesthetist/recovery actions, reflecting the actual steps,
+   instruments and suture/closure technique for that operation.
+   renderSurgeryRoleActions() checks this map first and only
+   falls back to the generic surgeryRoleActions template below
+   for a surgery (or role) not yet covered here.
+========================================================= */
+
+var surgeryRoleActionsBySurgery = {
+
+  bulletHead: {
+    surgeon: [
+      "confirms the entry point, trajectory and neurosurgical plan on imaging with the team before incision.",
+      "makes the scalp incision and reflects the scalp flap, controlling scalp bleeding with artery forceps and diathermy.",
+      "performs the craniotomy, elevating the bone flap to expose the dura over the bullet tract.",
+      "opens the dura and carefully explores the tract, removing the bullet fragment and any bone fragments under direct vision.",
+      "achieves haemostasis of the brain surface with bipolar diathermy and haemostatic agents before closing.",
+      "closes the dura with a continuous 4-0 Nurolon suture, checking the repair is watertight.",
+      "replaces the bone flap and secures it with titanium plates and screws.",
+      "closes the galea with interrupted 3-0 Vicryl sutures, then closes the scalp skin with staples.",
+      "dictates the operative findings and gives a structured neurosurgical handover to recovery."
+    ],
+    assistant: [
+      "helps position and secure the head in the Mayfield clamp, confirming pin sites are clear of the surgical field.",
+      "retracts the scalp flap and keeps the field clear of blood using suction as the surgeon works.",
+      "holds retractors steady during the craniotomy, watching the drill and saw lines the surgeon indicates.",
+      "assists with irrigation and suction inside the dural opening while the surgeon removes the fragment.",
+      "cuts each suture as the surgeon ties off during dural closure, keeping the ends the length the surgeon asks for.",
+      "helps hold the bone flap in position while the surgeon places the fixation plates and screws.",
+      "assists with scalp closure, holding skin edges apposed while the surgeon staples the incision.",
+      "helps apply the head dressing and assists with the transfer to recovery."
+    ],
+    scrub: [
+      "checks the craniotomy set, drill, perforator and dural instruments against the count sheet before opening.",
+      "passes the scalpel and artery forceps for the scalp incision, keeping the diathermy lead within reach.",
+      "hands the surgeon the perforator and craniotome for the bone flap, then the dural scissors and bipolar forceps.",
+      "keeps bone fragments and the retrieved bullet fragment on a separate sterile dish for the surgeon to inspect.",
+      "loads the needle holder with 4-0 Nurolon for the dural closure and passes it with the tips ready to use.",
+      "hands over the titanium plates, screws and screwdriver for the bone flap fixation.",
+      "loads 3-0 Vicryl for the galea and prepares the skin stapler for the final closure.",
+      "completes the final instrument, swab and sharps count with the circulating nurse before the dressing is applied."
+    ],
+    circulator: [
+      "confirms the patient's identity, consent and imaging are in theatre before the neurosurgical case begins.",
+      "positions the Mayfield clamp stand and checks the image intensifier is available if needed.",
+      "opens the titanium plate and screw set onto the sterile field when the surgeon requests it.",
+      "labels the retrieved bullet fragment as a forensic specimen and documents the chain of custody.",
+      "coordinates the final count and documentation before the patient is transferred to recovery."
+    ],
+    anaesthetist: [
+      "confirms GCS, pupil findings and any focal deficits with the team before induction.",
+      "secures the airway and establishes monitoring appropriate for a neurosurgical case, including arterial line access.",
+      "maintains controlled ventilation and blood pressure targets throughout the craniotomy.",
+      "communicates any acute change in intracranial pressure or bleeding immediately to the surgeon.",
+      "plans a controlled emergence and gives a structured neuro-observation handover to recovery."
+    ],
+    recovery: [
+      "receives the patient and checks GCS, pupils and limb power against the pre-operative baseline.",
+      "checks the head dressing for any fresh bleeding or swelling and documents findings.",
+      "sets a clear neuro-observation schedule and escalation threshold with the surgical team.",
+      "monitors closely for any deterioration in conscious level and escalates immediately if it occurs.",
+      "gives a structured handover covering the procedure, findings and ongoing neuro-observation plan."
+    ]
+  },
+
+  bulletChest: {
+    surgeon: [
+      "confirms the side and imaging findings with the team before opening the chest.",
+      "makes the thoracotomy incision along the intercostal space and inserts the rib spreader to gain access.",
+      "identifies the bullet tract and inspects the lung, great vessels and pericardium for injury.",
+      "repairs a lung laceration with a 2-0 Vicryl mattress suture or staples, controlling the air leak.",
+      "removes the bullet fragment and any devitalised tissue before irrigating the chest cavity.",
+      "closes the ribs with heavy pericostal 1 PDS sutures, then closes the muscle layers with 0 Vicryl.",
+      "inserts and secures the chest drain with a heavy silk suture before closing skin.",
+      "closes the skin with a subcuticular 3-0 Monocryl suture and checks the drain is swinging correctly.",
+      "confirms the post-operative chest X-ray plan and hands over to recovery."
+    ],
+    assistant: [
+      "helps position the patient laterally and pads the dependent arm and pressure points.",
+      "holds the rib spreader steady and retracts lung tissue to give the surgeon a clear view.",
+      "assists with suction to keep the field clear of blood during the lung repair.",
+      "cuts sutures during the pericostal and muscle-layer closure as the surgeon ties each one.",
+      "helps guide and secure the chest drain in position before it is sutured.",
+      "assists with the final skin closure and applies the dressing around the drain site."
+    ],
+    scrub: [
+      "checks the thoracotomy set, rib spreader and vascular instruments before the case starts.",
+      "passes the scalpel and rib spreader, then hands over long instruments suited to the chest cavity.",
+      "loads the needle holder with 2-0 Vicryl for the lung repair and keeps swabs accounted for at all times.",
+      "hands over heavy 1 PDS sutures on a large needle for the pericostal closure.",
+      "prepares the chest drain and connection tubing, checking it is patent before it is inserted.",
+      "loads 3-0 Monocryl for the subcuticular skin closure and completes the final count before dressing."
+    ],
+    circulator: [
+      "confirms patient identity, side and consent, and checks blood products are available before starting.",
+      "sets up the underwater seal drainage system and checks it is working before the drain is connected.",
+      "opens additional vascular instruments promptly if the surgeon reports a major vessel injury.",
+      "documents chest drain output and coordinates the final count and specimen documentation.",
+      "arranges the post-operative chest X-ray and communicates the plan to recovery."
+    ],
+    anaesthetist: [
+      "plans for one-lung ventilation or lung isolation if required for the thoracotomy.",
+      "establishes large-bore access and monitoring appropriate for potential major chest bleeding.",
+      "monitors oxygenation and haemodynamics closely once the chest is opened.",
+      "communicates promptly with the surgeon if blood loss or oxygenation become a concern.",
+      "plans safe emergence and gives a structured chest-specific handover to recovery."
+    ],
+    recovery: [
+      "receives the patient and checks the chest drain is swinging, bubbling appropriately and output is recorded.",
+      "monitors respiratory rate, SpO₂ and chest drain output closely for the first hour.",
+      "checks the dressing and drain site for bleeding or surgical emphysema.",
+      "escalates promptly for a sudden increase in drain output or respiratory distress.",
+      "gives a structured handover including drain status, chest X-ray plan and observation targets."
+    ]
+  },
+
+  bulletAbdomen: {
+    surgeon: [
+      "confirms the plan for exploratory laparotomy and reviews imaging with the team before starting.",
+      "makes a midline laparotomy incision and packs all four quadrants to control bleeding on entry.",
+      "systematically explores the bowel, solid organs and vessels along the bullet tract for injury.",
+      "repairs a bowel injury with a 3-0 Vicryl suture or resects and staples a non-viable segment.",
+      "removes the retrieved bullet fragment and irrigates the abdominal cavity thoroughly.",
+      "checks haemostasis methodically before deciding between formal or damage-control closure.",
+      "closes the fascia with a continuous 1 PDS loop suture using a mass-closure technique.",
+      "closes the skin with staples, or leaves the wound open with a dressing if contamination is significant.",
+      "dictates the operative findings and gives a structured abdominal-surgery handover to recovery."
+    ],
+    assistant: [
+      "helps insert and hold the abdominal packs steady during the initial four-quadrant packing.",
+      "retracts the bowel and abdominal wall to give a clear view as the surgeon explores each quadrant.",
+      "assists with suction and irrigation during the bowel repair and washout.",
+      "holds tension on the fascia and cuts sutures as the surgeon performs the mass closure.",
+      "counts swabs back in as they are removed from the abdomen and confirms this with the scrub nurse.",
+      "assists with the final skin closure or dressing and helps prepare the patient for transfer."
+    ],
+    scrub: [
+      "checks the laparotomy set, bowel clamps and vascular instruments against the count sheet.",
+      "passes the scalpel for the midline incision, then hands over the abdominal packs in sequence.",
+      "loads the needle holder with 3-0 Vicryl for the bowel repair and keeps track of every swab used.",
+      "hands over the bowel stapler if a resection is required and confirms the staple line with the surgeon.",
+      "loads the heavy 1 PDS loop suture for the mass fascial closure and keeps the needle count accurate.",
+      "prepares the skin stapler or dressing pack for closure and completes the final count with the circulator."
+    ],
+    circulator: [
+      "confirms patient identity, consent and checks blood products and the massive transfusion protocol status.",
+      "opens the bowel stapler and additional sterile supplies promptly when requested by the scrub nurse.",
+      "documents the volume of blood loss, fluids given and any products transfused during the case.",
+      "labels and packages the retrieved bullet fragment as a forensic specimen with correct documentation.",
+      "coordinates the final swab, instrument and sharps count and documents it clearly before closure."
+    ],
+    anaesthetist: [
+      "establishes large-bore access and activates the massive transfusion protocol if bleeding is significant.",
+      "monitors temperature, coagulation and acid-base status closely throughout a damage-control case.",
+      "communicates blood loss and physiological trends clearly and regularly to the surgical team.",
+      "supports the decision for damage-control closure over definitive repair if the patient is deteriorating.",
+      "gives a structured handover to intensive care or recovery covering blood products, fluids and physiology."
+    ],
+    recovery: [
+      "receives the patient and checks abdominal dressing, drains and observations against the handover.",
+      "monitors for signs of ongoing bleeding, abdominal distension or deterioration.",
+      "checks temperature, coagulation-related bleeding and urine output closely after a damage-control case.",
+      "escalates promptly for any signs of deterioration or a tense, distended abdomen.",
+      "gives a structured handover covering the procedure, ongoing monitoring and plan for any planned re-look."
+    ]
+  },
+
+  bulletLimb: {
+    surgeon: [
+      "confirms the entry/exit points and neurovascular findings with the team before exploring the wound.",
+      "extends the wound as needed and explores along the bullet tract, checking nerves and vessels directly.",
+      "controls any vascular injury with vascular clamps and repairs it with a fine 6-0 Prolene suture if needed.",
+      "removes the bullet fragment and any obviously dead tissue, preserving viable structures.",
+      "performs a fasciotomy if compartment pressures are a concern, leaving the skin open.",
+      "irrigates the wound thoroughly and decides between primary closure or planned delayed closure.",
+      "closes the fascia with 0 Vicryl if primary closure is appropriate, or leaves it open with a dressing.",
+      "closes the skin with interrupted 3-0 Nylon sutures where the wound is suitable for primary closure.",
+      "documents the neurovascular findings clearly and hands over to recovery with clear observation instructions."
+    ],
+    assistant: [
+      "helps position and support the limb, keeping it accessible without contaminating the sterile field.",
+      "retracts soft tissue to give a clear view of the bullet tract as the surgeon explores it.",
+      "assists with vessel control, holding clamps steady if a vascular repair is required.",
+      "irrigates the wound under the surgeon's direction and helps remove debris and dead tissue.",
+      "cuts sutures during fascial or skin closure as directed by the surgeon.",
+      "helps apply the dressing or splint and assists with limb positioning for transfer."
+    ],
+    scrub: [
+      "checks the limb exploration set, vascular instruments and irrigation equipment before opening.",
+      "passes the scalpel and retractors for wound exploration and keeps swabs accounted for.",
+      "hands over the fine 6-0 Prolene suture and vascular instruments promptly if a vessel injury is found.",
+      "keeps the retrieved bullet fragment on a labelled sterile dish for the surgeon to review.",
+      "loads 0 Vicryl for fascia and 3-0 Nylon for skin, ready for whichever closure the surgeon chooses.",
+      "prepares dressings or a splint for the limb and completes the final count before it is applied."
+    ],
+    circulator: [
+      "confirms patient identity, consent and checks a tourniquet is available and documented if used.",
+      "documents tourniquet time clearly if one is applied during the procedure.",
+      "opens vascular repair instruments promptly if the surgeon reports a vessel injury.",
+      "coordinates the final count and documents whether the wound is closed or left open with a plan for review.",
+      "communicates the closure decision and any splint or dressing details to recovery."
+    ],
+    anaesthetist: [
+      "checks distal neurovascular status is documented before induction, alongside the pre-operative assessment.",
+      "considers regional or general anaesthesia appropriate for the extent of limb exploration required.",
+      "monitors for significant blood loss, particularly if a vascular repair is needed.",
+      "communicates promptly with the surgeon about tourniquet time and any physiological concerns.",
+      "gives a structured handover including analgesia, limb positioning and any tourniquet details."
+    ],
+    recovery: [
+      "receives the patient and checks distal pulses, sensation and movement against the pre-operative baseline.",
+      "checks the dressing or splint for bleeding and ensures the limb is positioned appropriately.",
+      "monitors neurovascular status closely, especially after a vascular repair or fasciotomy.",
+      "escalates promptly for any loss of pulse, worsening pain or new neurological change.",
+      "gives a structured handover covering the procedure, neurovascular status and any planned re-look."
+    ]
+  },
+
+  bulletMultiple: {
+    surgeon: [
+      "leads a rapid team discussion to prioritise which wound is addressed first based on threat to life.",
+      "applies damage-control principles, controlling the most immediately life-threatening bleeding first.",
+      "moves systematically between wound sites, controlling haemorrhage and contamination rather than performing definitive repair.",
+      "removes accessible bullet fragments only where doing so does not delay control of bleeding.",
+      "uses temporary closure techniques rather than formal layered closure to save time across multiple sites.",
+      "communicates clearly with the team about which sites are packed, closed or still require attention.",
+      "plans for a return to theatre for definitive repair once the patient is physiologically stable.",
+      "gives a structured damage-control handover, listing every wound site and what was and wasn't definitively treated."
+    ],
+    assistant: [
+      "helps move rapidly between wound sites, supporting whichever the surgeon is addressing.",
+      "applies direct pressure or holds packing in place at a second site while the surgeon works on another.",
+      "assists with rapid temporary closure, holding skin edges for towel clips or large sutures.",
+      "keeps track of which sites have been addressed and flags anything still bleeding to the surgeon.",
+      "helps prepare the patient for rapid transfer to intensive care once damage control is complete."
+    ],
+    scrub: [
+      "lays out instruments for damage control rather than a single defined set, anticipating rapid site changes.",
+      "keeps multiple trays organised so instruments for each wound site are easy to find quickly.",
+      "passes large interrupted sutures or towel clips for rapid temporary closure at each site.",
+      "keeps an accurate count across every site despite the fast pace, flagging any discrepancy immediately.",
+      "prepares dressings for every wound site so the whole patient can be covered quickly once haemostasis is achieved."
+    ],
+    circulator: [
+      "confirms patient identity and activates the massive transfusion protocol immediately.",
+      "coordinates rapid supply of instruments and dressings across every wound site being worked on.",
+      "documents blood products given and blood loss across the whole case, not just one site.",
+      "coordinates the final count across every site before the patient leaves theatre.",
+      "communicates the damage-control plan and outstanding sites clearly to the receiving intensive care team."
+    ],
+    anaesthetist: [
+      "activates the massive transfusion protocol and establishes large-bore access immediately.",
+      "monitors temperature, coagulation and acid-base status continuously throughout the multi-site case.",
+      "communicates physiological trends to the whole team so damage-control decisions can be made quickly.",
+      "supports stopping for physiological reasons even if not every wound has been definitively treated.",
+      "gives a structured handover to intensive care covering physiology, blood products and outstanding surgical needs."
+    ],
+    recovery: [
+      "receives the patient into intensive care and checks every wound site against the handover list.",
+      "monitors temperature, coagulation and observations closely, watching for the lethal triad.",
+      "checks all temporary dressings and packing for ongoing bleeding.",
+      "escalates immediately for any sign of deterioration or uncontrolled bleeding at any site.",
+      "confirms the plan and timing for a return to theatre for definitive repair."
+    ]
+  },
+
+  fractureRepair: {
+    surgeon: [
+      "confirms the fracture pattern on imaging and the planned fixation method with the team.",
+      "makes the incision over the fracture site and exposes the bone while protecting surrounding soft tissue.",
+      "reduces the fracture under direct vision or with the image intensifier, checking alignment carefully.",
+      "applies the plate, screws, nail or external fixator according to the pre-operative plan.",
+      "checks the reduction and fixation on the image intensifier before closing.",
+      "closes the periosteum and fascia with 0 Vicryl, then the subcutaneous layer with 2-0 Vicryl.",
+      "closes the skin with staples or interrupted 3-0 Nylon sutures.",
+      "confirms the post-operative weight-bearing and mobility plan and hands over to recovery."
+    ],
+    assistant: [
+      "helps position the limb and confirms the image intensifier has a clear view before draping.",
+      "retracts soft tissue to expose the fracture site while protecting nerves and vessels.",
+      "holds the fracture reduced while the surgeon applies the plate or nail.",
+      "assists with the image intensifier checks, adjusting the limb position as requested.",
+      "cuts sutures during layered closure as the surgeon ties each one.",
+      "helps apply the post-operative dressing or splint and assists with transfer."
+    ],
+    scrub: [
+      "checks the fracture set, plates, screws and image intensifier drape before the case starts.",
+      "passes the scalpel and periosteal elevator, then the reduction clamps as the surgeon works.",
+      "hands over the correct plate and screws, confirming sizes against the pre-operative plan.",
+      "loads 0 Vicryl for fascia, 2-0 Vicryl for the subcutaneous layer and prepares the skin stapler.",
+      "keeps the drill bits, screws and instruments accounted for throughout, given the number of small metal parts in play.",
+      "completes the final count carefully, including all screws and any unused implants, before closure."
+    ],
+    circulator: [
+      "confirms patient identity, site and consent, checking the correct side is marked before starting.",
+      "positions the image intensifier and checks radiation safety precautions are in place for the team.",
+      "opens the correct implant set requested by the surgeon without breaking the sterile field.",
+      "documents implant details, including plate and screw sizes used, in the operative record.",
+      "coordinates the final count and confirms all implant packaging is accounted for."
+    ],
+    anaesthetist: [
+      "confirms regional or general anaesthesia is appropriate for the planned fixation.",
+      "monitors for blood loss, which can be significant with long-bone fractures.",
+      "adjusts positioning support as the surgeon needs access to check the image intensifier views.",
+      "communicates any tourniquet time or blood loss concerns to the surgical team.",
+      "gives a structured handover including analgesia plan and any weight-bearing precautions."
+    ],
+    recovery: [
+      "receives the patient and checks the limb's neurovascular status against the pre-operative baseline.",
+      "checks the dressing or splint and confirms the documented weight-bearing status.",
+      "monitors pain control and neurovascular status closely in the first few hours.",
+      "escalates promptly for any loss of pulse, worsening pain or new neurological change.",
+      "gives a structured handover covering the fixation used and post-operative mobility plan."
+    ]
+  },
+
+  haemorrhageControl: {
+    surgeon: [
+      "leads a rapid decision to proceed straight to damage-control surgery given ongoing haemorrhage.",
+      "opens rapidly and packs all four quadrants (or the relevant cavity) to control bleeding immediately.",
+      "identifies the bleeding source and controls it with a vascular clamp, ligature or pack rather than a formal repair.",
+      "ties or ligates the bleeding vessel with a heavy silk or 0 Prolene suture ligature where accessible.",
+      "reassesses haemostasis repeatedly, adding further packing rather than persisting with a difficult repair.",
+      "applies a temporary abdominal or cavity closure rather than a formal layered closure to save time.",
+      "communicates clearly with anaesthetics about ongoing blood loss and physiological status throughout.",
+      "plans for a return to theatre once the patient is warmed, resuscitated and coagulation corrected."
+    ],
+    assistant: [
+      "helps pack the cavity rapidly on entry, applying firm, even pressure as directed.",
+      "holds vascular clamps steady while the surgeon controls or ligates the bleeding vessel.",
+      "assists with rapid suction to keep the field visible during active bleeding.",
+      "helps apply the temporary closure device or dressing quickly once bleeding is controlled.",
+      "assists with rapid transfer to intensive care once the damage-control phase is complete."
+    ],
+    scrub: [
+      "has vascular clamps, ligatures and packs ready before the patient is even draped, given the urgency.",
+      "passes packs rapidly in sequence as the surgeon controls each quadrant or bleeding point.",
+      "hands over heavy silk ties or 0 Prolene sutures the moment a bleeding vessel is identified.",
+      "keeps an accurate count under pressure, flagging discrepancies immediately despite the pace.",
+      "prepares the temporary closure device (such as a vacuum dressing) ready for rapid application."
+    ],
+    circulator: [
+      "activates the massive transfusion protocol immediately and confirms blood products are en route.",
+      "opens additional packs and vascular instruments the moment they are requested.",
+      "documents blood loss, products given and timings accurately throughout a fast-moving case.",
+      "coordinates the count as far as possible given the urgency, flagging anything uncertain clearly.",
+      "communicates the plan for a return to theatre to the receiving intensive care team."
+    ],
+    anaesthetist: [
+      "activates the massive transfusion protocol and secures large-bore access immediately.",
+      "monitors temperature, coagulation and acid-base status continuously to guide resuscitation.",
+      "gives blood products in a balanced ratio and communicates the response to the surgical team.",
+      "supports the decision to stop for damage control rather than pursue definitive repair.",
+      "gives a structured handover to intensive care covering physiology, products given and ongoing needs."
+    ],
+    recovery: [
+      "receives the patient into intensive care and checks temporary dressings and drains for bleeding.",
+      "monitors temperature, coagulation and observations closely, watching for the lethal triad.",
+      "escalates immediately for any sign of ongoing or recurrent bleeding.",
+      "supports active warming and correction of coagulopathy per the documented plan.",
+      "confirms the plan and timing for a return to theatre for definitive repair."
+    ]
+  },
+
+  debridement: {
+    surgeon: [
+      "confirms the wound extent and contamination with the team before starting debridement.",
+      "irrigates the wound thoroughly with copious saline before excising any dead tissue.",
+      "excises non-viable skin, muscle and any foreign material back to healthy, bleeding tissue.",
+      "reassesses tissue viability and repeats excision if any doubtful tissue remains.",
+      "irrigates the wound again once debridement is complete and checks haemostasis.",
+      "decides between primary closure, delayed primary closure or a VAC dressing based on contamination.",
+      "closes the skin with interrupted 3-0 Nylon sutures if primary closure is appropriate.",
+      "applies a VAC dressing and plans a return to theatre for reassessment if the wound is left open."
+    ],
+    assistant: [
+      "helps irrigate the wound under pressure, directing the fluid away from the team.",
+      "retracts tissue to give a clear view as the surgeon excises non-viable tissue.",
+      "assists with hemostasis using diathermy or pressure as directed.",
+      "helps assess tissue for viability, pointing out any areas of concern to the surgeon.",
+      "assists with wound closure or VAC dressing application depending on the surgeon's decision."
+    ],
+    scrub: [
+      "checks the debridement set, irrigation equipment and VAC dressing supplies before opening.",
+      "passes scalpels and scissors for tissue excision, keeping track of instruments as tissue is removed.",
+      "keeps excised tissue for histology or microbiology as directed, labelling samples clearly.",
+      "loads 3-0 Nylon for skin closure if primary closure is chosen.",
+      "prepares the VAC dressing kit and foam if the wound is being left open, cutting it to size.",
+      "completes the final count, being especially careful given the amount of tissue and swabs used."
+    ],
+    circulator: [
+      "confirms patient identity and consent, and checks whether microbiology samples are required.",
+      "opens additional irrigation fluid and dressing supplies as the case requires.",
+      "labels microbiology and histology samples correctly and arranges prompt transport.",
+      "documents the extent of debridement and the closure decision clearly.",
+      "coordinates the final count and communicates the wound status to the ward or recovery team."
+    ],
+    anaesthetist: [
+      "confirms analgesia and anaesthesia appropriate for the extent of debridement required.",
+      "monitors for blood loss, which can be more than expected with extensive debridement.",
+      "communicates with the surgeon about the anticipated length of the procedure.",
+      "plans post-operative analgesia appropriate for a wound that may be left open.",
+      "gives a structured handover including the closure decision and dressing plan."
+    ],
+    recovery: [
+      "receives the patient and checks the wound dressing or VAC system is functioning correctly.",
+      "monitors for signs of infection, bleeding or worsening pain.",
+      "checks VAC suction pressure and canister output if a VAC dressing has been applied.",
+      "escalates promptly for any signs of spreading infection or deterioration.",
+      "gives a structured handover including the closure plan and any planned return to theatre."
+    ]
+  },
+
+  amputation: {
+    surgeon: [
+      "confirms the level of amputation with the team, marking skin flaps before starting.",
+      "divides the skin and muscle at the marked level, controlling bleeding with diathermy as they go.",
+      "identifies and ligates major vessels individually with 0 silk ties or transfixion sutures.",
+      "identifies major nerves, dividing them cleanly under gentle traction to reduce neuroma pain.",
+      "divides the bone with a saw at the planned level, smoothing any sharp edges.",
+      "performs myoplasty, suturing the muscle flaps over the bone end with 0 Vicryl for a well-padded stump.",
+      "places a drain in the stump before closing the deep layers.",
+      "closes the skin with interrupted 2-0 Nylon sutures or staples, checking the flap sits without tension.",
+      "documents the level and technique clearly and gives a structured handover to recovery."
+    ],
+    assistant: [
+      "helps support the limb during marking and division, keeping it steady for the surgeon.",
+      "retracts skin and muscle flaps to give a clear view as the surgeon works through each layer.",
+      "assists with vessel control, holding clamps steady while each vessel is ligated.",
+      "helps hold the muscle flaps in position during myoplasty while the surgeon sutures them over the bone end.",
+      "cuts sutures during closure as the surgeon ties each one.",
+      "helps apply the stump dressing and assists with positioning for transfer."
+    ],
+    scrub: [
+      "checks the amputation set, saw, ligatures and myoplasty instruments before the case starts.",
+      "passes the scalpel for skin marking and division, then artery forceps as vessels are identified.",
+      "hands over 0 silk ties promptly as each named vessel is controlled.",
+      "passes the amputation saw securely and receives the removed limb onto a separate sterile area.",
+      "loads 0 Vicryl for the myoplasty closure and keeps the drain and dressing ready.",
+      "loads 2-0 Nylon or the skin stapler for the final closure and completes the final count carefully."
+    ],
+    circulator: [
+      "confirms the consented level of amputation matches the surgeon's plan and the consent form.",
+      "arranges for sensitive handling and disposal of the amputated limb per local policy.",
+      "opens additional ligatures or instruments promptly if bleeding is more than expected.",
+      "documents the drain placement and stump dressing details in the operative record.",
+      "coordinates the final count and communicates the plan for stump care to recovery."
+    ],
+    anaesthetist: [
+      "discusses regional anaesthesia options for post-amputation pain control before induction.",
+      "monitors for blood loss during vessel ligation and bone division.",
+      "considers pre-emptive analgesia to help reduce the risk of phantom limb pain.",
+      "communicates with the surgeon about the anticipated timing of tourniquet release if one is used.",
+      "gives a structured handover including analgesia plan and stump precautions."
+    ],
+    recovery: [
+      "receives the patient and checks the stump dressing for bleeding and the drain is functioning.",
+      "monitors pain control closely, including screening for early signs of phantom limb pain.",
+      "checks proximal pulses and the general condition of the stump.",
+      "escalates promptly for any bleeding through the dressing or signs of infection.",
+      "gives a structured handover covering the level of amputation, drain and analgesia plan."
+    ]
+  },
+
+  emergencyField: {
+    surgeon: [
+      "confirms the scene is safe and the intervention is genuinely immediately life-saving before starting.",
+      "uses whatever sterile or clean equipment is available, accepting this is damage control only.",
+      "controls catastrophic haemorrhage first, using direct pressure, packing or a tourniquet as appropriate.",
+      "performs only the minimum intervention needed to keep the patient alive for evacuation.",
+      "closes any wound with simple interrupted sutures from the field surgical kit where time allows.",
+      "clearly documents every intervention performed, since definitive surgical care will follow at hospital.",
+      "communicates continuously with the team about the plan for rapid evacuation.",
+      "hands over a clear, structured account of interventions performed to the receiving hospital team."
+    ],
+    assistant: [
+      "helps maintain scene safety and keeps unnecessary personnel clear of the working area.",
+      "assists with direct pressure or holding a tourniquet in place while the surgeon works.",
+      "passes whatever equipment is available and keeps track of it given the austere setting.",
+      "helps package the patient for rapid evacuation once the intervention is complete.",
+      "assists with continuous monitoring during preparation for transport."
+    ],
+    scrub: [
+      "lays out the field surgical kit as best as space allows, prioritising haemorrhage control equipment.",
+      "passes instruments quickly given the improvised, non-sterile-theatre setting.",
+      "keeps track of every instrument and swab used despite the field conditions, to avoid leaving anything behind.",
+      "prepares whatever suture material and dressings are available for wound closure.",
+      "helps package equipment quickly once done, ready for immediate evacuation."
+    ],
+    circulator: [
+      "coordinates scene safety and keeps a clear working area around the patient.",
+      "manages communication with the evacuation team throughout the intervention.",
+      "documents interventions performed as clearly as the situation allows.",
+      "helps organise equipment and supplies given the lack of a normal theatre environment.",
+      "coordinates the handover of documentation to the receiving hospital team."
+    ],
+    anaesthetist: [
+      "provides whatever analgesia and sedation is safely available in the field setting.",
+      "monitors the patient continuously given the limited monitoring equipment available.",
+      "communicates clearly with the surgeon about how much intervention the patient can tolerate.",
+      "prepares the patient for the physiological stress of transport immediately afterwards.",
+      "gives a clear verbal handover of interventions and medications given to the receiving team."
+    ],
+    recovery: [
+      "receives the patient at the treatment facility and reassesses everything performed in the field.",
+      "checks all field dressings, tourniquets and interventions for adequacy on arrival.",
+      "documents the timeline of field interventions clearly for the hospital record.",
+      "escalates immediately for any inadequately controlled bleeding or deterioration.",
+      "confirms the plan for definitive surgical care now the patient has reached hospital."
+    ]
+  },
+
+  appendectomy: {
+    surgeon: [
+      "confirms the diagnosis, imaging and consent for appendectomy with the team before starting.",
+      "establishes pneumoperitoneum and inserts the laparoscopic ports, or makes an open incision if converting.",
+      "identifies the appendix and dissects the mesoappendix, dividing it between clips or with a vessel sealer.",
+      "secures the appendix base with an endoloop or 2-0 Vicryl transfixion suture before dividing it.",
+      "removes the appendix in a retrieval bag and inspects the stump for security and bleeding.",
+      "washes out the peritoneal cavity if the appendix was perforated, checking for collections.",
+      "closes the fascia at any port 10mm or larger with a 2-0 Vicryl suture.",
+      "closes the skin with a subcuticular 4-0 Monocryl suture or steri-strips at each port site.",
+      "documents the operative findings and gives a structured handover to recovery."
+    ],
+    assistant: [
+      "helps position the patient and confirms the camera and instrument ports are correctly placed.",
+      "holds the camera steady, keeping the appendix and mesoappendix in clear view throughout.",
+      "retracts the caecum gently to expose the appendix base for the surgeon.",
+      "assists with suction and irrigation if the appendix has perforated.",
+      "helps retrieve the specimen bag through the port without contaminating the wound.",
+      "assists with port site closure, holding skin edges apposed for the subcuticular suture."
+    ],
+    scrub: [
+      "checks the laparoscopic tower, camera, ports and appendix instruments before the case starts.",
+      "passes the Verres needle or optical port for initial entry, then the working ports.",
+      "hands over the endoloop or loads 2-0 Vicryl for the appendix base ligation.",
+      "prepares the specimen retrieval bag ready for when the appendix is freed.",
+      "loads 2-0 Vicryl for the fascia at the umbilical port and 4-0 Monocryl for the skin.",
+      "completes the final instrument and swab count before the ports are removed."
+    ],
+    circulator: [
+      "confirms patient identity, consent and checks the laparoscopic stack is working before starting.",
+      "adjusts the insufflator and camera settings as requested during the case.",
+      "receives the appendix specimen, checks the label against the request form and arranges histology.",
+      "documents whether the appendix was perforated and any washout performed.",
+      "coordinates the final count and communicates the plan for antibiotics to the ward."
+    ],
+    anaesthetist: [
+      "confirms fasting status and plans anaesthesia appropriate for a laparoscopic abdominal case.",
+      "monitors for the physiological effects of pneumoperitoneum during the case.",
+      "gives antibiotics at the correct time relative to incision as per local protocol.",
+      "communicates with the surgeon about conversion to open surgery if required.",
+      "gives a structured handover including analgesia plan and antibiotic status."
+    ],
+    recovery: [
+      "receives the patient and checks the port sites for bleeding and the abdomen is soft.",
+      "monitors pain, temperature and return of bowel sounds after the procedure.",
+      "checks whether the appendix was perforated and adjusts the observation plan accordingly.",
+      "escalates promptly for fever, worsening pain or signs of an intra-abdominal collection.",
+      "gives a structured handover including operative findings and the antibiotic and follow-up plan."
+    ]
+  },
+
+  cholecystectomy: {
+    surgeon: [
+      "confirms the diagnosis and imaging findings with the team before starting the laparoscopic case.",
+      "establishes pneumoperitoneum and inserts the four standard ports for laparoscopic cholecystectomy.",
+      "dissects Calot's triangle carefully to achieve the critical view of safety before dividing anything.",
+      "clips and divides the cystic duct and cystic artery once the critical view is confirmed.",
+      "dissects the gallbladder off the liver bed using diathermy, checking for bleeding as they go.",
+      "removes the gallbladder through the umbilical port in a retrieval bag.",
+      "checks the liver bed and clip sites for bleeding or bile leak before deflating the abdomen.",
+      "closes the umbilical fascia with a 0 Vicryl suture, then the skin with subcuticular 4-0 Monocryl at each port.",
+      "documents the critical view was achieved and gives a structured handover to recovery."
+    ],
+    assistant: [
+      "holds the camera steady, keeping Calot's triangle in clear view during the critical dissection.",
+      "retracts the gallbladder fundus to give the surgeon tension for the dissection.",
+      "confirms with the surgeon that the critical view of safety has been achieved before clips are applied.",
+      "assists with suction if there is any bile leak or bleeding from the liver bed.",
+      "helps retrieve the gallbladder specimen bag through the umbilical port.",
+      "assists with port site closure, holding the fascia and skin for the surgeon's sutures."
+    ],
+    scrub: [
+      "checks the laparoscopic tower, clip applier and dissecting instruments before the case starts.",
+      "passes the ports for insertion, then the dissecting instruments for Calot's triangle.",
+      "hands over the clip applier for the cystic duct and artery once the surgeon confirms the critical view.",
+      "prepares the specimen retrieval bag for the gallbladder.",
+      "loads 0 Vicryl for the umbilical fascia and 4-0 Monocryl for the skin at each port.",
+      "completes the final count, including confirming the number of clips used matches what was applied."
+    ],
+    circulator: [
+      "confirms patient identity, consent and checks imaging is available in theatre before starting.",
+      "adjusts the insufflator, light source and camera settings as requested.",
+      "receives the gallbladder specimen, checks the label against the request form and sends it for histology.",
+      "documents whether an intra-operative cholangiogram was performed if requested.",
+      "coordinates the final count and communicates the plan for discharge to the ward."
+    ],
+    anaesthetist: [
+      "confirms fasting status and plans anaesthesia appropriate for a laparoscopic case.",
+      "monitors for the physiological effects of pneumoperitoneum and steep positioning.",
+      "gives anti-emetics proactively, since nausea is common after this procedure.",
+      "communicates with the surgeon about conversion to open surgery if the anatomy is difficult.",
+      "gives a structured handover including analgesia and anti-emetic plan."
+    ],
+    recovery: [
+      "receives the patient and checks the port sites for bleeding and the abdomen is soft.",
+      "monitors for shoulder-tip pain, which is common after laparoscopic surgery from residual gas.",
+      "checks for signs of bile leak such as worsening pain, fever or jaundice.",
+      "escalates promptly for severe pain, fever or any concern about bile leak or bleeding.",
+      "gives a structured handover including operative findings and the discharge plan."
+    ]
+  },
+
+  bowelResection: {
+    surgeon: [
+      "confirms the diagnosis, imaging and plan for resection with the team before starting.",
+      "mobilises the affected bowel segment, dividing the mesentery and ligating the relevant vessels.",
+      "applies bowel clamps proximally and distally before resecting the diseased segment.",
+      "fashions the anastomosis, either stapled or hand-sewn with a 3-0 PDS suture in two layers.",
+      "checks the anastomosis is well-perfused and leak-free before returning the bowel to the abdomen.",
+      "closes the mesenteric defect with a continuous 3-0 Vicryl suture to prevent internal herniation.",
+      "fashions a stoma with interrupted 3-0 Vicryl sutures if diversion is required instead of anastomosis.",
+      "closes the fascia with a continuous 1 PDS loop suture using a mass-closure technique.",
+      "closes the skin with staples and gives a structured handover to recovery."
+    ],
+    assistant: [
+      "helps retract the bowel and abdominal wall to expose the segment being resected.",
+      "holds bowel clamps steady while the surgeon divides and resects the diseased segment.",
+      "assists with the anastomosis, holding tension on the bowel wall as sutures are placed.",
+      "cuts sutures during the anastomosis and mesenteric closure as the surgeon ties each one.",
+      "helps mature the stoma if one is fashioned, supporting the bowel through the abdominal wall.",
+      "assists with the fascial mass closure and final skin closure."
+    ],
+    scrub: [
+      "checks the bowel resection set, staplers and anastomosis instruments before the case starts.",
+      "passes bowel clamps and the stapler for resection, keeping track of staple cartridges used.",
+      "loads 3-0 PDS for a hand-sewn anastomosis if the surgeon chooses not to staple.",
+      "prepares stoma equipment (rod, bag) if diversion is planned.",
+      "loads the heavy 1 PDS loop suture for the mass fascial closure and keeps the count accurate throughout.",
+      "prepares the skin stapler for closure and completes the final count with the circulator."
+    ],
+    circulator: [
+      "confirms patient identity, consent and whether stoma siting was marked pre-operatively.",
+      "opens the bowel stapler and cartridges promptly as requested by the scrub nurse.",
+      "receives the resected bowel specimen, checks the label against the request form and sends it for histology.",
+      "documents whether an anastomosis or stoma was fashioned in the operative record.",
+      "coordinates the final count and communicates the stoma or wound care plan to the ward."
+    ],
+    anaesthetist: [
+      "plans anaesthesia and fluid management appropriate for a bowel resection case.",
+      "monitors closely for blood loss and fluid shifts during bowel mobilisation.",
+      "gives antibiotics at the correct time and considers epidural analgesia for open cases.",
+      "communicates with the surgeon about physiological status throughout a longer procedure.",
+      "gives a structured handover including fluid balance and analgesia plan."
+    ],
+    recovery: [
+      "receives the patient and checks the abdomen, wound and any stoma against the handover.",
+      "monitors for return of bowel function and any signs of anastomotic leak.",
+      "checks stoma output and appearance closely if one has been fashioned.",
+      "escalates promptly for fever, worsening pain or signs of a leak or ileus.",
+      "gives a structured handover including the anastomosis or stoma details and monitoring plan."
+    ]
+  },
+
+  splenectomy: {
+    surgeon: [
+      "confirms the indication and imaging findings with the team before starting.",
+      "mobilises the spleen, dividing the splenic ligaments while protecting the tail of the pancreas.",
+      "controls the splenic hilum with vascular clamps before dividing the splenic artery and vein.",
+      "ligates or staples the splenic vessels securely with 2-0 silk ties or a vascular stapler.",
+      "divides the short gastric vessels between ties, then removes the spleen.",
+      "checks the splenic bed, stomach and pancreatic tail carefully for bleeding or injury.",
+      "closes the fascia with a continuous 1 PDS loop suture using a mass-closure technique.",
+      "closes the skin with staples or a subcuticular suture and gives a structured handover to recovery."
+    ],
+    assistant: [
+      "helps retract the abdominal wall and stomach to expose the spleen and its ligaments.",
+      "holds vascular clamps steady while the surgeon controls the splenic hilum.",
+      "assists with suction and swab packing if there is brisk bleeding during mobilisation.",
+      "cuts sutures during vessel ligation and fascial closure as the surgeon ties each one.",
+      "helps inspect the splenic bed for bleeding before the abdomen is closed.",
+      "assists with the final skin closure and transfer preparation."
+    ],
+    scrub: [
+      "checks the splenectomy set, vascular clamps and stapler before the case starts.",
+      "passes long instruments suited to reaching the spleen in the left upper quadrant.",
+      "hands over 2-0 silk ties or the vascular stapler for the splenic hilum vessels.",
+      "keeps the spleen on a separate sterile dish once removed, ready for the surgeon to inspect.",
+      "loads the heavy 1 PDS loop suture for the mass fascial closure and confirms the count is accurate.",
+      "prepares the skin closure material and completes the final count before dressing."
+    ],
+    circulator: [
+      "confirms patient identity, consent and checks blood products are available given the risk of major bleeding.",
+      "opens the vascular stapler and additional ties promptly if requested during hilar control.",
+      "documents blood loss and any products given throughout the case.",
+      "receives the spleen specimen, checks the label against the request form and sends it for histology.",
+      "coordinates the final count and communicates post-splenectomy vaccination needs to the ward."
+    ],
+    anaesthetist: [
+      "establishes large-bore access given the risk of significant bleeding from the splenic hilum.",
+      "monitors haemodynamics closely, particularly during hilar dissection and vessel division.",
+      "communicates promptly with the surgeon if blood loss becomes significant.",
+      "prepares for rapid transfusion if the splenic vessels are difficult to control.",
+      "gives a structured handover including blood loss, products given and analgesia plan."
+    ],
+    recovery: [
+      "receives the patient and checks the abdomen, drain and observations against the handover.",
+      "monitors closely for signs of ongoing bleeding or a falling blood count.",
+      "checks temperature and general condition, watching for early signs of post-splenectomy infection risk.",
+      "escalates promptly for tachycardia, hypotension or a tense abdomen.",
+      "gives a structured handover including the need for post-splenectomy vaccination and antibiotic prophylaxis planning."
+    ]
+  },
+
+  jointWashout: {
+    surgeon: [
+      "confirms the affected joint, side and indication with the team before starting.",
+      "establishes arthroscopic portals or makes an open arthrotomy incision depending on the plan.",
+      "washes the joint out thoroughly with several litres of saline until the fluid runs clear.",
+      "debrides any obviously infected or damaged synovium while preserving healthy joint surfaces.",
+      "takes joint fluid and tissue samples for microbiology before completing the washout.",
+      "closes arthroscopic portals with simple 3-0 Nylon sutures or steri-strips.",
+      "closes an open arthrotomy in layers, the capsule with 0 Vicryl and skin with 3-0 Nylon.",
+      "documents the appearance of the joint and samples taken, then hands over to recovery."
+    ],
+    assistant: [
+      "helps position the limb to give good access to the joint throughout the procedure.",
+      "holds the camera or retractors steady, keeping the joint space clearly visible.",
+      "assists with irrigation, directing fluid flow as the surgeon washes out the joint.",
+      "helps label microbiology samples correctly as they are taken.",
+      "cuts sutures during portal or capsule closure as the surgeon ties each one."
+    ],
+    scrub: [
+      "checks the arthroscopy tower or open joint set and irrigation fluid before the case starts.",
+      "passes the arthroscope and instruments, keeping the sterile field organised around the joint.",
+      "prepares sample pots for microbiology and labels them clearly as they are filled.",
+      "loads 3-0 Nylon for portal or skin closure, ready for whichever approach is used.",
+      "completes the final count, including confirming all irrigation fluid bags used are documented."
+    ],
+    circulator: [
+      "confirms patient identity, joint and side, checking it is marked correctly before starting.",
+      "opens additional irrigation fluid promptly as the washout continues.",
+      "labels and sends microbiology samples promptly to maximise the chance of identifying the organism.",
+      "documents the volume of fluid used and the appearance of the joint.",
+      "coordinates the final count and communicates the antibiotic plan to the ward."
+    ],
+    anaesthetist: [
+      "confirms anaesthesia appropriate for the joint and approach being used.",
+      "monitors fluid absorption if a large volume of irrigation fluid is used, particularly for larger joints.",
+      "gives antibiotics at the correct time, often after samples have been taken as directed by the surgeon.",
+      "communicates with the surgeon about the anticipated duration of the washout.",
+      "gives a structured handover including antibiotic timing and analgesia plan."
+    ],
+    recovery: [
+      "receives the patient and checks the joint dressing and range of movement against the handover.",
+      "monitors temperature and inflammatory markers as directed after a septic joint washout.",
+      "checks for ongoing joint swelling, redness or worsening pain.",
+      "escalates promptly for fever or signs the infection is not settling.",
+      "gives a structured handover including microbiology samples sent and the antibiotic plan."
+    ]
+  },
+
+  vascularRepair: {
+    surgeon: [
+      "confirms the injured vessel and baseline distal perfusion with the team before starting.",
+      "obtains proximal and distal vascular control with clamps before exploring the injury.",
+      "assesses the extent of the vessel injury, deciding between primary repair, patch or interposition graft.",
+      "repairs the vessel with a continuous fine 6-0 Prolene suture, checking the repair is watertight.",
+      "releases the clamps gradually, checking for bleeding at the repair site and distal perfusion.",
+      "confirms distal pulses or uses a Doppler to check flow beyond the repair.",
+      "closes the fascia with 0 Vicryl and the skin with 3-0 Nylon or a subcuticular suture.",
+      "documents the repair technique and distal perfusion findings, then hands over to recovery."
+    ],
+    assistant: [
+      "helps obtain proximal and distal control, holding vascular clamps steady as directed.",
+      "retracts surrounding tissue to give a clear view of the injured vessel.",
+      "assists with suction to keep the field visible during the repair.",
+      "cuts sutures during the vascular anastomosis as the surgeon ties each fine stitch.",
+      "helps check distal pulses or apply the Doppler probe once clamps are released.",
+      "assists with layered closure and transfer preparation."
+    ],
+    scrub: [
+      "checks the vascular set, fine sutures and clamps before the case starts.",
+      "passes vascular clamps for proximal and distal control as the surgeon requests them.",
+      "loads the fine 6-0 Prolene suture on a needle holder suited to delicate vascular work.",
+      "has a vascular graft or patch material ready in case the surgeon needs one.",
+      "keeps a meticulous count given the small, easily-lost nature of vascular instruments and needles.",
+      "prepares the skin closure material and completes the final count before dressing."
+    ],
+    circulator: [
+      "confirms patient identity, injured vessel and checks blood products are available.",
+      "opens the vascular graft or patch material promptly if requested by the surgeon.",
+      "documents clamp times and any period of reduced distal perfusion during the repair.",
+      "coordinates the final count and confirms all fine vascular needles are accounted for.",
+      "communicates the repair technique and observation plan to recovery."
+    ],
+    anaesthetist: [
+      "establishes appropriate access given the risk of significant blood loss with a vascular injury.",
+      "monitors haemodynamics closely throughout vessel control and repair.",
+      "communicates clamp times and any ischaemia concerns clearly with the surgeon.",
+      "prepares for reperfusion effects once the clamps are released.",
+      "gives a structured handover including blood loss, clamp times and the analgesia plan."
+    ],
+    recovery: [
+      "receives the patient and checks distal pulses and perfusion against the pre-operative baseline.",
+      "monitors the limb or affected area closely for any sign of reduced perfusion.",
+      "checks the dressing for bleeding, particularly given the vascular repair underneath.",
+      "escalates immediately for any loss of pulse or sign of reduced perfusion.",
+      "gives a structured handover covering the repair technique and neurovascular observation plan."
+    ]
+  },
+
+  skinGraft: {
+    surgeon: [
+      "confirms the recipient site and planned donor site with the team before starting.",
+      "prepares the recipient bed, removing any non-viable tissue until a healthy, bleeding surface remains.",
+      "harvests a split-thickness skin graft from the donor site using a dermatome set to the planned thickness.",
+      "meshes the graft if a larger surface area needs to be covered from a smaller donor site.",
+      "positions the graft onto the recipient bed, checking orientation and full contact with the wound.",
+      "secures the graft with staples or interrupted 5-0 Vicryl sutures around the edges.",
+      "applies a tie-over bolster dressing, securing it with silk sutures to keep even pressure on the graft.",
+      "dresses the donor site with a non-adherent dressing and gives a structured handover to recovery."
+    ],
+    assistant: [
+      "helps position the patient to expose both the donor and recipient sites clearly.",
+      "holds the skin taut at the donor site while the surgeon operates the dermatome.",
+      "assists with positioning the graft accurately onto the recipient bed.",
+      "cuts sutures as the surgeon secures the graft edges.",
+      "helps apply the tie-over bolster dressing, holding it in place while it is sutured.",
+      "assists with dressing the donor site and positioning for transfer."
+    ],
+    scrub: [
+      "checks the dermatome, graft mesher and donor/recipient site instruments before the case starts.",
+      "passes the dermatome, checking the thickness setting matches the surgeon's plan.",
+      "hands the graft to the surgeon on a sterile dressing, keeping it moist until it is placed.",
+      "loads 5-0 Vicryl for securing the graft edges and prepares staples as an alternative.",
+      "prepares the tie-over bolster dressing materials and silk sutures for securing it.",
+      "prepares the non-adherent donor site dressing and completes the final count before it is applied."
+    ],
+    circulator: [
+      "confirms patient identity, recipient site and donor site match the consent and surgical plan.",
+      "opens the dermatome blades and mesher settings as requested by the scrub nurse.",
+      "documents the graft thickness, mesh ratio and donor site used in the operative record.",
+      "coordinates the final count and confirms all sharp dermatome blades are accounted for.",
+      "communicates the graft and donor site dressing plan clearly to recovery."
+    ],
+    anaesthetist: [
+      "confirms anaesthesia appropriate for both the donor and recipient sites being operated on.",
+      "monitors for blood loss, which can occur from both the donor site and recipient bed.",
+      "plans analgesia carefully, since the donor site is often more painful than the graft site itself.",
+      "communicates with the surgeon about the anticipated duration for harvesting and securing the graft.",
+      "gives a structured handover including analgesia plan and dressing precautions for both sites."
+    ],
+    recovery: [
+      "receives the patient and checks both the donor site dressing and the graft bolster dressing.",
+      "monitors the graft site for any sign of the bolster slipping or excessive bleeding.",
+      "keeps the grafted area elevated and immobilised as directed to protect graft take.",
+      "escalates promptly for bleeding through either dressing or signs of graft compromise.",
+      "gives a structured handover covering graft and donor site care and the planned first dressing check."
+    ]
+  }
+
+};
+
 var surgeryRoleActions = {
   surgeon: [
     "takes the lead for {SURGERY}, confirms the operative plan aloud and checks the intended site with the team.",
@@ -9311,9 +10179,12 @@ function renderSurgeryRoleActions(name, role) {
   var target = panel.querySelector('#surgery-role-' + name + '-' + role + ' .surgery-role-actions');
   if (!target) return;
   var title = getSurgeryRoleTitle(name);
-  var actions = (surgeryRoleActions[role] || []).map(function(action) {
-    return action.replace(/\{SURGERY\}/g, title);
-  });
+  var specific = surgeryRoleActionsBySurgery[name] && surgeryRoleActionsBySurgery[name][role];
+  var actions = specific
+    ? specific.slice()
+    : (surgeryRoleActions[role] || []).map(function(action) {
+        return action.replace(/\{SURGERY\}/g, title);
+      });
   target.innerHTML = actions.map(function(action, index) {
     var id = 'roleRp-' + name + '-' + role + '-' + index;
     return '<div class="surgery-role-action">'
