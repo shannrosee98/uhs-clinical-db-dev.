@@ -1242,6 +1242,13 @@
       </div>
       <input id="medAuthoritySearch" type="search" placeholder="Search medication or rank..." oninput="renderMedicationAuthority()">
     </div>
+    <div class="med-rank-tabs" role="tablist" aria-label="Medication rank authorisation">
+      <button type="button" class="med-rank-tab active" data-rank="all" onclick="showMedicationAuthorityRank('all')">All Ranks</button>
+      <button type="button" class="med-rank-tab" data-rank="Paramedic" onclick="showMedicationAuthorityRank('Paramedic')">🚑 Paramedic</button>
+      <button type="button" class="med-rank-tab" data-rank="Advanced Paramedic" onclick="showMedicationAuthorityRank('Advanced Paramedic')">⭐ Advanced Paramedic</button>
+      <button type="button" class="med-rank-tab" data-rank="HEMS" onclick="showMedicationAuthorityRank('HEMS')">🚁 HEMS</button>
+      <button type="button" class="med-rank-tab" data-rank="Doctor" onclick="showMedicationAuthorityRank('Doctor')">🩺 Doctor</button>
+    </div>
     <div class="med-authority-note">
       <strong>Reference note:</strong> The rank permissions come from the supplied handbook screenshots. Dose ranges are a separate typical-adult reference layer and may vary by indication, route, weight, age, renal/hepatic function and local protocol. For real clinical use, follow the current local formulary/protocol and prescribing information.
     </div>

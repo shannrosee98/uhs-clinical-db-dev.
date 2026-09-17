@@ -3,8 +3,9 @@
 let currentUser = null;
 let staffCache = [];
 let adminListCache = [];
+let currentContext = 'bed';
 
-const FIVEM_EMOTES = {
+var FIVEM_EMOTES = {
   examine: '/e examine',
   check: '/e check',
   mechanic: '/e mechanic',
@@ -29,11 +30,11 @@ const FIVEM_EMOTES = {
 };
 
 function formatRpWithEmote(action, emote) {
-  const e = FIVEM_EMOTES[emote] || '';
-  if (e) {
-    return `${action} ${e}`;
-  }
-  return action;
+  const map = (typeof FIVEM_EMOTES !== 'undefined' && FIVEM_EMOTES)
+    ? FIVEM_EMOTES
+    : {};
+  const e = map[emote] || '';
+  return e ? `${action} ${e}` : String(action || '');
 }
 
 
@@ -2627,7 +2628,11 @@ function renderProcedureRP() {
     return;
   }
 
-  const defaultRpList = procedure['rp_' + currentContext] || procedure.rp;
+  const contextList = procedure['rp_' + currentContext];
+  const defaultRpList = Array.isArray(contextList) && contextList.length
+    ? contextList
+    : (Array.isArray(procedure.rp) ? procedure.rp : []);
+
   const contentKey = 'procedure-rp-' + currentProcedure + '-' + currentContext;
   const rpList = getEditableItems(contentKey, defaultRpList);
 
@@ -3849,15 +3854,38 @@ const medicationAuthorityData = [
   {name:'Sodium Chloride', indication:'Fluids', dose:'Solution Infusion', ranks:['Doctor'], minDose:'250 mL', maxDose:'1000 mL', doseNote:'IV fluid bolus; indication/clinical state dependent'}
 ];
 
+let selectedMedicationAuthorityRank = 'all';
+
+function showMedicationAuthorityRank(rank) {
+  const validRanks = ['all', 'Paramedic', 'Advanced Paramedic', 'HEMS', 'Doctor'];
+  selectedMedicationAuthorityRank = validRanks.includes(rank) ? rank : 'all';
+
+  document.querySelectorAll('.med-rank-tab').forEach(button => {
+    button.classList.toggle('active', button.dataset.rank === selectedMedicationAuthorityRank);
+    button.setAttribute('aria-selected', button.dataset.rank === selectedMedicationAuthorityRank ? 'true' : 'false');
+  });
+
+  renderMedicationAuthority();
+}
+
 function renderMedicationAuthority() {
   const body = document.getElementById('medicationAuthorityBody');
   if (!body) return;
+
   const query = (document.getElementById('medAuthoritySearch')?.value || '').trim().toLowerCase();
+
   const rows = medicationAuthorityData.filter(item => {
-    if (!query) return true;
-    return item.name.toLowerCase().includes(query) ||
+    const rankMatches =
+      selectedMedicationAuthorityRank === 'all' ||
+      item.ranks.includes(selectedMedicationAuthorityRank);
+
+    const queryMatches =
+      !query ||
+      item.name.toLowerCase().includes(query) ||
       item.indication.toLowerCase().includes(query) ||
       item.ranks.some(rank => rank.toLowerCase().includes(query));
+
+    return rankMatches && queryMatches;
   });
 
   body.innerHTML = rows.map(item => `
@@ -3869,7 +3897,7 @@ function renderMedicationAuthority() {
       <td><strong>${escapeHtml(item.maxDose || 'Not specified')}</strong><br><small class="med-dose-note">${escapeHtml(item.doseNote || '')}</small></td>
       <td>${item.ranks.map(rank => `<span class="med-rank-chip">${escapeHtml(rank)}</span>`).join(' ')}</td>
     </tr>
-  `).join('') || '<tr><td colspan="6" class="muted">No matching medications.</td></tr>';
+  `).join('') || '<tr><td colspan="6" class="muted">No medications authorised for this rank.</td></tr>';
 }
 
 function showMedCategory(cat) {
