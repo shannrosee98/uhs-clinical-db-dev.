@@ -1159,3 +1159,116 @@ h1,h2,h3,h4{
 .uhs-search-empty{padding:28px 16px;text-align:center;color:#91a8bd}
 .uhs-search-badge,.knowledge-badge{display:inline-flex;align-items:center;border:1px solid #3a5873;border-radius:999px;padding:3px 8px;margin:0 6px 6px 0;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#cfe1f1;background:#0b243b}
 .knowledge-badges{display:flex;flex-wrap:wrap;margin:6px 0 10px}
+
+/* =========================================================
+   PHASE 2 — KNOWLEDGE PAGE PRESENTATION
+========================================================= */
+.knowledge-page-header{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:24px;
+  margin:0 0 18px;
+  padding:20px 22px;
+  border:1px solid rgba(90,130,180,.28);
+  border-radius:14px;
+  background:linear-gradient(135deg,rgba(14,31,55,.96),rgba(8,20,38,.96));
+  box-shadow:0 12px 30px rgba(0,0,0,.18);
+}
+.knowledge-page-copy{min-width:0}
+.knowledge-page-kicker{
+  font-size:.72rem;
+  font-weight:800;
+  letter-spacing:.14em;
+  opacity:.68;
+  margin-bottom:7px;
+}
+.knowledge-page-description{
+  margin:0 0 12px;
+  max-width:850px;
+  line-height:1.55;
+  opacity:.78;
+}
+.knowledge-page-title{
+  margin-top:4px !important;
+}
+.knowledge-page-tools{display:flex;align-items:center;flex:0 0 auto}
+.knowledge-search-link{
+  border:1px solid rgba(120,160,210,.4);
+  background:rgba(35,65,100,.55);
+  color:inherit;
+  border-radius:9px;
+  padding:9px 13px;
+  cursor:pointer;
+  font-weight:700;
+  white-space:nowrap;
+}
+.knowledge-search-link:hover{background:rgba(45,80,120,.75)}
+.knowledge-badges{display:flex;flex-wrap:wrap;gap:7px;margin:0}
+.knowledge-badge{
+  display:inline-flex;
+  align-items:center;
+  min-height:24px;
+  padding:3px 8px;
+  border-radius:999px;
+  border:1px solid rgba(130,170,220,.3);
+  background:rgba(255,255,255,.06);
+  font-size:.68rem;
+  font-weight:800;
+  letter-spacing:.04em;
+}
+.knowledge-badge[data-knowledge-type="study"]{background:rgba(70,110,170,.2)}
+.knowledge-badge[data-knowledge-type="real-world-reference"]{background:rgba(60,130,100,.2)}
+.knowledge-badge[data-knowledge-type="fivem-rp"]{background:rgba(130,90,170,.2)}
+.knowledge-badge[data-knowledge-type="rp-procedure"]{background:rgba(170,110,60,.2)}
+@media (max-width:700px){
+  .knowledge-page-header{align-items:flex-start;flex-direction:column;padding:16px}
+  .knowledge-page-tools{width:100%}
+  .knowledge-search-link{width:100%}
+}
+
+
+/* =========================================================
+   PHASE 2 — KNOWLEDGE ITEM PRESENTATION
+   Additive styling: existing content/components are retained.
+========================================================= */
+.knowledge-page-header + .info,
+.knowledge-page-header + .clinical-card,
+.knowledge-page-header + .med-grid,
+.knowledge-page-header + .scene-grid,
+.knowledge-page-header + .surgery-role-block{
+  margin-top:0;
+}
+.knowledge-page-header ~ .info,
+.knowledge-page-header ~ .clinical-card,
+.knowledge-page-header ~ .med-card,
+.knowledge-page-header ~ .scene-grid,
+.knowledge-page-header ~ .surgery-role-block{
+  scroll-margin-top:90px;
+}
+.info,
+.med-card,
+.scene-grid > *,
+.surgery-role-block,
+.action-list,
+.clinical-card{
+  transition:transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+.info:hover,
+.med-card:hover,
+.scene-grid > *:hover,
+.surgery-role-block:hover{
+  transform:translateY(-2px);
+  border-color:rgba(100,170,220,.38);
+  box-shadow:0 10px 24px rgba(0,0,0,.16);
+}
+.knowledge-page-header + *{
+  scroll-margin-top:90px;
+}
+.knowledge-page-header .knowledge-search-link::before{
+  content:"⌕";
+  margin-right:7px;
+}
+@media(max-width:700px){
+  .info:hover,.med-card:hover,.scene-grid > *:hover,.surgery-role-block:hover{transform:none}
+}

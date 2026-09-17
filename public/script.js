@@ -10940,21 +10940,72 @@ document.addEventListener('change', (event) => {
     documents:['REAL-WORLD REFERENCE','STUDY']
   };
 
+  const pageDescriptions = {
+    dashboard:'Your central UHS knowledge hub for clinical reference, procedures and FiveM RP resources.',
+    abcde:'Structured primary survey reference with clinical checks, equipment, reassessment and RP actions.',
+    trauma:'Trauma assessment and treatment reference for rapid scene-to-handover use.',
+    emergencies:'Emergency presentations, immediate actions and RP-ready response guidance.',
+    'emergency-mode':'Fast-access emergency RP workflow for active incidents.',
+    scenes:'Scenario-based scene guides, assessment prompts and RP actions.',
+    procedures:'Procedure references with preparation, equipment, workflow and RP actions.',
+    surgeries:'Surgical procedure library with theatre workflow and role-specific RP actions.',
+    meds:'Medication reference including indications, forms, dose reference and rank authorisation.',
+    equipment:'Equipment library organised by clinical task, with practical FiveM /me actions.',
+    cardiac:'Cardiac assessment, treatment references and RP procedure guidance.',
+    respiratory:'Respiratory assessment and treatment references with RP support.',
+    pain:'Pain assessment and management reference for clinical and RP use.',
+    documentation:'Documentation, SBAR, HART, HEMS and handover reference material.',
+    rp:'FiveM RP action library for clinical scenes and procedures.',
+    documents:'Reference documents and stored clinical resources.'
+  };
+
   function addKnowledgeBadges(){
     document.querySelectorAll('section.section').forEach(section=>{
       const labels=badgeMap[section.id];
-      if(!labels || section.querySelector('.knowledge-badges')) return;
+      if(!labels) return;
       const heading=section.querySelector('h1,h2,h3');
       if(!heading) return;
-      const wrap=document.createElement('div');
-      wrap.className='knowledge-badges';
-      labels.forEach(label=>{
-        const b=document.createElement('span');
-        b.className='knowledge-badge';
-        b.textContent=label;
-        wrap.appendChild(b);
-      });
-      heading.insertAdjacentElement('afterend',wrap);
+      let header=section.querySelector(':scope > .knowledge-page-header');
+      if(!header){
+        header=document.createElement('div');
+        header.className='knowledge-page-header';
+        const copy=document.createElement('div');
+        copy.className='knowledge-page-copy';
+        const title=document.createElement('div');
+        title.className='knowledge-page-kicker';
+        title.textContent='UHS KNOWLEDGE HUB';
+        copy.appendChild(title);
+        const description=document.createElement('p');
+        description.className='knowledge-page-description';
+        description.textContent=pageDescriptions[section.id] || 'Clinical Desk reference material and FiveM RP resources.';
+        copy.appendChild(description);
+        const tools=document.createElement('div');
+        tools.className='knowledge-page-tools';
+        const search=document.createElement('button');
+        search.type='button';
+        search.className='knowledge-search-link';
+        search.textContent='⌕ Search knowledge';
+        search.addEventListener('click',openSearch);
+        tools.appendChild(search);
+        header.append(copy,tools);
+        heading.insertAdjacentElement('beforebegin',header);
+      }
+      let wrap=header.querySelector('.knowledge-badges');
+      if(!wrap){
+        wrap=document.createElement('div');
+        wrap.className='knowledge-badges';
+        header.querySelector('.knowledge-page-copy').appendChild(wrap);
+      }
+      if(!wrap.childElementCount){
+        labels.forEach(label=>{
+          const b=document.createElement('span');
+          b.className='knowledge-badge';
+          b.dataset.knowledgeType=label.toLowerCase().replace(/[^a-z]+/g,'-');
+          b.textContent=label;
+          wrap.appendChild(b);
+        });
+      }
+      heading.classList.add('knowledge-page-title');
     });
   }
 
