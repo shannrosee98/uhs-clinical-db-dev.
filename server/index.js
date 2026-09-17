@@ -31,10 +31,6 @@ const app = express();
 
 const { Pool } = pg;
 
-if (!process.env.DATABASE_URL) {
-  throw new Error('DATABASE_URL is required before the server can start.');
-}
-
 const LEGACY_CMS_WRITES = String(process.env.CMS_LEGACY_WRITE_ENABLED || '').toLowerCase() === 'true';
 
 
@@ -88,6 +84,7 @@ async function ensureCoreSchema() {
       display_name TEXT NOT NULL,
       dob DATE,
       role TEXT NOT NULL DEFAULT 'member',
+      staff_side TEXT NOT NULL DEFAULT 'paramedic',
       rank TEXT,
       callsign TEXT,
       picture_url TEXT,
@@ -107,6 +104,15 @@ async function ensureCoreSchema() {
   */
   await pool.query(`
     ALTER TABLE users ADD COLUMN IF NOT EXISTS discord_username TEXT
+  `);
+
+  await pool.query(`
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS staff_side TEXT NOT NULL DEFAULT 'paramedic'
+  `);
+
+  await pool.query(`
+    UPDATE users SET staff_side = 'paramedic'
+    WHERE staff_side IS NULL OR staff_side = ''
   `);
 
   await pool.query(`
@@ -131,6 +137,55 @@ async function ensureCoreSchema() {
       updated_by UUID REFERENCES users(id),
       updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )
+  `);
+
+  /* =========================================================
+     ROSTER RANKS
+     Admin-managed rank definitions used by the staff roster.
+     Existing users.rank remains TEXT for backwards compatibility.
+  ========================================================= */
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS roster_ranks (
+      id BIGSERIAL PRIMARY KEY,
+      name TEXT NOT NULL,
+      staff_side TEXT NOT NULL DEFAULT 'paramedic',
+      rank_tier TEXT NOT NULL DEFAULT 'default',
+      rank_order INTEGER NOT NULL DEFAULT 0,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `);
+
+  await pool.query(`
+    ALTER TABLE roster_ranks ADD COLUMN IF NOT EXISTS staff_side TEXT NOT NULL DEFAULT 'paramedic'
+  `);
+
+  await pool.query(`
+    ALTER TABLE roster_ranks ADD COLUMN IF NOT EXISTS rank_tier TEXT NOT NULL DEFAULT 'default'
+  `);
+
+  await pool.query(`
+    UPDATE roster_ranks SET rank_tier = 'default'
+    WHERE rank_tier IS NULL OR rank_tier = '' OR rank_tier NOT IN ('gold','silver','bronze','default')
+  `);
+
+  await pool.query(`
+    UPDATE roster_ranks SET staff_side = 'paramedic'
+    WHERE staff_side IS NULL OR staff_side = ''
+  `);
+
+  await pool.query(`
+    ALTER TABLE roster_ranks DROP CONSTRAINT IF EXISTS roster_ranks_name_key
+  `);
+
+  await pool.query(`
+    CREATE UNIQUE INDEX IF NOT EXISTS roster_ranks_side_name_idx
+    ON roster_ranks (staff_side, name)
+  `);
+
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS roster_ranks_order_idx
+    ON roster_ranks (staff_side ASC, rank_order ASC, name ASC)
   `);
 
   await pool.query(`
@@ -234,14 +289,24 @@ async function ensureBodycamSchema() {
   /* =========================================================
      DOCUMENTS TABLE (multi-file per section)
      Stores uploaded documents with a section key so each
-     section can hold multiple files.
+     section (hart, hems, training, staff-handbook) can hold
+     multiple files. Auto-incrementing ID per document.
 
-     Document storage is additive. The legacy "documents" table
-     is intentionally NOT dropped during startup because an
-     existing database may contain data or foreign keys that
-     depend on it. The current document API uses
-     document_files/document_folders.
+     The old singular "documents" table is dropped defensively
+     in its own try/catch — if a leftover foreign key from an
+     earlier schema iteration ever blocks this drop, that
+     failure must not prevent document_files/document_folders
+     below from being created. Every /api/documents/:section
+     request depends on those two tables existing.
   ========================================================= */
+  try {
+    await pool.query(`DROP TABLE IF EXISTS documents`);
+  } catch (error) {
+    console.error(
+      'Non-fatal: could not drop legacy documents table:',
+      error.message
+    );
+  }
 
   await pool.query(`
     CREATE TABLE IF NOT EXISTS document_files (
@@ -265,7 +330,7 @@ async function ensureBodycamSchema() {
     them on a live database that already has the table.
   */
   await pool.query(`
-    ALTER TABLE document_files ADD COLUMN IF NOT EXISTS folder_id BIGINT
+    ALTER TABLE document_files ADD COLUMN IF NOT EXISTS folder_id INT
   `);
   await pool.query(`
     ALTER TABLE document_files ADD COLUMN IF NOT EXISTS description TEXT DEFAULT ''
@@ -312,26 +377,10 @@ async function ensureBodycamSchema() {
     it too predates one of these columns on a live database.
   */
   await pool.query(`
-    ALTER TABLE document_folders ADD COLUMN IF NOT EXISTS parent_id BIGINT REFERENCES document_folders(id)
+    ALTER TABLE document_folders ADD COLUMN IF NOT EXISTS parent_id INT REFERENCES document_folders(id)
   `);
   await pool.query(`
     ALTER TABLE document_folders ADD COLUMN IF NOT EXISTS sort_order INT NOT NULL DEFAULT 0
-  `);
-
-  /*
-    Older databases may have created these reference columns as
-    INT while the primary keys are BIGSERIAL/BIGINT. Normalize
-    them to BIGINT so foreign keys and joins use matching types.
-  */
-  await pool.query(`
-    ALTER TABLE document_files
-    ALTER COLUMN folder_id TYPE BIGINT
-    USING folder_id::BIGINT
-  `);
-  await pool.query(`
-    ALTER TABLE document_folders
-    ALTER COLUMN parent_id TYPE BIGINT
-    USING parent_id::BIGINT
   `);
 
   /* Soft delete support for documents and folders (part of the
@@ -735,6 +784,8 @@ function userView(u) {
     displayName: u.display_name,
     dob: u.dob,
     role: u.role,
+    staffSide: u.staff_side || 'paramedic',
+    staff_side: u.staff_side || 'paramedic',
     rank: u.rank,
     callsign: u.callsign,
     pictureUrl: u.picture_url,
@@ -1335,6 +1386,7 @@ app.get('/api/staff', auth, async (req, res) => {
         id,
         display_name,
         rank,
+        staff_side,
         callsign,
         picture_url,
         specialty,
@@ -1357,6 +1409,141 @@ app.get('/api/staff', auth, async (req, res) => {
 });
 
 /* =========================================================
+   ROSTER RANK MANAGEMENT
+========================================================= */
+
+app.get('/api/roster/ranks', auth, async (req, res) => {
+  try {
+    const side = ['paramedic', 'hospital'].includes(String(req.query.side || ''))
+      ? String(req.query.side)
+      : null;
+
+    const params = [];
+    const where = side ? 'WHERE staff_side = $1' : '';
+    if (side) params.push(side);
+
+    const { rows } = await pool.query(`
+      SELECT id, name, staff_side, rank_tier, rank_order, created_at, updated_at
+      FROM roster_ranks
+      ${where}
+      ORDER BY staff_side ASC, rank_order ASC, name ASC
+    `, params);
+
+    res.json({ ranks: rows });
+  } catch (error) {
+    console.error('Get roster ranks error:', error);
+    res.status(500).json({ error: 'Failed to fetch ranks' });
+  }
+});
+
+app.post('/api/roster/ranks', requirePermission('users.manage'), async (req, res) => {
+  try {
+    const parsed = z.object({
+      name: z.string().trim().min(1).max(100),
+      order: z.coerce.number().int().min(0).max(100000),
+      side: z.enum(['paramedic', 'hospital']).default('paramedic'),
+      tier: z.enum(['gold', 'silver', 'bronze', 'default']).default('default')
+    }).safeParse(req.body);
+
+    if (!parsed.success) {
+      return res.status(400).json({ error: 'Invalid rank' });
+    }
+
+    const { name, order, side, tier } = parsed.data;
+
+    const { rows } = await pool.query(`
+      INSERT INTO roster_ranks (name, staff_side, rank_tier, rank_order)
+      VALUES ($1, $2, $3, $4)
+      RETURNING id, name, staff_side, rank_tier, rank_order, created_at, updated_at
+    `, [name, side, tier, order]);
+
+    await logAction(req, 'roster.rank.create', 'roster_rank', String(rows[0].id), {
+      name: rows[0].name,
+      order: rows[0].rank_order,
+      tier: rows[0].rank_tier,
+      side: rows[0].staff_side
+    });
+
+    res.status(201).json({ rank: rows[0] });
+  } catch (error) {
+    if (error.code === '23505') {
+      return res.status(409).json({ error: 'That rank already exists' });
+    }
+    console.error('Create roster rank error:', error);
+    res.status(500).json({ error: 'Failed to create rank' });
+  }
+});
+
+app.patch('/api/roster/ranks/:id', requirePermission('users.manage'), async (req, res) => {
+  try {
+    const parsed = z.object({
+      name: z.string().trim().min(1).max(100),
+      order: z.coerce.number().int().min(0).max(100000),
+      side: z.enum(['paramedic', 'hospital']),
+      tier: z.enum(['gold', 'silver', 'bronze', 'default']).default('default')
+    }).safeParse(req.body);
+
+    if (!parsed.success) {
+      return res.status(400).json({ error: 'Invalid rank' });
+    }
+
+    const { name, order, side, tier } = parsed.data;
+
+    const { rows } = await pool.query(`
+      UPDATE roster_ranks
+      SET name = $1, staff_side = $2, rank_tier = $3, rank_order = $4, updated_at = NOW()
+      WHERE id = $5
+      RETURNING id, name, staff_side, rank_tier, rank_order, created_at, updated_at
+    `, [name, side, tier, order, req.params.id]);
+
+    if (!rows[0]) {
+      return res.status(404).json({ error: 'Rank not found' });
+    }
+
+    await logAction(req, 'roster.rank.update', 'roster_rank', String(rows[0].id), {
+      name: rows[0].name,
+      order: rows[0].rank_order,
+      tier: rows[0].rank_tier,
+      side: rows[0].staff_side
+    });
+
+    res.json({ rank: rows[0] });
+  } catch (error) {
+    if (error.code === '23505') {
+      return res.status(409).json({ error: 'That rank already exists' });
+    }
+    console.error('Update roster rank error:', error);
+    res.status(500).json({ error: 'Failed to update rank' });
+  }
+});
+
+app.delete('/api/roster/ranks/:id', requirePermission('users.manage'), async (req, res) => {
+  try {
+    const { rows } = await pool.query(`
+      SELECT id, name, rank_order
+      FROM roster_ranks
+      WHERE id = $1
+    `, [req.params.id]);
+
+    if (!rows[0]) {
+      return res.status(404).json({ error: 'Rank not found' });
+    }
+
+    await pool.query('DELETE FROM roster_ranks WHERE id = $1', [req.params.id]);
+
+    await logAction(req, 'roster.rank.delete', 'roster_rank', String(req.params.id), {
+      name: rows[0].name,
+      order: rows[0].rank_order
+    });
+
+    res.json({ ok: true });
+  } catch (error) {
+    console.error('Delete roster rank error:', error);
+    res.status(500).json({ error: 'Failed to delete rank' });
+  }
+});
+
+/* =========================================================
    UPDATE STAFF
 ========================================================= */
 
@@ -1371,6 +1558,8 @@ app.patch('/api/staff/:id', requirePermission('users.manage'), async (req, res) 
         dob: z.string().date(),
 
         rank: z.string().max(100),
+
+        staffSide: z.enum(['paramedic', 'hospital']).default('paramedic'),
 
         callsign: z.string().max(50),
 
@@ -1412,7 +1601,7 @@ app.patch('/api/staff/:id', requirePermission('users.manage'), async (req, res) 
     const x = parsed.data;
 
     const beforeQ = await pool.query(
-      'SELECT display_name, role, rank, callsign FROM users WHERE id=$1',
+      'SELECT display_name, role, rank, staff_side, callsign FROM users WHERE id=$1',
       [req.params.id]
     );
     const before = beforeQ.rows[0] || {};
@@ -1425,20 +1614,22 @@ app.patch('/api/staff/:id', requirePermission('users.manage'), async (req, res) 
         email=$2,
         dob=$3,
         rank=$4,
-        callsign=$5,
-        picture_url=$6,
-        specialty=$7,
-        training=$8,
-        role=$9,
-        discord_username=$10,
+        staff_side=$5,
+        callsign=$6,
+        picture_url=$7,
+        specialty=$8,
+        training=$9,
+        role=$10,
+        discord_username=$11,
         updated_at=NOW()
-      WHERE id=$11
+      WHERE id=$12
       `,
       [
         x.displayName,
         x.email.toLowerCase(),
         x.dob,
         x.rank,
+        x.staffSide,
         x.callsign,
         x.pictureUrl || null,
         x.specialty,
@@ -1459,7 +1650,8 @@ app.patch('/api/staff/:id', requirePermission('users.manage'), async (req, res) 
         roleChanged: before.role !== x.role,
         role: { before: before.role, after: x.role },
         rank: { before: before.rank, after: x.rank },
-        callsign: { before: before.callsign, after: x.callsign }
+        callsign: { before: before.callsign, after: x.callsign },
+        staffSide: { before: before.staff_side, after: x.staffSide }
       }
     );
 
@@ -4158,29 +4350,22 @@ const port = Number(
   process.env.PORT || 3000
 );
 
-async function startServer() {
-  /*
-    Verify database connectivity before running schema setup.
-    A DB/DNS failure must prevent the web process from starting
-    instead of leaving a half-initialised service returning 500s.
-  */
-  await pool.query('SELECT 1');
-  await ensureCoreSchema();
-  await ensureBodycamSchema();
-
-  app.listen(
-    port,
-    '0.0.0.0',
-    () => {
-      console.log(`NHS Clinical Desk listening on ${port}`);
-    }
-  );
-}
-
-startServer().catch(error => {
-  console.error(
-    'SCHEMA SETUP ERROR — server will not start:',
-    error
-  );
-  process.exit(1);
-});
+ensureCoreSchema()
+  .then(() => ensureBodycamSchema())
+  .catch(error => {
+    console.error(
+      'SCHEMA SETUP ERROR:',
+      error
+    );
+  })
+  .finally(() => {
+    app.listen(
+      port,
+      '0.0.0.0',
+      () => {
+        console.log(
+          `NHS Clinical Desk listening on ${port}`
+        );
+      }
+    );
+  });

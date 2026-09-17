@@ -2,6 +2,40 @@
 
 let currentUser = null;
 let staffCache = [];
+let adminListCache = [];
+
+const FIVEM_EMOTES = {
+  examine: '/e examine',
+  check: '/e check',
+  mechanic: '/e mechanic',
+  bandage: '/e bandage',
+  nurse: '/e nurse',
+  doctor: '/e doctor',
+  inject: '/e inject',
+  cpr: '/e cpr',
+  stitch: '/e stitch',
+  treat: '/e treat',
+  pickup: '/e pickup',
+  carry: '/e carry',
+  hold: '/e hold',
+  press: '/e press',
+  talk: '/e talk',
+  notepad: '/e notepad',
+  clean: '/e clean',
+  type: '/e type',
+  point: '/e point',
+  radio: '/e radio',
+  lean: '/e lean'
+};
+
+function formatRpWithEmote(action, emote) {
+  const e = FIVEM_EMOTES[emote] || '';
+  if (e) {
+    return `${action} ${e}`;
+  }
+  return action;
+}
+
 
 /* =========================================================
    API
@@ -85,6 +119,13 @@ function closeAuth() {
   const modal = document.getElementById('authModal');
 
   if (!modal) return;
+
+  // Move focus out of the modal before hiding it so aria-hidden never
+  // contains the active/focused element.
+  const active = document.activeElement;
+  if (active && modal.contains(active) && typeof active.blur === 'function') {
+    active.blur();
+  }
 
   modal.style.display = 'none';
   modal.setAttribute('aria-hidden', 'true');
@@ -530,6 +571,8 @@ function openEditWithUser(user) {
     user.dob
   );
 
+  setValue('editStaffSide', user.staff_side || user.staffSide || 'paramedic');
+  populateRankSelect(user.rank || '', user.staff_side || user.staffSide || 'paramedic');
   setValue(
     'editRank',
     user.rank
@@ -632,6 +675,11 @@ async function saveProfile() {
         .getElementById('editRank')
         ?.value.trim() || '',
 
+    staffSide:
+      document
+        .getElementById('editStaffSide')
+        ?.value || 'paramedic',
+
     callsign:
       document
         .getElementById('editCallsign')
@@ -709,7 +757,7 @@ async function loadStaff() {
       result.staff || [];
 
     renderStaff();
-    renderRanks();
+    loadRosterRanks();
 
   } catch (err) {
     console.error(
@@ -812,136 +860,142 @@ function staffCard(user) {
   `;
 }
 
+function rosterTierLabel(tier) {
+  return ({gold:'🥇 Gold Command', silver:'🥈 Silver Command', bronze:'🥉 Bronze Command'})[tier] || '';
+}
+
+function rosterGroupMarkup(users, side = '') {
+  if (!users.length) return '<div class="notice">No staff found.</div>';
+
+  const rankMap = new Map(
+    rosterRanksCache
+      .filter(r => !side || (r.staff_side || 'paramedic') === side)
+      .map(r => [String(r.name).toLowerCase(), r])
+  );
+
+  const groups = new Map();
+  users.forEach(user => {
+    const key = (user.rank || 'Rank pending').trim();
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(user);
+  });
+
+  const ordered = [...groups.entries()].sort((a,b) => {
+    const ra = rankMap.get(a[0].toLowerCase());
+    const rb = rankMap.get(b[0].toLowerCase());
+    if (ra && rb) return Number(ra.rank_order) - Number(rb.rank_order);
+    if (ra) return -1;
+    if (rb) return 1;
+    return a[0].localeCompare(b[0]);
+  });
+
+  return ordered.map(([rankName, members]) => {
+    const rank = rankMap.get(rankName.toLowerCase());
+    const tier = rank?.rank_tier || 'default';
+    const order = rank ? rank.rank_order : '—';
+    return `
+      <section class="fiveroster-rank-group">
+        <header class="fiveroster-rank-head">
+          <div class="fiveroster-rank-number">${escapeHtml(String(order))}</div>
+          <div>
+            <div class="fiveroster-rank-name">${escapeHtml(rankName)}</div>
+            <div class="fiveroster-rank-meta">${members.length} ${members.length === 1 ? 'member' : 'members'}</div>
+          </div>
+          ${tier !== 'default' ? `<span class="rank-tier-badge rank-tier-${escapeHtml(tier)}">${rosterTierLabel(tier)}</span>` : ''}
+        </header>
+        <div class="fiveroster-member-list">
+          ${members.map(staffCard).join('')}
+        </div>
+      </section>
+    `;
+  }).join('');
+}
+
+function updateRosterStats(prefix, users, side='') {
+  const total = document.getElementById(`${prefix}RosterTotalCount`);
+  const ranks = document.getElementById(`${prefix}RosterRankCount`);
+  if (total) total.textContent = String(users.length);
+  if (ranks) {
+    const names = new Set(users.map(u => u.rank).filter(Boolean));
+    ranks.textContent = String(names.size);
+  }
+}
+
 function renderStaff() {
-  const query =
-    (
-      document.getElementById('rosterSearch')
-        ?.value || ''
-    ).toLowerCase();
+  const query = (document.getElementById('rosterSearch')?.value || '').toLowerCase();
+  const searchQuery = (document.getElementById('staffSearchInput')?.value || '').toLowerCase();
+  const rank = document.getElementById('rosterRankFilter')?.value || '';
+  const specialty = document.getElementById('rosterSpecialtyFilter')?.value || '';
 
-  const searchQuery =
-    (
-      document.getElementById('staffSearchInput')
-        ?.value || ''
-    ).toLowerCase();
+  const filtered = staffCache.filter(user =>
+    (!query || staffMatches(user, query)) &&
+    (!rank || user.rank === rank) &&
+    (!specialty || user.specialty === specialty)
+  );
 
-  const rank =
-    document
-      .getElementById('rosterRankFilter')
-      ?.value || '';
+  const roster = document.getElementById('rosterGrid');
+  if (roster) roster.innerHTML = rosterGroupMarkup(filtered);
 
-  const specialty =
-    document
-      .getElementById('rosterSpecialtyFilter')
-      ?.value || '';
+  updateRosterStats('roster', filtered);
 
-  const filtered =
-    staffCache.filter(user =>
-      (!query || staffMatches(user, query)) &&
-      (!rank || user.rank === rank) &&
-      (
-        !specialty ||
-        user.specialty === specialty
-      )
-    );
-
-  const roster =
-    document.getElementById('rosterGrid');
-
-  if (roster) {
-    roster.innerHTML =
-      filtered.map(staffCard).join('') ||
-      `
-        <div class="notice">
-          No staff found.
-        </div>
-      `;
-  }
-
-  const searchResults =
-    document.getElementById(
-      'staffSearchResults'
-    );
-
+  const searchResults = document.getElementById('staffSearchResults');
   if (searchResults) {
-    const results =
-      staffCache.filter(user =>
-        !searchQuery ||
-        staffMatches(user, searchQuery)
-      );
-
-    searchResults.innerHTML =
-      results.map(staffCard).join('') ||
-      `
-        <div class="notice">
-          No staff found.
-        </div>
-      `;
+    const results = staffCache.filter(user => !searchQuery || staffMatches(user, searchQuery));
+    searchResults.innerHTML = results.map(staffCard).join('') || '<div class="notice">No staff found.</div>';
   }
 
+  renderSideRoster('paramedic');
+  renderSideRoster('hospital');
   populateFilters();
 }
 
-function populateFilters() {
-  const ranks =
-    [
-      ...new Set(
-        staffCache
-          .map(x => x.rank)
-          .filter(Boolean)
-      )
-    ].sort();
+function populateSideFilters(side) {
+  const prefix = side === 'hospital' ? 'hospital' : 'paramedic';
+  const users = staffCache.filter(user =>
+    (user.staff_side || user.staffSide || 'paramedic') === side
+  );
 
-  const specialties =
-    [
-      ...new Set(
-        staffCache
-          .map(x => x.specialty)
-          .filter(Boolean)
-      )
-    ].sort();
+  const ranks = [...new Set(users.map(x => x.rank).filter(Boolean))].sort();
+  const specialties = [...new Set(users.map(x => x.specialty).filter(Boolean))].sort();
 
-  const rankSelect =
-    document.getElementById(
-      'rosterRankFilter'
-    );
-
-  const specialtySelect =
-    document.getElementById(
-      'rosterSpecialtyFilter'
-    );
+  const rankSelect = document.getElementById(`${prefix}RosterRankFilter`);
+  const specialtySelect = document.getElementById(`${prefix}RosterSpecialtyFilter`);
 
   if (rankSelect) {
-    const old =
-      rankSelect.value;
-
+    const old = rankSelect.value;
     rankSelect.innerHTML =
-      '<option value="">All ranks</option>' +
-      ranks
-        .map(
-          x =>
-            `<option value="${escapeHtml(x)}">${escapeHtml(x)}</option>`
-        )
-        .join('');
-
+      `<option value="">All ${side === 'hospital' ? 'hospital' : 'paramedic'} ranks</option>` +
+      ranks.map(x => `<option value="${escapeHtml(x)}">${escapeHtml(x)}</option>`).join('');
     rankSelect.value = old;
   }
 
   if (specialtySelect) {
-    const old =
-      specialtySelect.value;
-
+    const old = specialtySelect.value;
     specialtySelect.innerHTML =
       '<option value="">All specialties</option>' +
-      specialties
-        .map(
-          x =>
-            `<option value="${escapeHtml(x)}">${escapeHtml(x)}</option>`
-        )
-        .join('');
-
+      specialties.map(x => `<option value="${escapeHtml(x)}">${escapeHtml(x)}</option>`).join('');
     specialtySelect.value = old;
   }
+}
+
+function renderSideRoster(side) {
+  const prefix = side === 'hospital' ? 'hospital' : 'paramedic';
+  const query = (document.getElementById(`${prefix}RosterSearch`)?.value || '').toLowerCase();
+  const rank = document.getElementById(`${prefix}RosterRankFilter`)?.value || '';
+  const specialty = document.getElementById(`${prefix}RosterSpecialtyFilter`)?.value || '';
+
+  const filtered = staffCache.filter(user =>
+    (user.staff_side || user.staffSide || 'paramedic') === side &&
+    (!query || staffMatches(user, query)) &&
+    (!rank || user.rank === rank) &&
+    (!specialty || user.specialty === specialty)
+  );
+
+  const grid = document.getElementById(`${prefix}RosterGrid`);
+  if (grid) grid.innerHTML = rosterGroupMarkup(filtered, side);
+
+  updateRosterStats(prefix, filtered, side);
+  populateSideFilters(side);
 }
 
 /* =========================================================
@@ -951,6 +1005,8 @@ function populateFilters() {
 function showStaffTab(tab) {
   const ids = {
     roster: 'staffRosterTab',
+    paramedic: 'staffParamedicTab',
+    hospital: 'staffHospitalTab',
     search: 'staffSearchTab',
     bodycam: 'staffBodycamTab',
     ranks: 'staffRanksTab',
@@ -1001,8 +1057,16 @@ function showStaffTab(tab) {
     renderStaff();
   }
 
+  if (tab === 'paramedic') {
+    renderSideRoster('paramedic');
+  }
+
+  if (tab === 'hospital') {
+    renderSideRoster('hospital');
+  }
+
   if (tab === 'ranks') {
-    renderRanks();
+    loadRosterRanks();
   }
 
   if (tab === 'bodycam') {
@@ -1018,2358 +1082,148 @@ function showStaffTab(tab) {
   }
 }
 
+let rosterRanksCache = [];
+
+async function loadRosterRanks() {
+  try {
+    const result = await api('/api/roster/ranks');
+    rosterRanksCache = result.ranks || [];
+    renderRanks();
+    populateRankSelect();
+  } catch (err) {
+    console.error('Unable to load roster ranks:', err);
+  }
+}
+
+function populateRankSelect(selectedValue = '', side = '') {
+  const select = document.getElementById('editRank');
+  if (!select) return;
+
+  const old = selectedValue || select.value || '';
+  const selectedSide = side || document.getElementById('editStaffSide')?.value || 'paramedic';
+  const ranks = rosterRanksCache.filter(rank => (rank.staff_side || 'paramedic') === selectedSide);
+
+  select.innerHTML =
+    '<option value="">Select rank</option>' +
+    ranks.map(rank =>
+      `<option value="${escapeHtml(rank.name)}">${escapeHtml(rank.name)} — ${escapeHtml(String(rank.rank_tier || 'default').toUpperCase())}</option>`
+    ).join('');
+
+  select.value = old;
+}
+
 function renderRanks() {
-  const list =
-    document.getElementById('rankList');
-
+  const list = document.getElementById('rankList');
   if (!list) return;
 
-  const ranks =
-    [
-      ...new Set(
-        staffCache
-          .map(x => x.rank)
-          .filter(Boolean)
-      )
-    ];
+  const manager = document.getElementById('rankManager');
+  const notice = document.getElementById('rankAdminNotice');
+  const canManage = currentUser?.role === 'admin' || currentUser?.role === 'super_admin';
+
+  if (manager) manager.style.display = canManage ? 'block' : 'none';
+  if (notice) notice.style.display = canManage ? 'none' : 'block';
 
   list.innerHTML =
-    ranks
-      .map(
-        (rank, i) => `
-          <div class="rank-row">
-
-            <span>
-              ${i + 1}
-            </span>
-
-            <strong>
-              ${escapeHtml(rank)}
-            </strong>
-
+    rosterRanksCache.map(rank => `
+      <div class="rank-row">
+        <span>${escapeHtml(String(rank.rank_order))}</span>
+        <strong>${escapeHtml(rank.name)}</strong>
+        <span class="rank-side-badge">${rank.staff_side === 'hospital' ? '🏥 Hospital Staff' : '🚑 Paramedic'}</span>${rank.rank_tier && rank.rank_tier !== 'default' ? `<span class="rank-tier-badge rank-tier-${escapeHtml(rank.rank_tier)}">${rosterTierLabel(rank.rank_tier)}</span>` : '<span class="rank-tier-badge rank-tier-default">Default</span>'}
+        ${canManage ? `
+          <div class="rank-actions">
+            <button class="secondary" onclick="editRank(${Number(rank.id)})">Edit</button>
+            <button class="secondary" onclick="deleteRank(${Number(rank.id)})">Delete</button>
           </div>
-        `
-      )
-      .join('') ||
-    `
-      <p class="muted">
-        No ranks assigned yet.
-      </p>
-    `;
-}
-
-function addRank() {
-  alert(
-    'Ranks are assigned through the staff profile editor.'
-  );
-}
-
-/* =========================================================
-   ADMIN
-========================================================= */
-
-async function refreshAdmin() {
-  if (
-    !currentUser ||
-    currentUser.role !== 'admin'
-  ) {
-    return;
-  }
-
-  try {
-    const result =
-      await api('/api/staff');
-
-    staffCache =
-      result.staff || [];
-
-    renderAdmin();
-
-  } catch (err) {
-    console.error(err);
-  }
-}
-
-function renderAdmin() {
-  const list =
-    document.getElementById('staffList');
-
-  if (!list) return;
-
-  const query =
-    (
-      document.getElementById('adminSearch')
-        ?.value || ''
-    ).toLowerCase();
-
-  const users =
-    staffCache.filter(user =>
-      [
-        user.display_name,
-        user.displayName,
-        user.email,
-        user.rank,
-        user.callsign,
-        user.specialty
-      ]
-        .join(' ')
-        .toLowerCase()
-        .includes(query)
-    );
-
-  list.innerHTML =
-    users
-      .map(
-        user => `
-          <article class="admin-staff-card">
-
-            <div>
-
-              <strong>
-                ${escapeHtml(
-                  user.display_name ||
-                  user.displayName ||
-                  ''
-                )}
-              </strong>
-
-              <span>
-                ${escapeHtml(
-                  user.rank ||
-                  'Rank pending'
-                )}
-              </span>
-
-              <small>
-                ${escapeHtml(
-                  user.callsign ||
-                  'No callsign'
-                )}
-                •
-                ${escapeHtml(
-                  user.specialty ||
-                  'No specialty'
-                )}
-              </small>
-
-            </div>
-
-            <button
-              class="primary"
-              onclick="editStaff('${escapeHtml(user.id)}')"
-            >
-              Edit
-            </button>
-
-          </article>
-        `
-      )
-      .join('') ||
-    `
-      <div class="notice">
-        No staff found.
+        ` : ''}
       </div>
-    `;
+    `).join('') ||
+    `<p class="muted">No ranks created yet.</p>`;
 }
 
-function editStaff(id) {
-  const user =
-    staffCache.find(
-      x => String(x.id) === String(id)
-    );
+async function addRank() {
+  const name = document.getElementById('newRankName')?.value.trim() || '';
+  const orderValue = document.getElementById('newRankOrder')?.value;
+  const order = Number(orderValue);
+  const side = document.getElementById('newRankSide')?.value || 'paramedic';
+  const tier = document.getElementById('newRankTier')?.value || 'default';
 
-  if (!user) return;
-
-  openEditWithUser(user);
-}
-
-/* =========================================================
-   PROFILE TABS
-========================================================= */
-
-function showProfileTab(tab) {
-  const panels = {
-    overview:
-      'profileOverviewTab',
-
-    adminjournal:
-      'profileAdminJournalTab',
-
-    privatejournal:
-      'profilePrivateJournalTab'
-  };
-
-  Object
-    .values(panels)
-    .forEach(id => {
-
-      const el =
-        document.getElementById(id);
-
-      if (el) {
-        el.style.display = 'none';
-        el.classList.remove('active');
-      }
-
-    });
-
-  const targetId =
-    panels[tab];
-
-  if (targetId) {
-    const target =
-      document.getElementById(targetId);
-
-    if (target) {
-      target.style.display = '';
-      target.classList.add('active');
-    }
+  if (!name) {
+    alert('Enter a rank name.');
+    return;
   }
 
-  document
-    .querySelectorAll('.profile-tab')
-    .forEach(button => {
-
-      button.classList.toggle(
-        'active',
-        button.dataset.profileTab === tab
-      );
-
-    });
-
-  if (tab === 'privatejournal') {
-    loadJournal();
-  }
-
-  if (tab === 'adminjournal') {
-    loadStaffDevelopment();
-  }
-}
-
-/* =========================================================
-   JOURNAL
-========================================================= */
-
-async function loadJournal() {
-  if (!currentUser) return;
-
-  try {
-    const result =
-      await api('/api/journal');
-
-    const list =
-      document.getElementById(
-        'privateJournalEntries'
-      );
-
-    if (!list) return;
-
-    list.innerHTML =
-      (result.entries || [])
-        .map(
-          entry => `
-            <article class="journal-entry">
-
-              <time>
-                ${escapeHtml(
-                  new Date(
-                    entry.created_at
-                  ).toLocaleString('en-GB')
-                )}
-              </time>
-
-              <p>
-                ${escapeHtml(
-                  entry.body || ''
-                ).replaceAll(
-                  '\n',
-                  '<br>'
-                )}
-              </p>
-
-              <small>
-                ${
-                  entry.sent_to
-                    ? 'Sent to admin'
-                    : 'Private'
-                }
-              </small>
-
-            </article>
-          `
-        )
-        .join('') ||
-      `
-        <p class="muted">
-          No journal entries yet.
-        </p>
-      `;
-
-  } catch (err) {
-    console.error(err);
-  }
-}
-
-async function savePrivateJournal() {
-  const body =
-    (
-      document.getElementById(
-        'privateJournalText'
-      )?.value || ''
-    ).trim();
-
-  if (!body) {
-    alert('Write something first.');
+  if (!Number.isInteger(order) || order < 0) {
+    alert('Enter a valid rank order (0 or higher).');
     return;
   }
 
   try {
-    await api('/api/journal', {
+    await api('/api/roster/ranks', {
       method: 'POST',
-      body: {
-        body,
-        sendTo: null
-      }
+      body: { name, order, side, tier }
     });
 
-    const textarea =
-      document.getElementById(
-        'privateJournalText'
-      );
-
-    if (textarea) {
-      textarea.value = '';
-    }
-
-    await loadJournal();
-
-    alert('Saved privately.');
-
+    document.getElementById('newRankName').value = '';
+    document.getElementById('newRankOrder').value = '';
+    document.getElementById('newRankTier').value = 'default';
+    await loadRosterRanks();
   } catch (err) {
-    alert(
-      err.message ||
-      'Unable to save journal entry.'
-    );
+    alert(err.message || 'Unable to add rank.');
   }
 }
 
-async function sendPrivateJournalToAdmin() {
-  const body =
-    (
-      document.getElementById(
-        'privateJournalText'
-      )?.value || ''
-    ).trim();
+async function editRank(id) {
+  const rank = rosterRanksCache.find(x => Number(x.id) === Number(id));
+  if (!rank) return;
 
-  const sendTo =
-    document.getElementById(
-      'journalAdminRecipient'
-    )?.value || '';
+  const name = prompt('Rank name:', rank.name);
+  if (name === null) return;
 
-  if (!body || !sendTo) {
-    alert(
-      'Enter an entry and choose an admin.'
-    );
+  const orderValue = prompt('Rank order:', String(rank.rank_order));
+  if (orderValue === null) return;
 
+  const order = Number(orderValue);
+  const side = prompt('Side (paramedic or hospital):', rank.staff_side === 'hospital' ? 'hospital' : 'paramedic');
+  if (side === null) return;
+  const normalisedSide = side.trim().toLowerCase();
+  const tier = prompt('Command tier (gold, silver, bronze, or default):', rank.rank_tier || 'default');
+  if (tier === null) return;
+  const normalisedTier = tier.trim().toLowerCase();
+
+  if (!name.trim() || !Number.isInteger(order) || order < 0 || !['paramedic', 'hospital'].includes(normalisedSide) || !['gold', 'silver', 'bronze', 'default'].includes(normalisedTier)) {
+    alert('Invalid rank. Choose a valid side and tier (Default, Gold, Silver, or Bronze).');
     return;
   }
 
   try {
-    await api('/api/journal', {
-      method: 'POST',
-
-      body: {
-        body,
-        sendTo
-      }
+    await api(`/api/roster/ranks/${encodeURIComponent(id)}`, {
+      method: 'PATCH',
+      body: { name: name.trim(), order, side: normalisedSide, tier: normalisedTier }
     });
-
-    const textarea =
-      document.getElementById(
-        'privateJournalText'
-      );
-
-    if (textarea) {
-      textarea.value = '';
-    }
-
-    await loadJournal();
-
-    alert('Entry sent.');
-
+    await loadRosterRanks();
   } catch (err) {
-    alert(
-      err.message ||
-      'Unable to send entry.'
-    );
+    alert(err.message || 'Unable to update rank.');
   }
 }
 
-/* =========================================================
-   TRAINING
+async function deleteRank(id) {
+  const rank = rosterRanksCache.find(x => Number(x.id) === Number(id));
+  if (!rank) return;
 
-   Reuses the existing staff_development table/routes.
-   Every logged-in user can view and tick their own
-   checklist; admins can additionally edit the strengths/
-   development/admin-notes feedback fields (students can\'t —
-   the server enforces this even if the client didn't).
-========================================================= */
-
-const STUDENT_PATHWAY_CHECKLIST = [
-  'Blue Light Trained',
-  'Professional Radio Communications',
-  'Medical Records & Reporting System \u2013 MDT',
-  'Assisting a Paramedic',
-  'Uniform Standards & Professional Appearance',
-  'Command Structure & Escalation Procedures',
-  'Patient Assessment (ABCDE)',
-  'X-Ray & MRI',
-  'Patient Observation \u2014 HR, BP, RR, SpO\u2082, BM, Temp',
-  'ECG & Defibrillator',
-  'Basic Life Support (BLS)',
-  'Adult Resuscitation Procedures',
-  'Airway Management',
-  'Medication Management',
-  'Burn Assessment & Burn Care',
-  'Wound Assessment & Wound Care',
-  'Bleeding & Haemorrhage Management',
-  'Management of Unconscious Patients'
-];
-
-let currentTrainingChecklist = [];
-
-async function loadStaffDevelopment() {
-  const gate =
-    document.getElementById('adminJournalGate');
-
-  const content =
-    document.getElementById('adminJournalContent');
-
-  if (!currentUser) {
-    if (gate) gate.style.display = '';
-    if (content) content.style.display = 'none';
+  if (!confirm(`Delete the rank "${rank.name}"? Existing staff keep their current rank text.`)) {
     return;
   }
 
-  if (gate) gate.style.display = 'none';
-  if (content) content.style.display = '';
-
-  const isAdmin =
-    currentUser.role === 'admin';
-
-  const strengthsEl =
-    document.getElementById('staffStrengths');
-
-  const developmentEl =
-    document.getElementById('staffDevelopment');
-
-  [strengthsEl, developmentEl].forEach(el => {
-    if (el) el.readOnly = !isAdmin;
-  });
-
   try {
-    const result =
-      await api(
-        `/api/staff/${encodeURIComponent(currentUser.id)}/development`
-      );
-
-    const dev =
-      result.development || {};
-
-    let checklist =
-      Array.isArray(dev.checklist)
-        ? dev.checklist
-        : [];
-
-    if (checklist.length === 0) {
-      checklist =
-        STUDENT_PATHWAY_CHECKLIST.map(
-          text => ({ text, done: false })
-        );
-    }
-
-    currentTrainingChecklist = checklist;
-    renderTrainingChecklist();
-
-    if (strengthsEl) {
-      strengthsEl.value = dev.strengths || '';
-    }
-
-    if (developmentEl) {
-      developmentEl.value = dev.development || '';
-    }
-
-    if (notesEl) {
-      notesEl.value = dev.admin_notes || '';
-    }
-
+    await api(`/api/roster/ranks/${encodeURIComponent(id)}`, {
+      method: 'DELETE'
+    });
+    await loadRosterRanks();
   } catch (err) {
-    console.error(
-      'Unable to load training record:',
-      err
-    );
+    alert(err.message || 'Unable to delete rank.');
   }
 }
 
-function renderTrainingChecklist() {
-  const container =
-    document.getElementById('trainingChecklist');
-
-  if (!container) return;
-
-  container.innerHTML =
-    currentTrainingChecklist
-      .map(
-        (item, index) => `
-          <div class="training-item">
-
-            <input
-              type="checkbox"
-              ${item.done ? 'checked' : ''}
-              onchange="toggleTrainingItem(${index})"
-            >
-
-            <input
-              type="text"
-              value="${escapeHtml(item.text)}"
-              onchange="updateTrainingItemText(${index}, this.value)"
-            >
-
-            <button
-              type="button"
-              onclick="removeTrainingItem(${index})"
-            >
-              ✕
-            </button>
-
-          </div>
-        `
-      )
-      .join('') ||
-    `
-      <p class="muted">
-        No training items yet. Use "+ Add item" to start.
-      </p>
-    `;
-}
-
-function toggleTrainingItem(index) {
-  if (!currentTrainingChecklist[index]) return;
-
-  currentTrainingChecklist[index].done =
-    !currentTrainingChecklist[index].done;
-
-  renderTrainingChecklist();
-}
-
-function updateTrainingItemText(index, value) {
-  if (!currentTrainingChecklist[index]) return;
-
-  currentTrainingChecklist[index].text = value;
-}
-
-function removeTrainingItem(index) {
-  currentTrainingChecklist.splice(index, 1);
-  renderTrainingChecklist();
-}
-
-function addTrainingItem() {
-  if (!currentUser) return;
-
-  currentTrainingChecklist.push({
-    text: '',
-    done: false
-  });
-
-  renderTrainingChecklist();
-
-  const container =
-    document.getElementById('trainingChecklist');
-
-  const inputs =
-    container?.querySelectorAll('input[type="text"]');
-
-  const lastInput =
-    inputs?.[inputs.length - 1];
-
-  if (lastInput) lastInput.focus();
-}
-
-async function saveStaffDevelopment() {
-  if (!currentUser) return;
-
-  const checklist =
-    currentTrainingChecklist.filter(
-      item => item.text.trim() !== ''
-    );
-
-  const strengths =
-    document.getElementById('staffStrengths')?.value || '';
-
-  const development =
-    document.getElementById('staffDevelopment')?.value || '';
-
-  const adminNotes = '';
-
-  try {
-    await api(
-      `/api/staff/${encodeURIComponent(currentUser.id)}/development`,
-      {
-        method: 'PUT',
-        body: {
-          checklist,
-          strengths,
-          development,
-          adminNotes
-        }
-      }
-    );
-
-    currentTrainingChecklist = checklist;
-    renderTrainingChecklist();
-
-    alert('Training & development record saved.');
-
-  } catch (err) {
-    alert(
-      err.message ||
-      'Unable to save training record.'
-    );
-  }
-}
-
-/* =========================================================
-   MEDICATION RP
-========================================================= */
-
-function toggleMed(button) {
-  if (!button) return;
-
-  const card =
-    button.closest('.med-card');
-
-  if (!card) return;
-
-  const rp =
-    card.querySelector('.med-rp');
-
-  if (!rp) return;
-
-  const computed =
-    window.getComputedStyle(rp);
-
-  const isOpen =
-    computed.display !== 'none';
-
-  if (isOpen) {
-    rp.style.display = 'none';
-
-    button.textContent =
-      'Show RP /me';
-
-  } else {
-    rp.style.display = 'block';
-
-    button.textContent =
-      'Hide RP /me';
-  }
-}
-
-/* =========================================================
-   COPY TEXT
-========================================================= */
-
-async function copyToClipboard(text) {
-  if (!text) return false;
-
-  try {
-    if (
-      navigator.clipboard &&
-      window.isSecureContext
-    ) {
-      await navigator.clipboard.writeText(text);
-
-      return true;
-    }
-  } catch (_) {}
-
-  try {
-    const textarea =
-      document.createElement('textarea');
-
-    textarea.value = text;
-
-    textarea.setAttribute(
-      'readonly',
-      ''
-    );
-
-    textarea.style.position =
-      'fixed';
-
-    textarea.style.left =
-      '-9999px';
-
-    textarea.style.opacity =
-      '0';
-
-    document.body.appendChild(
-      textarea
-    );
-
-    textarea.focus();
-    textarea.select();
-
-    const result =
-      document.execCommand('copy');
-
-    textarea.remove();
-
-    return result;
-
-  } catch (_) {
-    return false;
-  }
-}
-
-async function copyText(id) {
-  const el =
-    document.getElementById(id);
-
-  if (!el) {
-    console.warn(
-      `copyText: element #${id} was not found`
-    );
-
-    return;
-  }
-
-  const text =
-    (
-      el.innerText ||
-      el.textContent ||
-      ''
-    ).trim();
-
-  const success =
-    await copyToClipboard(text);
-
-  if (!success) {
-    console.warn(
-      'Clipboard copy failed.'
-    );
-  }
-}
-
-async function copyRPButton(button) {
-  if (!button) return;
-
-  const item =
-    button.closest(
-      '.rp-item, .scene-rp-item, .scene-rp-row'
-    );
-
-  if (!item) return;
-
-  const textEl =
-    item.querySelector(
-      'p, .rp-text, [data-rp-text]'
-    );
-
-  if (!textEl) return;
-
-  const text =
-    (
-      textEl.innerText ||
-      textEl.textContent ||
-      ''
-    ).trim();
-
-  const success =
-    await copyToClipboard(text);
-
-  if (success) {
-    const oldText =
-      button.textContent;
-
-    button.textContent =
-      'Copied ✓';
-
-    setTimeout(() => {
-      button.textContent =
-        oldText;
-    }, 1200);
-  }
-}
-
-/* =========================================================
-   BLOOD PRESSURE
-========================================================= */
-
-function updateBP() {
-  const sys =
-    Number(
-      document.getElementById('sys')
-        ?.value || 120
-    );
-
-  const dia =
-    Number(
-      document.getElementById('dia')
-        ?.value || 80
-    );
-
-  const s =
-    document.getElementById(
-      'sysDisplay'
-    );
-
-  const d =
-    document.getElementById(
-      'diaDisplay'
-    );
-
-  const meaning =
-    document.getElementById(
-      'bpMeaning'
-    );
-
-  if (s) {
-    s.textContent = sys;
-  }
-
-  if (d) {
-    d.textContent = dia;
-  }
-
-  if (!meaning) return;
-
-  if (
-    sys < 90 ||
-    dia < 60
-  ) {
-    meaning.textContent =
-      'Low BP / hypotension — interpret with symptoms and clinical context.';
-
-  } else if (
-    sys >= 180 ||
-    dia >= 120
-  ) {
-    meaning.textContent =
-      'Severely raised BP — urgent assessment may be required.';
-
-  } else if (
-    sys >= 140 ||
-    dia >= 90
-  ) {
-    meaning.textContent =
-      'High BP reading — repeat and interpret in context.';
-
-  } else if (
-    sys >= 121 ||
-    dia >= 81
-  ) {
-    meaning.textContent =
-      'Raised / above ideal.';
-
-  } else {
-    meaning.textContent =
-      'Common reference range. Context matters.';
-  }
-}
-
-/* =========================================================
-   OTHER VITAL SIGN SLIDERS
-
-   Each follows the same pattern as updateBP(): read the
-   slider, update the live number, then set a plain-English
-   meaning based on the value. RP/reference only.
-========================================================= */
-
-function updateHR() {
-  const hr = Number(document.getElementById('hrRange')?.value || 75);
-  const display = document.getElementById('hrDisplay');
-  const meaning = document.getElementById('hrMeaning');
-
-  if (display) display.textContent = hr;
-  if (!meaning) return;
-
-  if (hr < 40) {
-    meaning.textContent = 'Severe bradycardia — needs urgent assessment.';
-  } else if (hr < 60) {
-    meaning.textContent = 'Bradycardia — may be normal in a fit/athletic patient, but review with symptoms.';
-  } else if (hr <= 100) {
-    meaning.textContent = 'Normal range.';
-  } else if (hr <= 130) {
-    meaning.textContent = 'Tachycardia — assess for an underlying cause.';
-  } else {
-    meaning.textContent = 'Marked tachycardia — needs urgent assessment.';
-  }
-}
-
-function updateRR() {
-  const rr = Number(document.getElementById('rrRange')?.value || 16);
-  const display = document.getElementById('rrDisplay');
-  const meaning = document.getElementById('rrMeaning');
-
-  if (display) display.textContent = rr;
-  if (!meaning) return;
-
-  if (rr < 8) {
-    meaning.textContent = 'Severe bradypnoea — needs urgent assessment.';
-  } else if (rr < 12) {
-    meaning.textContent = 'Bradypnoea — below the normal range.';
-  } else if (rr <= 20) {
-    meaning.textContent = 'Normal range.';
-  } else if (rr <= 24) {
-    meaning.textContent = 'Raised — assess for an underlying cause.';
-  } else {
-    meaning.textContent = 'Marked tachypnoea — needs urgent assessment.';
-  }
-}
-
-function updateSpO2() {
-  const spo2 = Number(document.getElementById('spo2Range')?.value || 98);
-  const display = document.getElementById('spo2Display');
-  const meaning = document.getElementById('spo2Meaning');
-
-  if (display) display.textContent = spo2;
-  if (!meaning) return;
-
-  if (spo2 < 85) {
-    meaning.textContent = 'Severe hypoxia — needs urgent assessment.';
-  } else if (spo2 < 92) {
-    meaning.textContent = 'Significant hypoxia — needs prompt assessment.';
-  } else if (spo2 < 94) {
-    meaning.textContent = 'Low — assess for an underlying cause.';
-  } else {
-    meaning.textContent = 'Normal range for most patients (target range may differ for some chronic respiratory conditions).';
-  }
-}
-
-function updateTemp() {
-  const temp = Number(document.getElementById('tempRange')?.value || 37);
-  const display = document.getElementById('tempDisplay');
-  const meaning = document.getElementById('tempMeaning');
-
-  if (display) display.textContent = temp.toFixed(1);
-  if (!meaning) return;
-
-  if (temp < 35) {
-    meaning.textContent = 'Hypothermia — needs assessment and active warming.';
-  } else if (temp < 36.5) {
-    meaning.textContent = 'Low-normal.';
-  } else if (temp <= 37.5) {
-    meaning.textContent = 'Normal range.';
-  } else if (temp < 39) {
-    meaning.textContent = 'Fever — assess for an underlying cause.';
-  } else if (temp < 40) {
-    meaning.textContent = 'High fever — needs assessment.';
-  } else {
-    meaning.textContent = 'Very high temperature — needs urgent assessment.';
-  }
-}
-
-function updateBGL() {
-  const bgl = Number(document.getElementById('bglRange')?.value || 6);
-  const display = document.getElementById('bglDisplay');
-  const meaning = document.getElementById('bglMeaning');
-
-  if (display) display.textContent = bgl.toFixed(1);
-  if (!meaning) return;
-
-  if (bgl < 3) {
-    meaning.textContent = 'Hypoglycaemia — needs urgent treatment.';
-  } else if (bgl < 4) {
-    meaning.textContent = 'Low — borderline hypoglycaemia.';
-  } else if (bgl <= 7.8) {
-    meaning.textContent = 'Normal range (approximate, non-fasting reference).';
-  } else if (bgl <= 11) {
-    meaning.textContent = 'Raised.';
-  } else if (bgl <= 20) {
-    meaning.textContent = 'High — hyperglycaemia.';
-  } else {
-    meaning.textContent = 'Very high — risk of DKA/HHS, needs urgent assessment.';
-  }
-}
-
-function updateGCS() {
-  const e = Number(document.getElementById('gcsE')?.value || 4);
-  const v = Number(document.getElementById('gcsV')?.value || 5);
-  const m = Number(document.getElementById('gcsM')?.value || 6);
-  const total = e + v + m;
-
-  const eDisplay = document.getElementById('gcsEDisplay');
-  const vDisplay = document.getElementById('gcsVDisplay');
-  const mDisplay = document.getElementById('gcsMDisplay');
-  const totalDisplay = document.getElementById('gcsDisplay');
-  const meaning = document.getElementById('gcsMeaning');
-
-  if (eDisplay) eDisplay.textContent = e;
-  if (vDisplay) vDisplay.textContent = v;
-  if (mDisplay) mDisplay.textContent = m;
-  if (totalDisplay) totalDisplay.textContent = total;
-  if (!meaning) return;
-
-  if (total === 15) {
-    meaning.textContent = 'Normal — fully alert.';
-  } else if (total >= 13) {
-    meaning.textContent = 'Mild impairment.';
-  } else if (total >= 9) {
-    meaning.textContent = 'Moderate impairment.';
-  } else {
-    meaning.textContent = 'Severe impairment — airway at risk, needs urgent senior/anaesthetic input.';
-  }
-}
-
-/* =========================================================
-   PAIN
-
-   painReliefByScore gives a specific recommendation for
-   every point on the 0–10 scale, reusing the exact same
-   drugs/doses already shown in the static Pain Ladder above
-   so the two stay consistent. This is an RP reference only —
-   see the "Do not use pain score alone" warning on the page.
-========================================================= */
-
-const painReliefByScore = [
-
-  /* 0 */
-  {
-    heading: 'No pain (0/10)',
-    lines: [
-      'No analgesia routinely required.'
-    ],
-    caution:
-      'Continue to monitor and reassess if the clinical picture changes.'
-  },
-
-  /* 1 */
-  {
-    heading: 'Mild pain (1/10) — first-line analgesia',
-    lines: [
-      'Paracetamol <span class="dose">500 mg–1 g PO</span>, at least 4 hours apart (max 4 g/24h).'
-    ],
-    caution:
-      'Reassess and step up to the moderate pathway if pain persists or worsens.'
-  },
-
-  /* 2 */
-  {
-    heading: 'Mild pain (2/10) — first-line analgesia',
-    lines: [
-      'Paracetamol <span class="dose">500 mg–1 g PO</span>, at least 4 hours apart (max 4 g/24h).',
-      'Ibuprofen <span class="dose">200–400 mg PO</span> can be considered if an NSAID is appropriate (OTC max 1.2 g/day).'
-    ],
-    caution:
-      'Reassess and step up to the moderate pathway if pain persists or worsens.'
-  },
-
-  /* 3 */
-  {
-    heading: 'Mild pain (3/10) — first-line analgesia',
-    lines: [
-      'Paracetamol <span class="dose">500 mg–1 g PO</span>, at least 4 hours apart (max 4 g/24h).',
-      'Ibuprofen <span class="dose">200–400 mg PO</span> can be considered if an NSAID is appropriate (OTC max 1.2 g/day).'
-    ],
-    caution:
-      'Reassess and step up to the moderate pathway if pain persists or worsens.'
-  },
-
-  /* 4 */
-  {
-    heading: 'Moderate pain (4/10) — step up if required',
-    lines: [
-      'Paracetamol <span class="dose">500 mg–1 g PO</span> remains a base analgesic.',
-      'Co-codamol (500 mg paracetamol + 8–30 mg codeine) <span class="dose">1–2 tablets, up to 4×/day</span>, 4–6 hours apart (max 8 tablets/day).'
-    ],
-    caution:
-      'Count the paracetamol in co-codamol toward the daily paracetamol maximum.'
-  },
-
-  /* 5 */
-  {
-    heading: 'Moderate pain (5/10) — step up if required',
-    lines: [
-      'Paracetamol <span class="dose">500 mg–1 g PO</span> remains a base analgesic.',
-      'Co-codamol (500 mg paracetamol + 8–30 mg codeine) <span class="dose">1–2 tablets, up to 4×/day</span>, 4–6 hours apart (max 8 tablets/day).'
-    ],
-    caution:
-      'Count the paracetamol in co-codamol toward the daily paracetamol maximum.'
-  },
-
-  /* 6 */
-  {
-    heading: 'Moderate pain (6/10) — step up if required',
-    lines: [
-      'Paracetamol <span class="dose">500 mg–1 g PO</span> remains a base analgesic.',
-      'Co-codamol (500 mg paracetamol + 8–30 mg codeine) <span class="dose">1–2 tablets, up to 4×/day</span>, 4–6 hours apart (max 8 tablets/day).'
-    ],
-    caution:
-      'Count the paracetamol in co-codamol toward the daily paracetamol maximum. Escalate to the severe-pain pathway if pain remains uncontrolled.'
-  },
-
-  /* 7 */
-  {
-    heading: 'Severe pain (7/10) — stronger analgesia / escalation',
-    lines: [
-      'IV paracetamol supplemented with titrated IV morphine: an initial dose of <span class="dose">up to 5 mg IV</span>, then <span class="dose">1–5 mg IV increments</span> at 5-minute intervals, titrated to effect by an appropriately trained clinician.'
-    ],
-    caution:
-      'Monitor respiratory rate, SpO₂, blood pressure and consciousness throughout.'
-  },
-
-  /* 8 */
-  {
-    heading: 'Severe pain (8/10) — stronger analgesia / escalation',
-    lines: [
-      'IV paracetamol supplemented with titrated IV morphine: an initial dose of <span class="dose">up to 5 mg IV</span>, then <span class="dose">1–5 mg IV increments</span> at 5-minute intervals, titrated to effect by an appropriately trained clinician.'
-    ],
-    caution:
-      'Monitor respiratory rate, SpO₂, blood pressure and consciousness throughout. Escalate for senior/anaesthetic input if pain is not settling.'
-  },
-
-  /* 9 */
-  {
-    heading: 'Severe pain (9/10) — stronger analgesia / escalation',
-    lines: [
-      'IV paracetamol supplemented with titrated IV morphine: an initial dose of <span class="dose">up to 5 mg IV</span>, then <span class="dose">1–5 mg IV increments</span> at 5-minute intervals, titrated to effect by an appropriately trained clinician.'
-    ],
-    caution:
-      'Monitor respiratory rate, SpO₂, blood pressure and consciousness throughout. Escalate for senior/anaesthetic input if pain is not settling.'
-  },
-
-  /* 10 */
-  {
-    heading: 'Extreme / uncontrolled pain (10/10) — emergency assessment',
-    lines: [
-      'Use the severe-pain pathway with appropriately titrated IV opioid analgesia (as above).'
-    ],
-    caution:
-      'Do not simply keep giving more tablets. Find and treat the underlying cause, repeat a full ABCDE/observation set, and escalate for senior/anaesthetic support. Reassess pain, RR, SpO₂, consciousness and BP after treatment.'
-  }
-];
-
-function updatePain() {
-  const value =
-    Number(
-      document.getElementById(
-        'painRange'
-      )?.value || 0
-    );
-
-  const valueEl =
-    document.getElementById(
-      'painValue'
-    );
-
-  const meaning =
-    document.getElementById(
-      'painMeaning'
-    );
-
-  const medication =
-    document.getElementById(
-      'painMedication'
-    );
-
-  if (valueEl) {
-    valueEl.textContent =
-      `${value}/10`;
-  }
-
-  let label =
-    'No pain';
-
-  if (
-    value >= 1 &&
-    value <= 3
-  ) {
-    label =
-      'Mild pain';
-
-  } else if (
-    value >= 4 &&
-    value <= 6
-  ) {
-    label =
-      'Moderate pain';
-
-  } else if (
-    value >= 7 &&
-    value <= 9
-  ) {
-    label =
-      'Severe pain';
-
-  } else if (
-    value === 10
-  ) {
-    label =
-      'Extreme / uncontrolled pain';
-  }
-
-  if (meaning) {
-    meaning.textContent = label;
-  }
-
-  if (medication) {
-    const entry =
-      painReliefByScore[value] ||
-      painReliefByScore[0];
-
-    medication.innerHTML = `
-      <h4>${entry.heading}</h4>
-      ${
-        entry.lines
-          .map(line => `<p>${line}</p>`)
-          .join('')
-      }
-      <p class="caution">${entry.caution}</p>
-    `;
-  }
-}
-
-/* =========================================================
-   INCIDENT SCENE DATA
-========================================================= */
-
-/* =========================================================
-   BED/FLOOR CONTEXT SYSTEM & FIVEM EMOTES
-
-   Declared here, before sceneData/proceduresData/docsData
-   below, since several of those data objects call
-   formatRpWithEmote() while building their rp_bed/rp_floor
-   arrays — that only works if FIVEM_EMOTES already exists
-   by the time this file reaches that point.
-========================================================= */
-
-/* Shared context state */
-let currentContext = 'bed'; /* default to bed */
-
-/* FiveM medical roleplay emotes mapped by keyword */
-const FIVEM_EMOTES = {
-  examine: '/e examine',
-  check: '/e check',
-  mechanic: '/e mechanic',
-  bandage: '/e bandage',
-  nurse: '/e nurse',
-  doctor: '/e doctor',
-  inject: '/e inject',
-  cpr: '/e cpr',
-  stitch: '/e stitch',
-  treat: '/e treat',
-  pickup: '/e pickup',
-  carry: '/e carry',
-  hold: '/e hold',
-  press: '/e press',
-  talk: '/e talk',
-  notepad: '/e notepad',
-  clean: '/e clean',
-  type: '/e type',
-  point: '/e point',
-  radio: '/e radio',
-  lean: '/e lean'
-};
-
-/* Helper: format an RP action with emote */
-function formatRpWithEmote(action, emote) {
-  const e = FIVEM_EMOTES[emote] || '';
-  if (e) {
-    return `${action} ${e}`;
-  }
-  return action;
-}
-
-const sceneData = {
-
-  rtc: {
-    slideUrl: '',
-
-    checklist: [
-      'Confirm the scene is safe before approaching — check for traffic, fuel leaks, fire, airbag deployment and electrical hazards.',
-      'Assess the mechanism of injury and vehicle damage — estimate speed, direction of impact, rollover/ejection and occupant position.',
-      'Check for catastrophic external bleeding and apply direct pressure, haemostatic gauze or tourniquet as appropriate.',
-      'Begin a structured <C>ABCDE assessment and reassess after every intervention.',
-      'Assess airway and consider cervical-spine risk — manually stabilise the head if spinal injury is suspected.',
-      'Assess breathing, chest movement, respiratory effort and signs of tension/pneumothorax or flail segment.',
-      'Check pulse, blood pressure, skin colour, temperature, capillary refill and signs of shock — do not rely on a single BP reading.',
-      'Assess disability: GCS/AVPU, pupil size and reaction, limb movement, glucose level.',
-      'Expose only as required to identify injuries while maintaining dignity and preventing hypothermia.',
-      'Systematically assess head, neck, chest, abdomen, pelvis and all four limbs — logroll if spinal precautions allow.',
-      'Apply splints to suspected fractures and recheck distal neurovascular status after splinting.',
-      'Record a full set of observations (HR, BP, RR, SpO2, GCS, temperature, pain score) and repeat after every intervention.',
-      'Reassess observations and clinical status after treatment — watch for deterioration trends.',
-      'Prepare a structured trauma handover including mechanism, injuries, observations, treatment given and response.'
-    ],
-
-    questions: [
-      'Can you tell me your name and what happened today?',
-      'Were you the driver or a passenger in the vehicle?',
-      'Were you wearing a seatbelt at the time of the crash?',
-      'Approximately how fast was the vehicle travelling when the crash happened?',
-      'Did the vehicle roll over or were you ejected from it?',
-      'Did you hit your head inside the vehicle?',
-      'Did you lose consciousness at any point, even briefly?',
-      'Do you have any neck or back pain, numbness or tingling?',
-      'Where exactly is your pain — point to every place that hurts?',
-      'Do you feel short of breath or is it painful to breathe deeply?',
-      'Do you feel dizzy, faint or sick to your stomach?',
-      'Do you have any pain or discomfort in your tummy or pelvis?',
-      'Are you taking any regular medication — especially blood thinners like warfarin, apixaban or clopidogrel?',
-      'Do you have any allergies to medications or anything else?',
-      'Do you have any medical conditions like diabetes, epilepsy or heart problems?',
-      'What is your pain level on a scale of 0 to 10 right now?'
-    ],
-
-    rp: [
-      'approaches the RTC scene after confirming it is safe to enter and begins assessing the mechanism of injury and vehicle damage.',
-      'checks the patient for catastrophic external bleeding before beginning a structured ABCDE assessment with spinal precautions.',
-      'manually stabilises the patient\'s head and neck while assessing their airway and considering possible cervical-spine injury.',
-      'observes the patient\'s chest movement, respiratory effort and breathing pattern — notes equal rise and absence of obvious chest trauma.',
-      'checks the patient\'s radial pulse, skin colour, temperature and capillary refill time, then applies the BP cuff and obtains a reading.',
-      'applies the blood pressure cuff and obtains a reading of 118/76 while continuing to monitor the patient\'s perfusion status.',
-      'assesses the patient\'s level of consciousness using AVPU and checks their pupils for size, equality and reaction to light.',
-      'systematically assesses the patient for head, chest, abdominal, pelvic and limb injuries, palpating each region in turn.',
-      'suspected right femoral shaft fracture — applies a traction splint and rechecks distal pulse, sensation and movement.',
-      'repeats a full set of observations — HR 92, BP 118/76, RR 20, SpO2 97%, GCS 15, pain 6/10 — and documents the trends.',
-      'administrates oral paracetamol 1g for pain management and reassesses the pain score after 15 minutes.',
-      'calls ahead to the receiving trauma unit with an SBAR handover including mechanism, injuries, vital signs and treatment given.',
-      'prepares a structured handover for the emergency department — driver in a 40 mph frontal collision, seatbelt worn, no LOC, right femur fracture, observations stable, analgesia given.'
-    ],
-
-    rp_floor: [
-      formatRpWithEmote('kneels down beside the patient on the road surface after confirming the scene is safe, and begins assessing the mechanism of injury and vehicle damage.', 'mechanic'),
-      formatRpWithEmote('checks the patient for catastrophic external bleeding while kneeling on the ground beside them, before beginning a structured ABCDE assessment with spinal precautions.', 'check'),
-      formatRpWithEmote('kneels at the patient\'s head on the road, manually stabilising their head and neck while assessing airway and considering cervical-spine injury.', 'hold'),
-      formatRpWithEmote('leans over the patient on the ground, observing chest movement, respiratory effort and breathing pattern — notes equal rise and absence of obvious chest trauma.', 'lean'),
-      formatRpWithEmote('kneels beside the patient and checks their radial pulse, skin colour, temperature and capillary refill time on the road surface.', 'check'),
-      formatRpWithEmote('applies the blood pressure cuff while kneeling beside the patient on the ground and obtains a reading of 118/76.', 'treat'),
-      formatRpWithEmote('kneels at eye level with the patient on the ground, assessing their level of consciousness using AVPU and checking pupil reaction.', 'examine'),
-      formatRpWithEmote('systematically palpates the patient for head, chest, abdominal, pelvic and limb injuries while kneeling on the road surface beside them.', 'check'),
-      formatRpWithEmote('kneels beside the patient\'s leg on the ground — suspected right femoral shaft fracture — applies a traction splint and rechecks distal pulse.', 'treat'),
-      formatRpWithEmote('crouches beside the patient on the ground to repeat a full set of observations — HR 92, BP 118/76, RR 20, SpO2 97%, GCS 15, pain 6/10.', 'notepad'),
-      formatRpWithEmote('kneels beside the patient on the road and administers oral paracetamol 1g for pain management.', 'inject'),
-      formatRpWithEmote('steps back from the patient on the ground to radio ahead to the receiving trauma unit with an SBAR handover.', 'radio'),
-      formatRpWithEmote('kneels back down beside the patient to prepare a structured handover for the crew taking over on scene.', 'notepad')
-    ],
-
-    rp_bed: [
-      formatRpWithEmote('stands beside the stretcher, reviewing the mechanism of injury and vehicle damage now the patient has been extracted and moved to the ambulance.', 'doctor'),
-      formatRpWithEmote('stands at the side of the stretcher and rechecks for catastrophic external bleeding before continuing the ABCDE assessment.', 'check'),
-      formatRpWithEmote('stands at the head of the stretcher, maintaining manual in-line stabilisation while reassessing the patient\'s airway.', 'hold'),
-      formatRpWithEmote('stands over the stretcher, observing the patient\'s chest movement and respiratory effort under the ambulance lighting.', 'examine'),
-      formatRpWithEmote('stands beside the stretcher and rechecks the patient\'s radial pulse, skin colour and capillary refill time.', 'check'),
-      formatRpWithEmote('reapplies the blood pressure cuff at the patient\'s arm on the stretcher and obtains an updated reading.', 'treat'),
-      formatRpWithEmote('stands beside the stretcher, reassessing the patient\'s level of consciousness and pupil response under better lighting.', 'examine'),
-      formatRpWithEmote('stands over the stretcher, re-palpating the patient\'s chest, abdomen, pelvis and limbs now they are secured.', 'check'),
-      formatRpWithEmote('stands at the foot of the stretcher, rechecking the traction splint and confirming distal pulse, sensation and movement are intact.', 'treat'),
-      formatRpWithEmote('stands beside the stretcher to repeat a full set of observations before departing for the trauma unit.', 'notepad'),
-      formatRpWithEmote('stands beside the stretcher and administers oral paracetamol 1g, securing the patient for transport.', 'inject'),
-      formatRpWithEmote('stands beside the stretcher and radios ahead to the receiving trauma unit with a full SBAR handover.', 'radio'),
-      formatRpWithEmote('stands beside the stretcher, preparing a structured handover ready for the trauma team on arrival.', 'notepad')
-  ]
-  },
-
-  explosion: {
-    slideUrl: '',
-
-    checklist: [
-      'Confirm fire, fuel and explosion hazards are controlled — do not enter an unstable scene.',
-      'Consider additional explosions, secondary devices and structural collapse risk.',
-      'Check for catastrophic bleeding and apply direct pressure, haemostatic gauze or tourniquet as appropriate.',
-      'Begin a structured <C>ABCDE assessment immediately and reassess after every intervention.',
-      'Assess airway for facial burns, soot, carbonaceous sputum, stridor, hoarseness or supraglottic swelling suggesting inhalation injury.',
-      'Assess breathing — respiratory rate, chest movement, oxygen saturation and signs of blast lung (hypoxia, cough, haemoptysis).',
-      'Check for blast-related chest injury — pneumothorax, haemothorax, pulmonary contusion or rib fractures.',
-      'Assess circulation and signs of shock — check pulse, BP, capillary refill, skin colour and temperature.',
-      'Assess burns — estimate percentage using the rule of nines, assess depth and cover with appropriate dressings.',
-      'Assess for other traumatic injuries — blunt force from blast wave, penetrating injury from debris, fractures.',
-      'Consider hearing injury — ringing in ears, reduced hearing, tinnitus from blast overpressure.',
-      'Consider eye injury — foreign bodies, burns, blast effect on the globe.',
-      'Prevent heat loss — cover burns, use blankets, warm fluids if available, and limit exposure.',
-      'Reassess observations and clinical status frequently — blast lung and inhalation injury can deteriorate rapidly.',
-      'Escalate significant burns (>10% TBSA), airway compromise, blast lung or major trauma urgently.'
-    ],
-
-    questions: [
-      'Were you inside or outside the vehicle when it exploded?',
-      'How close were you to the explosion when it happened?',
-      'Were you thrown by the blast wave or struck by any debris?',
-      'Did you lose consciousness at any point, even briefly?',
-      'Are you having any difficulty breathing or is your chest painful?',
-      'Do you have ringing in your ears or reduced hearing since the explosion?',
-      'Where have you been burned — show me every affected area?',
-      'Did you inhale smoke or fumes before, during or after the explosion?',
-      'Do you have any pain or discomfort anywhere else?',
-      'Do you have any medical conditions or take any regular medication?',
-      'Do you have any allergies to medications or anything else?',
-      'On a scale of 0 to 10, how would you rate your pain right now?'
-    ],
-
-    rp: [
-      'confirms the explosion scene is safe before approaching and checks for ongoing fire, fuel and secondary hazards.',
-      'checks the patient for catastrophic bleeding and begins a rapid ABCDE assessment while noting blast proximity.',
-      'examines the patient\'s mouth and airway for soot, carbonaceous sputum, burns, swelling and signs of inhalation injury.',
-      'assesses respiratory effort, chest movement and oxygen saturation — notes any hypoxia, cough or haemoptysis suggesting blast lung.',
-      'checks the patient for chest trauma, burns, penetrating injuries and other blast-related injuries.',
-      'assesses circulation by palpating radial pulse, checking capillary refill, skin colour and applying the BP cuff.',
-      'obtains a BP of 124/78, HR 96, RR 22, SpO2 94% — notes the hypoxia and applies oxygen via non-rebreather mask at 15 L/min.',
-      'estimates the affected burn areas using the rule of nines — approximately 12% TBSA to the arms and face.',
-      'cools the thermal burns with cool running water for 20 minutes and protects the patient from further heat loss.',
-      'covers the burns with cling film or appropriate burn dressings and monitors for hypothermia.',
-      'reassesses respiratory status — SpO2 improving to 98% on oxygen, chest clear to auscultation bilaterally.',
-      'prepares an urgent trauma handover including blast mechanism, burn percentage, respiratory status and vital signs.'
-  ]
-  },
-
-
-  gunshot: {
-    slideUrl: '',
-
-    checklist: [
-      'Confirm the scene is safe and any weapon threat is controlled before approaching — use appropriate PPE.',
-      'Identify catastrophic haemorrhage immediately — check for arterial bleeding, massive haemorrhage from the wound site.',
-      'Control severe external bleeding with direct pressure, haemostatic gauze, wound packing or tourniquet for limb injuries.',
-      'Begin a structured <C>ABCDE assessment and identify the wound location without unnecessarily disturbing the wound.',
-      'Check for entry and exit wounds — mark the locations and do not probe the wound tract.',
-      'Assess airway and breathing, especially if the torso, neck or head is involved — high-flow oxygen if available.',
-      'Assess circulation and signs of shock — check pulse, BP, capillary refill, skin colour — do not assume normal BP rules out haemorrhage.',
-      'Record a full set of observations and reassess frequently — HR, BP, RR, SpO2, GCS, pain score, temperature.',
-      'Immobilise fractures if present and recheck distal neurovascular status after any splinting.',
-      'Prepare urgent trauma escalation and handover — include wound location(s), estimated blood loss, vital signs and treatment given.',
-      'Document the number of wounds, entry/exit locations, estimated time of injury and all interventions.'
-    ],
-
-    questions: [
-      'Where were you shot — point to every wound location you know of?',
-      'How many shots did you hear and do you know how many times you were hit?',
-      'Do you know how long ago this happened?',
-      'Are you having any difficulty breathing?',
-      'Do you have any chest or abdominal pain?',
-      'Do you feel dizzy, lightheaded or faint?',
-      'Can you move and feel your arms and legs normally?',
-      'Are you taking any blood-thinning medication like warfarin, apixaban or clopidogrel?',
-      'Do you have any allergies to any medications?',
-      'Do you have any medical conditions like diabetes, heart problems or epilepsy?',
-      'On a scale of 0 to 10, how bad is your pain right now?',
-      'Do you feel like you\'re losing consciousness or are you struggling to stay awake?'
-    ],
-
-    rp: [
-      'confirms the scene is safe before approaching the patient and applies appropriate PPE including gloves and eye protection.',
-      'performs a rapid check for catastrophic haemorrhage and immediately addresses significant external bleeding with direct pressure and haemostatic gauze.',
-      'applies a tourniquet to the actively bleeding limb wound and notes the time of application clearly.',
-      'begins a structured ABCDE assessment while identifying the location of the entry and any exit wounds.',
-      'marks the entry and exit wound locations on the dressings and avoids probing the wound tract.',
-      'assesses chest movement and respiratory effort — applies an occlusive dressing to any penetrating chest wound with a three-way taped edge.',
-      'checks the patient\'s pulse — finds a rapid, thready radial pulse at 112/min and BP of 104/68 suggesting hypovolaemia.',
-      'cannulates an antecubital vein with a grey (14G) or green (18G) cannula and begins fluid resuscitation per local protocols.',
-      'administers IV morphine 5mg for severe pain — checks pulse, respiration and sedation level before and after administration.',
-      'repeats observations — HR 104, BP 108/70, RR 22, SpO2 97%, GCS 15, pain 4/10 — and documents downward trends in pulse.',
-      'splints the associated femoral fracture with a traction splint and rechecks distal pulse, sensation and movement.',
-      'prepares an urgent trauma team handover — gunshot wound to the right thigh with exit wound, estimated 500ml blood loss, two large-bore IVs, tourniquet applied at 14:32, last observations HR 104 / BP 108/70.'
-  ]
-  },
-
-
-  stab: {
-    slideUrl: '',
-
-    checklist: [
-      'Confirm the scene is safe and any weapon threat is controlled before approaching — use appropriate PPE.',
-      'Identify catastrophic haemorrhage immediately — check for arterial bleeding, massive haemorrhage from the wound site.',
-      'Control severe external bleeding with direct pressure — do not remove any embedded object, stabilise it in place.',
-      'Begin a structured <C>ABCDE assessment and identify the wound location without unnecessarily disturbing the wound.',
-      'Assess for entry and exit wounds — mark the location(s) and do not probe the wound tract.',
-      'Assess airway and breathing, especially if the neck or chest is involved — consider occlusive dressing for chest wounds.',
-      'Assess circulation and signs of shock — check pulse, BP, capillary refill, skin colour and temperature.',
-      'Record a full set of observations and reassess frequently — HR, BP, RR, SpO2, GCS, pain score.',
-      'Prepare urgent trauma escalation — stab wounds to the neck, chest, abdomen or groin are high-risk.',
-      'Document the mechanism, wound locations, estimated time of injury, treatment given and all observations.'
-    ],
-
-    questions: [
-      'Where were you stabbed — point to every wound you know of?',
-      'What type of weapon was used, and how long ago did this happen?',
-      'Do you know if the weapon is still in place or was it removed?',
-      'Are you having any difficulty breathing or any chest pain?',
-      'Do you have any abdominal pain, tenderness or feeling of fullness?',
-      'Do you feel dizzy, lightheaded or faint?',
-      'Can you move and feel your arms and legs normally?',
-      'Are you taking any blood-thinning medication like warfarin, apixaban or clopidogrel?',
-      'Do you have any allergies to any medications?',
-      'Do you have any medical conditions like diabetes or heart problems?',
-      'On a scale of 0 to 10, how bad is your pain right now?',
-      'Do you feel like you\'re losing consciousness or struggling to stay awake?'
-    ],
-
-    rp: [
-      'confirms the scene is safe before approaching the patient and applies appropriate PPE including gloves.',
-      'identifies a stab wound to the left anterior chest and notes there is no embedded object, but there is active bleeding.',
-      'applies direct pressure with haemostatic gauze to the bleeding wound and monitors for ongoing haemorrhage.',
-      'applies an occlusive dressing with a three-way taped edge to the penetrating chest wound to prevent tension pneumothorax.',
-      'begins a structured ABCDE assessment — airway clear, breathing laboured with reduced air entry on the left side.',
-      'checks the patient\'s pulse — radial pulse present but rapid at 106/min, BP 110/72, skin pale and cool.',
-      'cannulates an antecubital vein with a green (18G) cannula for IV access.',
-      'administers oxygen via non-rebreather at 15 L/min and administers IV morphine 5mg for severe pain.',
-      'repeats observations — HR 102, BP 112/74, RR 24, SpO2 96% on oxygen, pain 5/10 — and documents trends.',
-      'reassesses chest — air entry improving on the left after the occlusive dressing, SpO2 stable at 96%.',
-      'prepares an urgent trauma handover — single stab wound to the left anterior chest, occlusive dressing applied, IV access established.'
-  ]
-  },
-
-
-  burns: {
-    slideUrl: '',
-
-    checklist: [
-      'Confirm the scene is safe — check for ongoing fire, electrical, chemical or structural hazards before approaching.',
-      'Stop the burning process — remove the patient from the source and extinguish any flames by stop, drop and roll or use of a fire blanket.',
-      'Perform a primary survey using <C>ABCDE — burns are not the first priority if there is catastrophic haemorrhage or airway compromise.',
-      'Assess airway for facial burns, soot, stridor, hoarseness or carbonaceous sputum suggesting inhalation injury — this can deteriorate rapidly.',
-      'Assess breathing — respiratory rate, chest movement, oxygen saturation and signs of respiratory distress.',
-      'Assess circulation and signs of shock — check pulse, BP, capillary refill, skin colour — burns can cause hypovolaemic shock.',
-      'Estimate the total body surface area burned using the rule of nines or Lund and Browder chart for children.',
-      'Assess burn depth — superficial (epidermal), partial thickness (blistering, painful) or full thickness (waxy, painless).',
-      'Cool thermal burns with cool running water for 20 minutes within 3 hours of injury — take care to avoid hypothermia.',
-      'Cover burns with cling film or sterile non-adherent dressings — do not apply creams, lotions or ice.',
-      'Provide analgesia — paracetamol/ibuprofen for mild pain; IV morphine or Entonox for severe burn pain.',
-      'Monitor for hypothermia and maintain body temperature with blankets and warm fluids.',
-      'Reassess frequently — burns and inhalation injury can evolve over time.',
-      'Escalate serious burns (>10% TBSA in adults), facial/airway burns, circumferential burns or burns in children.'
-    ],
-
-    questions: [
-      'How did you get burned — was it fire, hot liquid, electricity or chemicals?',
-      'How long ago did the burn happen and how long were you exposed?',
-      'Were you in an enclosed space with smoke or flames — did you breathe in smoke or fumes?',
-      'Do you have any difficulty breathing, coughing or a hoarse voice?',
-      'Where exactly are your burns — show me everywhere you were burned?',
-      'Do you have any other injuries besides the burns?',
-      'Have you passed out or felt dizzy at any point?',
-      'Are you taking any regular medication or do you have any medical conditions?',
-      'Do you have any allergies?',
-      'On a scale of 0 to 10, how bad is your pain right now?'
-    ],
-
-    rp: [
-      'confirms the scene is safe before approaching and checks for ongoing fire, chemical or electrical hazards.',
-      'stops the burning process by removing the patient from the source and extinguishing any remaining flames.',
-      'performs a primary survey using <C>ABCDE and begins a systematic assessment of the patient.',
-      'examines the patient\'s face and airway for signs of facial burns, singed nasal hair, soot in the mouth or hoarseness.',
-      'listens for stridor or respiratory distress — high suspicion of inhalation injury given the enclosed space.',
-      'assesses respiratory rate, chest movement and applies pulse oximetry — SpO2 95% on room air.',
-      'checks circulation — radial pulse 104/min, BP 118/76, skin warm and pink, capillary refill <2 seconds.',
-      'estimates the burn area using the rule of nines — approximately 15% TBSA to the anterior chest and left arm.',
-      'assesses burn depth — partial thickness burns to the chest with blistering and intact capillary refill; full thickness to the left forearm.',
-      'cools the thermal burns under cool running water for 20 minutes and monitors for hypothermia during cooling.',
-      'covers the burns with cling film and administers IV morphine 5mg for severe burn pain — checks respiration and sedation level.',
-      'repeats observations — HR 100, BP 120/78, RR 20, SpO2 97%, pain 4/10 after analgesia — and documents improvement.',
-      'prepares an urgent transfer to the burns unit with full details of the mechanism, TBSA, depth, treatment and vital signs.'
-  ]
-  },
-
-
-  smoke: {
-    slideUrl: '',
-
-    checklist: [
-      'Confirm the scene is safe — check for ongoing fire, smoke, structural collapse or toxic gas hazards.',
-      'Remove the patient from the smoke-filled environment to fresh air as soon as it is safe to do so.',
-      'Perform a primary survey using <C>ABCDE with a high index of suspicion for inhalation injury.',
-      'Assess airway — look for facial burns, singed nasal hairs, carbonaceous sputum, stridor, hoarseness or altered voice.',
-      'Assess breathing — respiratory rate, chest movement, accessory muscle use, wheeze, cough, oxygen saturation.',
-      'Administer high-flow oxygen via non-rebreather mask at 15 L/min — monitor SpO2 response carefully.',
-      'Assess circulation — pulse, BP, capillary refill — smoke inhalation rarely causes shock alone but check for associated burns or trauma.',
-      'Assess disability — headache, confusion, drowsiness or reduced consciousness may suggest carbon monoxide poisoning or hypoxia.',
-      'Expose and examine for associated burns or other injuries from the fire or evacuation.',
-      'Monitor for deterioration — airway swelling and pulmonary oedema can evolve over hours, even with initially normal observations.',
-      'Arrange appropriate specialist assessment — inhalation injury requires specialist respiratory assessment even if the patient looks well.'
-    ],
-
-    questions: [
-      'Were you in an enclosed space with smoke or flames — how long were you exposed?',
-      'Are you having any difficulty breathing or is your throat feeling tight?',
-      'Do you have a cough, hoarse voice or any burning sensation in your throat?',
-      'Do you have a headache, feel dizzy or confused?',
-      'Did you lose consciousness at any point?',
-      'Do you have any burns or other injuries?',
-      'Do you have any known heart or lung conditions like asthma or COPD?',
-      'Are you taking any regular medication?',
-      'Do you have any allergies?'
-    ],
-
-    rp: [
-      'confirms the scene is safe before approaching and checks for ongoing fire, smoke and structural hazards.',
-      'removes the patient from the smoke-filled environment to fresh air with the help of the fire service.',
-      'begins a primary survey using <C>ABCDE with a high index of suspicion for inhalation injury.',
-      'examines the patient\'s face and airway — finds singed nasal hairs, soot around the nose and mouth, and a hoarse voice.',
-      'listens to the chest — auscultates wheeze and reduced air entry bilaterally with a frequent cough.',
-      'applies pulse oximetry — SpO2 91% on room air — and administers high-flow oxygen via non-rebreather mask at 15 L/min.',
-      'monitors the patient\'s response — SpO2 rises to 97% with supplemental oxygen, respiratory rate 24.',
-      'checks circulation — HR 104, BP 126/78, capillary refill <3 seconds, skin warm and pink.',
-      'assesses the patient for any associated burns or other traumatic injuries from the fire.',
-      'reassesses respiratory status every 5 minutes — monitors for stridor, increasing distress or declining SpO2.',
-      'calls ahead to the receiving emergency department with a pre-alert for potential inhalation injury.',
-      'continues to monitor the patient closely and prepares a handover detailing smoke exposure time, symptoms, observations and oxygen requirement.'
-  ]
-  },
-
-
-  allergy: {
-    slideUrl: '',
-
-    checklist: [
-      'Assess the patient immediately using ABCDE — identify any airway, breathing or circulation compromise.',
-      'Ask about known allergies, the suspected trigger, onset time and previous reactions — distinguish mild allergy from anaphylaxis.',
-      'Check airway — look for lip/tongue/throat swelling, stridor, hoarseness, difficulty swallowing or a sensation of throat tightness.',
-      'Assess breathing — respiratory rate, wheeze, accessory muscle use, oxygen saturation — anaphylaxis often presents with respiratory distress.',
-      'Assess circulation — check pulse, BP, capillary refill, skin colour and temperature — look for signs of distributive shock.',
-      'Assess skin — look for urticaria (hives), erythema, angioedema (swelling of lips, eyelids, face) and pruritus.',
-      'Assess disability — confusion, anxiety, sense of impending doom or reduced consciousness can accompany anaphylaxis.',
-      'If airway, breathing or circulation are compromised, administer IM adrenaline (1:1000, 0.5mg) into the anterolateral thigh immediately.',
-      'Position the patient appropriately — lying flat with legs raised if circulatory compromise, sitting up if respiratory distress.',
-      'Administer high-flow oxygen via non-rebreather mask and monitor SpO2, pulse and BP continuously.',
-      'Repeat observations and reassess frequently — anaphylaxis can improve then deteriorate again (biphasic reaction).',
-      'Arrange urgent transfer to hospital — all patients with anaphylaxis should be observed in an emergency department.',
-      'Document the suspected trigger, time of onset, all treatment given and the patient\'s response to each intervention.'
-    ],
-
-    questions: [
-      'Do you know what caused this reaction — what did you eat, take or come into contact with?',
-      'How long ago did the reaction start and how quickly did it come on?',
-      'Have you had an allergic reaction like this before?',
-      'Do you have any difficulty breathing, throat tightness or a feeling that your throat is closing?',
-      'Do you feel dizzy, lightheaded or faint?',
-      'Do you have an adrenaline auto-injector (EpiPen) with you and have you used it?',
-      'Have you taken any medication for this reaction such as antihistamines?',
-      'Do you have any other medical conditions like asthma or heart problems?',
-      'Are you taking any regular medication?'
-    ],
-
-    rp: [
-      'begins assessing the patient using ABCDE and identifies immediate airway, breathing and circulation compromise.',
-      'notes widespread urticaria, facial angioedema, audible wheeze and the patient reporting throat tightness.',
-      'identifies stridor and respiratory distress with SpO2 92% — calls for urgent help and prepares IM adrenaline.',
-      'administers IM adrenaline 1:1000 (0.5mg) into the patient\'s right anterolateral thigh and notes the time of administration.',
-      'positions the patient sitting upright to optimise breathing and administers oxygen via non-rebreather mask at 15 L/min.',
-      'assesses the patient\'s response — stridor improving, SpO2 rising to 96%, wheeze less prominent after adrenaline.',
-      'checks the patient\'s pulse — HR 112, BP 100/64 — and monitors for signs of improving perfusion.',
-      'records a full set of observations — HR 108, BP 106/68, RR 24, SpO2 96%, GCS 15 — and repeats every 5 minutes.',
-      'continues to monitor the patient closely for signs of biphasic reaction or deterioration after initial improvement.',
-      'prepares a structured handover — suspected peanut anaphylaxis, IM adrenaline given at 15:22 with good initial response, observations improving.'
-  ]
-  },
-
-
-  waterrescue: {
-    slideUrl: '',
-
-    checklist: [
-      'Confirm your own safety first — do not enter the water unless trained and equipped; use reach, throw, row or wade techniques.',
-      'Remove the patient from the water as safely and quickly as possible while maintaining spinal precautions if a diving or impact mechanism is suspected.',
-      'Check responsiveness and breathing for no more than 10 seconds once out of the water.',
-      'If not breathing normally, give 5 initial rescue breaths before starting chest compressions, given the likely hypoxic cause of arrest.',
-      'Begin CPR if there are no signs of life, following standard compression ratios (30:2).',
-      'Remove wet clothing and begin gentle rewarming — avoid rapid rewarming or rough handling which can cause cardiac arrhythmias.',
-      'Protect the airway and monitor for vomiting — the patient may regurgitate water or stomach contents.',
-      'Give high-flow oxygen if available and continuously monitor SpO2, pulse, BP and temperature.',
-      'Treat any associated injuries — from diving, rocks, entrapment or rescue process — alongside the main assessment.',
-      'Monitor for delayed deterioration — aspiration pneumonitis or pulmonary oedema can develop hours after an apparently good recovery.',
-      'Reassess regularly and prepare a structured handover including submersion time, water type (fresh/salt/cold), treatment given and response.'
-    ],
-
-    questions: [
-      'How long were you in the water or submerged, if you know?',
-      'Was the water cold, and roughly what temperature would you say it was?',
-      'Did you hit anything or injure yourself before or during going into the water?',
-      'Have you vomited or coughed up any water since being rescued?',
-      'Do you know if you can swim, or was this an accidental submersion?',
-      'Do you have any medical conditions such as epilepsy, a heart condition or diabetes?',
-      'Are you on any medications?',
-      'Do you have any difficulty breathing or chest discomfort now?'
-    ],
-
-    rp: [
-      'confirms their own safety and uses a reach or throw technique rather than entering the water themselves.',
-      'with the help of bystanders, carefully removes the patient from the water.',
-      'checks the patient\'s responsiveness and breathing for no more than 10 seconds — the patient is unconscious and not breathing normally.',
-      'gives 5 initial rescue breaths before starting chest compressions, given the likely hypoxic cause.',
-      'begins CPR at a ratio of 30 compressions to 2 breaths and continues with minimal interruptions.',
-      'after the return of spontaneous circulation, carefully removes the patient\'s wet clothing.',
-      'begins gentle rewarming using blankets and warm air, avoiding rapid rewarming techniques.',
-      'monitors for vomiting and positions the patient in the recovery position to protect their airway.',
-      'administers high-flow oxygen via non-rebreather mask and continuously monitors SpO2, pulse and BP.',
-      'assesses for any associated injuries from the incident and the rescue process.',
-      'repeats observations — HR 88, BP 124/76, RR 18, SpO2 98%, GCS 14, temperature 35.2C — and documents trends.',
-      'continues to monitor the patient closely for any delayed deterioration from aspiration.',
-      'prepares a structured handover — approximately 5 minutes submersion in cold freshwater, brief resuscitation, now self-ventilating on oxygen.'
-  ]
-  },
-
-
-
-  mountainlion: {
-    slideUrl: '',
-
-    checklist: [
-      'Confirm the animal threat has been neutralised or is no longer present before approaching the patient.',
-      'Perform a primary survey and control any catastrophic bleeding first — direct pressure, haemostatic gauze or tourniquet if appropriate for a limb.',
-      'Expose and examine all bite and claw wounds systematically, including less obvious areas like the scalp, armpits and behind the knees.',
-      'Assess the depth of puncture wounds carefully — they can hide deeper tissue, tendon or vessel damage despite a small external entry.',
-      'Check distal circulation, sensation and movement for any limb wounds, and reassess after any intervention.',
-      'Irrigate and clean wounds thoroughly once bleeding is controlled — use warmed saline or clean water where available.',
-      'Cover wounds with an appropriate clean dressing or sterile non-adherent pad; do not close puncture wounds in the field.',
-      'Prioritise urgent assessment for any facial, scalp or neck wounds — these bleed heavily and may need rapid haemorrhage control.',
-      'Assess for signs of infection — warmth, erythema, swelling or discharge around older wounds.',
-      'Offer appropriate analgesia — paracetamol or ibuprofen for mild pain; consider oral morphine or IV opioids for significant pain.',
-      'Monitor for signs of shock — tachycardia, hypotension, pale/clammy skin, delayed capillary refill, especially with significant bleeding.',
-      'Reassess observations (HR, BP, RR, SpO2, GCS) after every intervention and document trends.',
-      'Escalate for wound exploration, possible surgical closure and infection-risk management — document the animal species if known (dog, cat, wild animal).',
-      'Document the mechanism, wound locations, treatment given, and whether the animal was domestic or wild — rabies risk may need public health notification.'
-    ],
-
-    questions: [
-      'Can you tell me exactly how the attack happened — what animal was it?',
-      'Where are all the places you were bitten or scratched? Please show me every spot.',
-      'Do you feel any numbness, weakness or reduced movement anywhere?',
-      'Are you up to date with tetanus vaccination, if you know?',
-      'Do you have any allergies, particularly to antibiotics or pain relief?',
-      'Do you have any medical conditions that affect your immune system, like diabetes or medications?',
-      'Are you taking any blood-thinning medication like warfarin, apixaban or clopidogrel?',
-      'Have you passed out or felt dizzy at any point since the attack?',
-      'Do you feel short of breath or lightheaded?',
-      'On a scale of 0 to 10, how bad is your pain right now?',
-      'Did the animal seem aggressive or sick — was it behaving unusually?',
-      'Has anyone else been attacked or is anyone else injured?'
-    ],
-
-    rp: [
-      'confirms the animal threat has been neutralised before approaching the patient and ensuring scene safety.',
-      'performs a primary survey using <C>ABCDE and controls any catastrophic bleeding with direct pressure.',
-      'applies a tourniquet to the bleeding limb wound and notes the time of application.',
-      'exposes and systematically examines all bite and claw wounds, including less obvious areas like the scalp and armpits.',
-      'carefully assesses the depth of puncture wounds, noting that small external wounds can hide significant deeper damage.',
-      'checks distal circulation, sensation and movement for each limb wound and documents the findings.',
-      'prepares warmed saline and begins irrigating the wound sites to remove gross contamination.',
-      'covers each wound with sterile non-adherent dressings and secures them with bandaging.',
-      'assesses the facial and neck injuries for airway involvement and major vessel proximity.',
-      'applies a haemostatic dressing to the heavily bleeding neck wound and maintains direct pressure.',
-      'administers oral paracetamol 1g for mild pain and reassesses the pain score after 15 minutes.',
-      'prepares IV morphine 5mg for significant pain — checks pulse, respiration and sedation level before and after.',
-      'cannulates an antecubital vein with a green (18G) cannula for IV access in case of deterioration.',
-      'repeats a full set of observations — HR 98, BP 128/74, RR 18, SpO2 98%, GCS 15, pain 5/10 — and documents trends.',
-      'reassesses the wounds for any ongoing bleeding or swelling and reinforces dressings as needed.',
-      'applies a cervical collar and spinal precautions due to the mechanism of the attack.',
-      'calls ahead to the receiving trauma unit with a full SBAR handover including the animal species and wound locations.',
-      'documents the mechanism of injury, all wound locations, treatments given, and the patient response in the PCR.',
-      'prepares a structured handover for the emergency department staff — mechanism, injuries, vital signs, treatment and analgesia given.',
-      'notes the time of the last tetanus booster and escalates for a booster if due or unknown.'
-  ]
-  },
-
-  heightfall: {
-    slideUrl: '',
-
-    checklist: [
-      'Confirm the scene is safe, including checking for any ongoing fall risk, unstable structures or environmental hazards.',
-      'Approach with spinal precautions given the mechanism — manually stabilise the head and minimise unnecessary movement.',
-      'Perform a primary survey using <C>ABCDE and control any catastrophic bleeding first.',
-      'Assess for spinal tenderness, deformity, step-off or neurological symptoms — do not logroll until spinal injury is assessed.',
-      'Assess the pelvis gently for instability or pain without excessive manipulation.',
-      'Check for lower-limb and other fractures — assess distal circulation, sensation and movement in all four limbs.',
-      'Assess for head injury — check GCS, pupil size and reaction, and monitor level of consciousness closely.',
-      'Assess the chest and abdomen for signs of internal injury — pain, tenderness, bruising or distension.',
-      'Splint any fractures identified and reassess neurovascular status after splinting.',
-      'Record a full set of observations and repeat them regularly — HR, BP, RR, SpO2, GCS, pain score, temperature.',
-      'Escalate urgently for suspected spinal, pelvic or multi-system injury.',
-      'Document the estimated height, landing surface, body position on landing, mechanism and all clinical findings.'
-    ],
-
-    questions: [
-      'Can you tell me what happened and how you fell?',
-      'Approximately how high did you fall from?',
-      'What surface did you land on and what part of your body hit first?',
-      'Did you hit your head during the fall or landing?',
-      'Did you lose consciousness at any point, even briefly?',
-      'Do you have any neck or back pain, numbness, tingling or weakness?',
-      'Can you feel and move your arms and legs?',
-      'Do you have any pain in your hips, pelvis or lower back?',
-      'Do you feel short of breath or have any chest or abdominal pain?',
-      'Are you taking any blood-thinning medication?',
-      'Do you have any medical conditions or allergies?',
-      'On a scale of 0 to 10, how bad is your pain right now?'
-    ],
-
-    rp: [
-      'confirms the scene is safe and approaches the patient with spinal precautions, manually stabilising the head.',
-      'introduces themselves and begins a primary survey using <C>ABCDE while maintaining manual in-line stabilisation.',
-      'checks for catastrophic bleeding and controls any external haemorrhage found.',
-      'assesses the airway while maintaining spinal alignment — airway is patent.',
-      'assesses breathing — respiratory rate 20, chest movement symmetrical, oxygen saturation 97% on room air.',
-      'checks circulation — radial pulse 96/min, BP 130/84, capillary refill <2 seconds, skin warm and dry.',
-      'assesses disability — GCS 15, pupils equal and reactive, patient alert and orientated.',
-      'palpates the cervical and thoracic spine gently for tenderness or step-off — no midline tenderness reported.',
-      'assesses the pelvis gently for pain or instability — no pelvic tenderness or crepitus detected.',
-      'assesses the lower limbs — no deformity, distal pulse strong, sensation and movement intact bilaterally.',
-      'applies a cervical collar and prepares for a logroll to assess the back and complete spinal assessment.',
-      'repeats observations — HR 92, BP 124/78, RR 18, SpO2 98%, GCS 15, pain 4/10 — and documents the fall mechanism.',
-      'prepares a structured handover — 4m fall landing on feet, no LOC, no spinal tenderness, observations stable, ongoing spinal precautions.'
-  ]
-  },
-
-
-
-  melee: {
-    slideUrl: '',
-
-    checklist: [
-      'Confirm the scene is safe and any assailant risk has passed before approaching the patient.',
-      'Perform a primary survey using <C>ABCDE and control any catastrophic bleeding first.',
-      'Assess level of consciousness and look for signs of head injury — GCS, pupils, focal neurological signs.',
-      'Examine the chest for signs of blunt injury — bruising, rib tenderness, respiratory effort and oxygenation.',
-      'Examine the abdomen for tenderness, guarding or distension suggesting internal organ injury.',
-      'Fully expose the patient and check systematically for bruising, swelling, deformity and wounds from strikes or weapons.',
-      'Assess the neck carefully for any signs of strangulation — bruising, petechiae, voice change, difficulty swallowing.',
-      'Assess and splint any suspected fractures, checking distal neurovascular status before and after.',
-      'Do not be falsely reassured by a lack of visible external injury — blunt trauma can hide serious internal injury.',
-      'Record a full set of observations and repeat them regularly — watch for trends suggesting deterioration.',
-      'Offer appropriate analgesia based on pain severity and reassess after treatment.',
-      'Document the mechanism, number of blows or assailants where known, weapon type and all clinical findings.'
-    ],
-
-    questions: [
-      'Can you tell me exactly what happened and how many times you were hit?',
-      'Were you hit with a weapon like a bat or pipe, or with fists and feet?',
-      'Did you lose consciousness at any point, even briefly?',
-      'Where does it hurt the most — point to every place that hurts?',
-      'Do you have any pain in your tummy, or does it hurt to breathe?',
-      'Were you grabbed or squeezed around your neck at any point?',
-      'Do you feel any numbness, tingling or weakness anywhere?',
-      'Do you feel dizzy, lightheaded or sick to your stomach?',
-      'Are you taking any blood-thinning medication?',
-      'Do you have any medical conditions or allergies?',
-      'On a scale of 0 to 10, how bad is your pain right now?'
-    ],
-
-    rp: [
-      'confirms the scene is safe before approaching the patient.',
-      'performs a primary survey using <C>ABCDE and controls any catastrophic bleeding first.',
-      'assesses the patient\'s level of consciousness — GCS 15, alert and orientated, pupils equal and reactive.',
-      'examines the chest for signs of blunt injury — bruising and tenderness over the left ribcage, symmetrical chest movement.',
-      'examines the abdomen — no tenderness, guarding or distension noted.',
-      'fully exposes the patient and systematically checks for bruising, swelling and deformity across the torso and limbs.',
-      'carefully assesses the neck for any signs of strangulation — no bruising, voice clear, no difficulty swallowing.',
-      'assesses and splints a suspected right forearm fracture — checks distal pulse, sensation and movement before and after splinting.',
-      'administers oral paracetamol 1g for pain and reassesses the pain score after 15 minutes.',
-      'repeats observations — HR 88, BP 126/78, RR 18, SpO2 98%, GCS 15, pain 3/10 after analgesia.',
-      'stays alert for signs of internal injury despite the lack of obvious external wounds given the blunt mechanism.',
-      'prepares a structured handover — assaulted with a bat, blunt chest trauma, right forearm fracture, observations stable, analgesia given.'
-  ]
-  }
-};
-
-
-/* =========================================================
-   CARDIAC ASSESSMENT & CARE DATA
-
-   Two categories: "assessment" (suspected cardiac chest
-   pain / ACS) and "care" (cardiac arrest / resuscitation).
-   Mirrors the incident-scene checklist/questions/RP pattern
-   above but is a fully independent system (separate element
-   IDs, classes and functions) so it can\'t interfere with the
-   Incident Scenes page.
-========================================================= */
-
-const cardiacData = {
-
-  assessment: {
-
-    checklistTitle:
-      'Cardiac assessment checklist',
-
-    questionsTitle:
-      'Chest pain history — ask the patient',
-
-    checklist: [
-      'Confirm the scene is safe before approaching.',
-      'Introduce yourself and gain the patient\u2019s consent to assess them.',
-      'Begin a structured ABCDE assessment.',
-      'Assess airway patency.',
-      'Assess breathing rate, effort and oxygen saturation.',
-      'Check pulse rate, rhythm and character, and blood pressure in both arms if dissection is suspected.',
-      'Take a structured SOCRATES pain history for the chest pain.',
-      'Attach a 12-lead ECG and review for ST changes, T-wave changes or new bundle branch block as early as possible.',
-      'Give supplemental oxygen only if the patient is hypoxic, not routinely.',
-      'Consider aspirin 300 mg if indicated and there is no clear contraindication.',
-      'Consider GTN for symptom relief if blood pressure allows.',
-      'Gain IV access and take bloods, including troponin, per local protocol.',
-      'Continue cardiac monitoring and repeat a full set of observations.',
-      'Identify red-flag features and escalate promptly if present.',
-      'Prepare a structured ATMIST/SBAR handover.'
-    ],
-
-    questions: [
-      'Can you describe what the pain feels like?',
-      'Where exactly is the pain?',
-      'Does it spread anywhere — your arm, jaw or back?',
-      'When did it start, and what were you doing?',
-      'Is the pain constant, or does it come and go?',
-      'Does anything make it better or worse?',
-      'On a scale of 0 to 10, how severe is the pain?',
-      'Do you feel short of breath, sweaty, sick or light-headed?',
-      'Have you had pain like this before?',
-      'Do you have a history of heart problems, high blood pressure, diabetes or high cholesterol?',
-      'Do you smoke, or have you smoked in the past?',
-      'Is there a family history of heart disease?',
-      'What medications are you currently taking?',
-      'Do you have any allergies?'
-    ],
-
-    rp: [
-      'introduces themselves to the patient, gains consent and begins a structured ABCDE assessment focused on the chest pain.',
-      'checks the patient\u2019s airway is clear and assesses their breathing rate, effort and oxygen saturation.',
-      'palpates the patient\u2019s radial pulse, checks blood pressure in both arms and assesses skin colour, temperature and capillary refill.',
-      'takes a structured SOCRATES pain history, asking about the site, onset, character, radiation, associated symptoms, timing, exacerbating/relieving factors and severity of the chest pain.',
-      'attaches a 12-lead ECG monitor and reviews the trace for ST changes, T-wave abnormalities or a new bundle branch block.',
-      'checks the patient\u2019s oxygen saturation before deciding whether supplemental oxygen is clinically indicated.',
-      'checks for aspirin allergy and bleeding risk before preparing the indicated 300 mg aspirin loading dose.',
-      'checks the patient\u2019s blood pressure and cardiac history before considering GTN for symptom relief.',
-      'gains IV access and prepares blood samples, including troponin, according to local protocol.',
-      'continues cardiac monitoring and repeats a full set of observations, watching closely for deterioration.',
-      'identifies red-flag features in the assessment and escalates the case for urgent senior/cardiology review.',
-      'prepares a structured ATMIST handover summarising the history, ECG findings and treatment given so far.'
-  ]
-  },
-
-  care: {
-
-    checklistTitle:
-      'Cardiac arrest / resuscitation checklist',
-
-    questionsTitle:
-      'Ask bystanders / witnesses',
-
-    checklist: [
-      'Confirm the scene is safe before approaching.',
-      'Check for a response by shaking the shoulders and shouting.',
-      'Open the airway and look, listen and feel for normal breathing for no more than 10 seconds.',
-      'Shout for help, call for resuscitation support and request an AED/defibrillator.',
-      'Begin chest compressions immediately at the centre of the chest.',
-      'Compress at a rate of 100–120 per minute to a depth of 5–6cm, allowing full recoil.',
-      'Give compressions and ventilations at a ratio of 30:2 where trained and equipped to do so.',
-      'Attach the AED/defibrillator as soon as it arrives and follow its prompts.',
-      'Stand clear during rhythm analysis and shock delivery, then resume compressions immediately.',
-      'Swap the compressor role roughly every 2 minutes to maintain compression quality.',
-      'Consider and treat the reversible causes (4 Hs and 4 Ts) where trained to do so.',
-      'On return of spontaneous circulation, reassess ABCDE, obtain a 12-lead ECG and titrate oxygen to target.',
-      'Continue close monitoring of consciousness, breathing, circulation and temperature in post-ROSC care.',
-      'Prepare a structured handover including collapse time, initial rhythm, shocks and drugs given, and response to treatment.'
-    ],
-
-    questions: [
-      'Did anyone see what happened?',
-      'What time did they collapse?',
-      'Were they breathing normally before this happened?',
-      'Has anyone already started CPR?',
-      'Does the patient have any known heart conditions?',
-      'Is there a defibrillator nearby?',
-      'Did they complain of chest pain, breathlessness or feeling unwell beforehand?',
-      'Does anyone know their medical history or current medications?',
-      'Has anyone already called for further help?'
-    ],
-
-    rp: [
-      'confirms the scene is safe, checks for a response by shaking the patient\u2019s shoulders and shouting, and opens the airway to check for normal breathing.',
-      'shouts for help, requests an AED/defibrillator and calls for resuscitation support after confirming the patient is unresponsive and not breathing normally.',
-      'begins chest compressions at the centre of the patient\u2019s chest at a rate of 100 to 120 per minute, allowing full recoil between compressions.',
-      'delivers compressions and ventilations at a ratio of 30 to 2 while resuscitation equipment is prepared.',
-      'attaches the AED/defibrillator, follows the voice prompts and stands clear of the patient during rhythm analysis.',
-      'delivers a shock when advised by the defibrillator and immediately resumes chest compressions afterwards.',
-      'swaps the compressor role with a colleague every two minutes to maintain effective compression quality.',
-      'considers the reversible causes of cardiac arrest and treats any that are identified.',
-      'reassesses the patient\u2019s ABCDE, obtains a 12-lead ECG and titrates oxygen following return of spontaneous circulation.',
-      'continues close monitoring of the patient\u2019s consciousness, breathing, circulation and temperature during post-resuscitation care.',
-      'prepares a structured handover including the time of collapse, initial rhythm, shocks delivered and treatment given.'
-  ]
-  }
-};
-
-let currentCardiacCategory = 'assessment';
-let currentCardiacRPMode = 'slash';
-
-function showCardiacCategory(name) {
-  if (!cardiacData[name]) {
-    console.warn(
-      `Unknown cardiac category: ${name}`
-    );
-
-    return;
-  }
-
-  currentCardiacCategory = name;
-
-  document
-    .querySelectorAll('.cardiac-panel')
-    .forEach(el => {
-
-      const active =
-        el.id === `cardiac-${name}`;
-
-      el.classList.toggle(
-        'active',
-        active
-      );
-    });
-
-  document
-    .querySelectorAll('.cardcat')
-    .forEach(button => {
-
-      button.classList.remove('active');
-
-      const onclick =
-        button.getAttribute('onclick') || '';
-
-      if (
-        onclick.includes(
-          `showCardiacCategory('${name}')`
-        ) ||
-        onclick.includes(
-          `showCardiacCategory("${name}")`
-        )
-      ) {
-        button.classList.add('active');
-      }
-    });
-
-  renderCardiacChecklist();
-  renderCardiacQuestions();
-  renderCardiacRP();
-}
-
-function renderCardiacChecklist() {
-  const container =
-    document.getElementById('cardiacChecklist');
-
-  const titleEl =
-    document.getElementById('cardiacChecklistTitle');
-
-  if (!container) return;
-
-  const category =
-    cardiacData[currentCardiacCategory];
-
-  if (!category) {
-    container.innerHTML = '';
-    return;
-  }
-
-  if (titleEl) {
-    titleEl.textContent =
-      category.checklistTitle || 'Checklist';
-  }
-
-  container.innerHTML =
-    category.checklist
-      .map(
-        (item, index) => `
-          <label class="check-row">
-
-            <input
-              type="checkbox"
-              data-cardiac-check="${index}"
-            >
-
-            <span>
-              ${escapeHtml(item)}
-            </span>
-
-          </label>
-        `
-      )
-      .join('');
-}
-
-function renderCardiacQuestions() {
-  const container =
-    document.getElementById('cardiacQuestions');
-
-  const titleEl =
-    document.getElementById('cardiacQuestionsTitle');
-
-  if (!container) return;
-
-  const category =
-    cardiacData[currentCardiacCategory];
-
-  if (!category) {
-    container.innerHTML = '';
-    return;
-  }
-
-  if (titleEl) {
-    titleEl.textContent =
-      category.questionsTitle || 'Ask directly';
-  }
-
-  container.innerHTML =
-    category.questions
-      .map(
-        (question, index) => `
-          <div class="question-row">
-
-            <span>
-              ${index + 1}
-            </span>
-
-            <p id="cardiacQ-${index}">
-              ${escapeHtml(question)}
-            </p>
-
-            <div class="question-buttons">
-              <button
-                type="button"
-                onclick="copyText('cardiacQ-${index}')"
-              >
-                Copy
-              </button>
-            </div>
-
-          </div>
-        `
-      )
-      .join('');
-}
-
-function setCardiacRPMode(mode) {
-  if (
-    mode !== 'slash' &&
-    mode !== 'f8'
-  ) {
-    mode = 'slash';
-  }
-
-  currentCardiacRPMode = mode;
-
-  document
-    .querySelectorAll('.crpt')
-    .forEach(button => {
-
-      button.classList.remove('active');
-
-      const onclick =
-        button.getAttribute('onclick') || '';
-
-      if (
-        onclick.includes(
-          `setCardiacRPMode('${mode}')`
-        ) ||
-        onclick.includes(
-          `setCardiacRPMode("${mode}")`
-        )
-      ) {
-        button.classList.add('active');
-      }
-    });
-
-  renderCardiacRP();
-}
-
-function renderCardiacRP() {
-  const container =
-    document.getElementById('cardiacRPList');
-
-  if (!container) return;
-
-  const category =
-    cardiacData[currentCardiacCategory];
-
-  if (!category) {
-    container.innerHTML = '';
-    return;
-  }
-
-  const contentKey = 'cardiac-rp-' + currentCardiacCategory;
-  const rpList = getEditableItems(contentKey, category.rp);
-
-  renderEditableList('cardiacRPList', rpList, contentKey, (action, index) => {
-    const command =
-      currentCardiacRPMode === 'f8'
-        ? `ME ${action}`
-        : `/me ${action}`;
-
-    return `
-      <div class="rp-item scene-rp-item">
-
-        <span>
-          ${
-            currentCardiacRPMode === 'f8'
-              ? 'ME • F8'
-              : '/me'
-          }
-        </span>
-
-        <p
-          id="cardiacRP-${index}"
-          class="rp-text"
-        >
-          ${escapeHtml(command)}
-        </p>
-
-        <button
-          type="button"
-          onclick="copyText('cardiacRP-${index}')"
-        >
-          Copy
-        </button>
-
-      </div>
-    `;
-  });
-}
-
-function initialiseCardiac() {
-  currentCardiacCategory = 'assessment';
-  currentCardiacRPMode = 'slash';
-
-  showCardiacCategory('assessment');
-  setCardiacRPMode('slash');
-}
-
-/* =========================================================
-   PROCEDURES
-
-   Full prep-through-procedure walkthroughs. Each entry has
-   its own prep checklist, procedure checklist, patient
-   questions and RP action library. Independent system —
-   separate element IDs/classes/functions from both the
-   Incident Scenes and Cardiac systems above, so none of the
-   three can interfere with each other.
-========================================================= */
-
-
-/* =========================================================
-   PATIENT QUESTION LIBRARY
-========================================================= */
-
-var patientQuestionLib = {
-  "general": [
-    "/tts Can you tell me your name and date of birth?",
-    "/tts Can you tell me what happened today?",
-    "/tts Do you have any medical conditions?",
-    "/tts Are you taking any regular medication?",
-    "/tts Do you have any allergies?",
-    "/tts On a scale of 0 to 10, how much pain are you in?",
-    "/tts Can you point to where it hurts?"
-  ],
-  "chest-pain": [
-    "/tts Can you describe the pain? Is it sharp, dull, crushing or burning?",
-    "/tts When did the pain start?",
-    "/tts Does the pain go anywhere else? Like your arm, jaw or back?",
-    "/tts Does anything make it better or worse?",
-    "/tts Do you feel short of breath?",
-    "/tts Have you had a heart attack or heart problems before?"
-  ],
-  "trauma": [
-    "/tts What happened? Can you walk me through it?",
-    "/tts Where is your pain?",
-    "/tts Can you feel your hands and feet?",
-    "/tts Did you hit your head or lose consciousness?",
-    "/tts Do you have any neck or back pain?",
-    "/tts Do you feel dizzy or lightheaded?"
-  ],
-  "respiratory": [
-    "/tts When did the breathing difficulty start?",
-    "/tts Do you have asthma, COPD or any lung condition?",
-    "/tts Have you used your inhaler already?",
-    "/tts Can you speak in full sentences?",
-    "/tts Do you have any chest pain when you breathe?"
-  ],
-  "neuro": [
-    "/tts Can you tell me what day it is today?",
-    "/tts Can you tell me where you are?",
-    "/tts Can you lift both arms up for me?",
-    "/tts Can you squeeze my hands?",
-    "/tts Can you smile for me? Show me your teeth.",
-    "/tts Did you have a seizure? How long did it last?"
-  ],
-  "cardiac": [
-    "/tts Do you have any chest pain or discomfort?",
-    "/tts Do you feel your heart racing or skipping beats?",
-    "/tts Do you have a history of heart disease?",
-    "/tts Do you smoke or vape?",
-    "/tts Do you have diabetes?"
-  ],
-  "abdominal": [
-    "/tts Where is the pain in your stomach?",
-    "/tts When did the pain start?",
-    "/tts Is the pain constant or does it come and go?",
-    "/tts Have you been sick or had diarrhoea?",
-    "/tts Have you had any surgery on your stomach before?"
-  ]
-};
-
-/* =========================================================
-   DOCUMENTATION BUILDER (Patient Care Record)
-========================================================= */
-
-function generatePcr() {
-  var fields = [];
-  var ids = ["pcr_date","pcr_type","pcr_location","pcr_name","pcr_age","pcr_gender","pcr_complaint","pcr_history","pcr_allergies","pcr_meds","pcr_bp","pcr_hr","pcr_rr","pcr_spo2","pcr_temp","pcr_gcs","pcr_pain","pcr_airway","pcr_breathing","pcr_circulation","pcr_disability","pcr_exposure","pcr_treatment","pcr_medsGiven","pcr_procedures","pcr_response","pcr_disposition","pcr_handover","pcr_clinician"];
-  var vals = {};
-  ids.forEach(function(id) {
-    var el = document.getElementById(id);
-    vals[id] = el ? el.value : '';
-  });
-  var t = '=== PATIENT CARE RECORD (RP) ===\n\n';
-  t += 'Date/Time: ' + vals.pcr_date + ' | Type: ' + vals.pcr_type + ' | Location: ' + vals.pcr_location + '\n\n';
-  t += 'Patient: ' + vals.pcr_name + ' | Age: ' + vals.pcr_age + ' | Gender: ' + vals.pcr_gender + '\n';
-  t += 'Complaint: ' + vals.pcr_complaint + '\n';
-  t += 'History: ' + vals.pcr_history + '\n';
-  t += 'Allergies: ' + vals.pcr_allergies + ' | Medications: ' + vals.pcr_meds + '\n\n';
-  t += 'OBS: BP ' + vals.pcr_bp + ' | HR ' + vals.pcr_hr + ' | RR ' + vals.pcr_rr + ' | SpO2 ' + vals.pcr_spo2 + ' | Temp ' + vals.pcr_temp + ' | GCS ' + vals.pcr_gcs + ' | Pain ' + vals.pcr_pain + '\n\n';
-  t += 'ABCDE: A=' + vals.pcr_airway + ' B=' + vals.pcr_breathing + ' C=' + vals.pcr_circulation + ' D=' + vals.pcr_disability + ' E=' + vals.pcr_exposure + '\n\n';
-  t += 'Treatment: ' + vals.pcr_treatment + '\n';
-  t += 'Meds Given: ' + vals.pcr_medsGiven + '\n';
-  t += 'Procedures: ' + vals.pcr_procedures + '\n';
-  t += 'Response: ' + vals.pcr_response + '\n\n';
-  t += 'Disposition: ' + vals.pcr_disposition + '\n';
-  t += 'Handover: ' + vals.pcr_handover + '\n';
-  t += 'Clinician: ' + vals.pcr_clinician + '\n';
-  t += '\n--- RP DOCUMENTATION ONLY ---';
-  var out = document.getElementById('pcrOutput');
-  if (out) out.textContent = t;
-}
-
-function copyPcr() {
-  var out = document.getElementById('pcrOutput');
-  if (out && out.textContent && out.textContent.indexOf('PATIENT CARE RECORD') >= 0) copyTextInline(out.textContent);
-  else showToast('Generate a PCR first', 'error');
-}
-
-function clearPcr() {
-  document.querySelectorAll('#pcrForm input, #pcrForm textarea').forEach(function(el) { el.value = ''; });
-  var out = document.getElementById('pcrOutput');
-  if (out) out.textContent = 'Fill in the form above and click Generate.';
-  showToast('Cleared', 'info');
-}
-
-window.generatePcr = generatePcr;
-window.copyPcr = copyPcr;
-window.clearPcr = clearPcr;
-/* =========================================================
-   CMS FRONTEND LAYER (Defaults + Overrides)
-   Every data consumer can call cmsGet(type) to receive
-   DB content when present, falling back to built-in JS
-   defaults when not. Safe by construction - never breaks.
-========================================================= */
-
-var cmsCache = {};
-var cmsCacheTime = {};
-var CMS_CACHE_TTL = 30000; /* 30s */
-var cmsFallbacks = {};
 /*
  * Phase 5 cutover:
  * Structured CMS is authoritative. Legacy editable_content is retained only
@@ -5942,8 +3796,84 @@ function initialisePainSection() {
    MEDICATIONS — CATEGORY TABS
 ========================================================= */
 
+
+/* =========================================================
+   MEDICATION RANK AUTHORISATION REFERENCE
+   Source: handbook screenshots supplied by the user for medication/rank
+   permissions and listed presentations. Minimum/maximum fields are a
+   separate typical-adult reference layer researched against UK clinical
+   guidance; they are not a substitute for local prescribing protocols.
+========================================================= */
+
+const medicationAuthorityData = [
+  {name:'Adrenaline', indication:'Cardiac arrest, anaphylaxis', dose:'1mg/10ml (IV) / 0.5mg (IM)', ranks:['Paramedic','Doctor'], minDose:'500 micrograms', maxDose:'1 mg', doseNote:'per dose; indication-dependent'},
+  {name:'Amiodarone', indication:'Cardiac arrest (pulseless VT/VF)', dose:'300mg/10ml', ranks:['Paramedic'], minDose:'150 mg', maxDose:'300 mg', doseNote:'IV bolus; rhythm/protocol-dependent'},
+  {name:'Atropine', indication:'Symptomatic bradycardia (<40 pulse)', dose:'600 mcg', ranks:['Paramedic'], minDose:'500 micrograms', maxDose:'3 mg', doseNote:'500 microgram repeat doses; 3 mg is the total adult maximum in bradycardia'},
+  {name:'Diazepam', indication:'Acute muscle spasms, seizure control', dose:'5mg', ranks:['Paramedic','Doctor'], minDose:'5 mg', maxDose:'10 mg', doseNote:'per dose; indication/route-dependent'},
+  {name:'Ipratropium Bromide', indication:'Life-threatening asthma, COPD', dose:'250mcg/3ml', ranks:['Paramedic','Doctor'], minDose:'250 micrograms', maxDose:'500 micrograms', doseNote:'per nebulised dose'},
+  {name:'Morphine Sulfate', indication:'Moderate to severe pain relief', dose:'10mg/1ml', ranks:['Paramedic','HEMS','Doctor'], minDose:'2.5 mg', maxDose:'10 mg', doseNote:'IV titration range; route/clinical response dependent'},
+  {name:'TXA', indication:'Major trauma, catastrophic bleeding', dose:'100mg/1ml', ranks:['Paramedic','HEMS','Doctor'], minDose:'1 g', maxDose:'2 g', doseNote:'1 g loading dose + 1 g over 8 hours for major trauma'},
+  {name:'Glucose (IV)', indication:'Hypoglycemia (unconscious)', dose:'10% or 50g/500ml', ranks:['Paramedic'], minDose:'10 g', maxDose:'25 g', doseNote:'IV rescue dose; concentration/route dependent'},
+  {name:'Ketamine', indication:'Severe pain management, sedation', dose:'10mg/1ml', ranks:['Advanced Paramedic','HEMS'], minDose:'0.1 mg/kg', maxDose:'2 mg/kg', doseNote:'analgesia to procedural/induction dosing; indication-dependent'},
+  {name:'Midazolam', indication:'Status epilepticus (seizures), sedation', dose:'5mg/5ml', ranks:['Advanced Paramedic','HEMS','Doctor'], minDose:'2.5 mg', maxDose:'10 mg', doseNote:'per dose; indication/route-dependent'},
+  {name:'Prednisolone', indication:'Moderate acute asthma, croup', dose:'5mg', ranks:['Advanced Paramedic','Doctor'], minDose:'40 mg', maxDose:'50 mg', doseNote:'adult acute asthma course; local protocol may differ'},
+  {name:'Fentanyl', indication:'Severe pain management', dose:'100mcg/2ml', ranks:['Advanced Paramedic','HEMS'], minDose:'25 micrograms', maxDose:'100 micrograms', doseNote:'IV titrated dose'},
+  {name:'Propofol', indication:'Induction of anaesthesia, sedation', dose:'10mg/1ml', ranks:['Advanced Paramedic','HEMS'], minDose:'1 mg/kg', maxDose:'2.5 mg/kg', doseNote:'adult induction bolus; infusion dosing is separate'},
+  {name:'Suxamethonium', indication:'Paralytic for rapid sequence intubation', dose:'100mg/2ml', ranks:['Advanced Paramedic','HEMS'], minDose:'1 mg/kg', maxDose:'1.5 mg/kg', doseNote:'IV RSI dose'},
+  {name:'Ondansetron', indication:'Nausea and vomiting', dose:'4mg/2ml', ranks:['Advanced Paramedic','HEMS'], minDose:'4 mg', maxDose:'8 mg', doseNote:'per dose; route/indication-dependent'},
+  {name:'Noradrenaline', indication:'Severe hypotension, shock', dose:'4mg/4ml', ranks:['Advanced Paramedic','HEMS'], minDose:'0.05 micrograms/kg/min', maxDose:'0.5 micrograms/kg/min', doseNote:'IV infusion; titrate to effect in critical care'},
+  {name:'Sodium Bicarbonate', indication:'Severe acidosis, hyperkalaemia', dose:'8.4%', ranks:['Advanced Paramedic','HEMS'], minDose:'50 mmol', maxDose:'100 mmol', doseNote:'IV; only for specific indications, not routine cardiac arrest'},
+  {name:'Calcium Chloride', indication:'Hyperkalaemia, calcium channel blocker OD', dose:'10%', ranks:['Advanced Paramedic','HEMS'], minDose:'10 mmol', maxDose:'20 mmol', doseNote:'10% IV; indication-dependent and requires appropriate access'},
+  {name:'Magnesium Sulfate', indication:'Eclampsia, severe asthma, arrhythmias', dose:'50%', ranks:['Advanced Paramedic','HEMS'], minDose:'1.2 g', maxDose:'2 g', doseNote:'IV; indication-dependent'},
+  {name:'Hypertonic Saline', indication:'Raised intracranial pressure (TBI)', dose:'3%', ranks:['Advanced Paramedic','HEMS'], minDose:'100 mL', maxDose:'250 mL', doseNote:'3% saline bolus; indication/protocol-dependent'},
+  {name:'Mannitol', indication:'Raised intracranial pressure', dose:'20%', ranks:['Advanced Paramedic','HEMS'], minDose:'0.25 g/kg', maxDose:'1 g/kg', doseNote:'IV; neurocritical-care indication dependent'},
+  {name:'Oxygen', indication:'Hypoxia, major trauma, shock', dose:'Gas', ranks:['HEMS','Doctor'], minDose:'2 L/min', maxDose:'15 L/min', doseNote:'flow rate; titrate to target saturation/clinical state'},
+  {name:'Rocuronium', indication:'Paralytic for advanced intubation (RSI)', dose:'50mg/5ml', ranks:['HEMS'], minDose:'0.6 mg/kg', maxDose:'1.2 mg/kg', doseNote:'IV neuromuscular blockade; RSI commonly uses the upper end'},
+  {name:'PRBC', indication:'Massive haemorrhage, severe trauma', dose:'1 unit', ranks:['HEMS'], minDose:'1 unit', maxDose:'4 units', doseNote:'transfusion is protocol/lab/clinical-state dependent'},
+  {name:'FFP', indication:'Coagulopathy in major bleeding', dose:'1 unit', ranks:['HEMS'], minDose:'1 unit', maxDose:'4 units', doseNote:'transfusion is protocol/lab/clinical-state dependent'},
+  {name:'Amoxicillin', indication:'Infections', dose:'Tablet (500mg)', ranks:['Doctor'], minDose:'500 mg', maxDose:'1 g', doseNote:'per dose; route/indication-dependent'},
+  {name:'Aspirin', indication:'Suspected heart attack / ACS', dose:'Tablet (300g)', ranks:['Doctor'], minDose:'75 mg', maxDose:'300 mg', doseNote:'per dose; ACS loading differs from maintenance'},
+  {name:'Chlorphenamine', indication:'Allergic reaction', dose:'Ampoule Injection', ranks:['Doctor'], minDose:'4 mg', maxDose:'10 mg', doseNote:'route/indication-dependent'},
+  {name:'Co-amoxiclav', indication:'Open fracture to prevent infections', dose:'Oral Solution (125mg)', ranks:['Doctor'], minDose:'1.2 g', maxDose:'1.2 g', doseNote:'IV adult dose commonly used for serious/open-fracture infection prophylaxis'},
+  {name:'Codeine', indication:'Mild to severe pain', dose:'Tablet (15mg)', ranks:['Doctor'], minDose:'15 mg', maxDose:'60 mg', doseNote:'per oral dose'},
+  {name:'Glucose', indication:'Hypoglycemia / low blood sugar', dose:'Solution Infusion', ranks:['Doctor'], minDose:'10 g', maxDose:'25 g', doseNote:'hypoglycaemia rescue dose; route/concentration-dependent'},
+  {name:'GTN', indication:'Cardiac chest pain, angina', dose:'Inhaler (400 mcg)', ranks:['Doctor'], minDose:'400 micrograms', maxDose:'800 micrograms', doseNote:'sublingual dose; repeat dosing depends on protocol'},
+  {name:'Ibuprofen', indication:'Mild to moderate pain relief', dose:'Tablet (400mg)', ranks:['Doctor'], minDose:'200 mg', maxDose:'400 mg', doseNote:'per oral dose'},
+  {name:'Metoclopramide', indication:'Nausea and vomiting', dose:'Ampoule Injection', ranks:['Doctor'], minDose:'10 mg', maxDose:'10 mg', doseNote:'adult dose per administration'},
+  {name:'Naloxone IV', indication:'Drug overdose', dose:'Ampoule Injection', ranks:['Doctor'], minDose:'100 micrograms', maxDose:'400 micrograms', doseNote:'titrate IV to adequate ventilation; repeated doses may be required'},
+  {name:'Naloxone IM', indication:'Drug overdose', dose:'Ampoule Injection', ranks:['Doctor'], minDose:'400 micrograms', maxDose:'800 micrograms', doseNote:'IM rescue dose; repeated doses may be required'},
+  {name:'Naproxen', indication:'Acute and chronic musculoskeletal pain', dose:'Tablet (250mg)', ranks:['Doctor'], minDose:'250 mg', maxDose:'500 mg', doseNote:'per oral dose'},
+  {name:'Paracetamol IV', indication:'Mild to moderate pain relief', dose:'Solution Infusion', ranks:['Doctor'], minDose:'1 g', maxDose:'1 g', doseNote:'adult IV dose; weight/clinical factors may require adjustment'},
+  {name:'Paracetamol 1g', indication:'Mild to moderate pain relief', dose:'Tablet (500mg per screenshot)', ranks:['Doctor'], minDose:'500 mg', maxDose:'1 g', doseNote:'per oral dose'},
+  {name:'Salbutamol Neb', indication:'Asthmatic attack and COPD', dose:'Nebuliser (2.5mg)', ranks:['Doctor'], minDose:'2.5 mg', maxDose:'5 mg', doseNote:'per nebulised dose; severe cases may use higher protocol-specific dosing'},
+  {name:'Sodium Chloride', indication:'Fluids', dose:'Solution Infusion', ranks:['Doctor'], minDose:'250 mL', maxDose:'1000 mL', doseNote:'IV fluid bolus; indication/clinical state dependent'}
+];
+
+function renderMedicationAuthority() {
+  const body = document.getElementById('medicationAuthorityBody');
+  if (!body) return;
+  const query = (document.getElementById('medAuthoritySearch')?.value || '').trim().toLowerCase();
+  const rows = medicationAuthorityData.filter(item => {
+    if (!query) return true;
+    return item.name.toLowerCase().includes(query) ||
+      item.indication.toLowerCase().includes(query) ||
+      item.ranks.some(rank => rank.toLowerCase().includes(query));
+  });
+
+  body.innerHTML = rows.map(item => `
+    <tr>
+      <td><strong>${escapeHtml(item.name)}</strong></td>
+      <td>${escapeHtml(item.indication)}</td>
+      <td>${escapeHtml(item.dose)}</td>
+      <td><strong>${escapeHtml(item.minDose || 'Not specified')}</strong></td>
+      <td><strong>${escapeHtml(item.maxDose || 'Not specified')}</strong><br><small class="med-dose-note">${escapeHtml(item.doseNote || '')}</small></td>
+      <td>${item.ranks.map(rank => `<span class="med-rank-chip">${escapeHtml(rank)}</span>`).join(' ')}</td>
+    </tr>
+  `).join('') || '<tr><td colspan="6" class="muted">No matching medications.</td></tr>';
+}
+
 function showMedCategory(cat) {
-  const validCats = ['painrelief', 'sedation', 'allergies', 'cardiac', 'respiratory', 'emergencies'];
+  const validCats = ['painrelief', 'sedation', 'allergies', 'cardiac', 'respiratory', 'emergencies', 'authority'];
 
   if (!validCats.includes(cat)) {
     cat = 'painrelief';
@@ -5961,6 +3891,8 @@ function showMedCategory(cat) {
         active
       );
     });
+
+  if (cat === 'authority') renderMedicationAuthority();
 
   document
     .querySelectorAll('.medcat')
@@ -9159,8 +7091,6 @@ function initialiseScenes() {
    BODYCAM
 ========================================================= */
 
-let adminListCache = [];
-
 async function loadAdminList() {
   try {
     const result = await api('/api/admins');
@@ -11090,4 +9020,20 @@ document.addEventListener('click', (event) => {
   try {
     history.replaceState(null, '', '#' + (subTargetId || targetId));
   } catch (_) {}
+});
+
+
+/* =========================================================
+   ROSTER SIDE FILTERS
+========================================================= */
+document.addEventListener('input', (event) => {
+  if (event.target?.id === 'paramedicRosterSearch') renderSideRoster('paramedic');
+  if (event.target?.id === 'hospitalRosterSearch') renderSideRoster('hospital');
+});
+document.addEventListener('change', (event) => {
+  if (event.target?.id === 'paramedicRosterRankFilter' || event.target?.id === 'paramedicRosterSpecialtyFilter') renderSideRoster('paramedic');
+  if (event.target?.id === 'hospitalRosterRankFilter' || event.target?.id === 'hospitalRosterSpecialtyFilter') renderSideRoster('hospital');
+  if (event.target?.id === 'editStaffSide') {
+    populateRankSelect(document.getElementById('editRank')?.value || '', event.target.value);
+  }
 });

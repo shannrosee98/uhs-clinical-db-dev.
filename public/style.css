@@ -1043,3 +1043,72 @@ h1,h2,h3,h4{
 .update-log-arrow{color:#79d2ec;font-size:1.1rem}
 
 .dashboard-update-log .update-log-item{width:100%;text-align:left;font:inherit;cursor:pointer}.dashboard-update-log .update-log-item:focus-visible{outline:2px solid #79d2ec;outline-offset:2px}
+
+/* Roster rank management */
+.rank-row {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+}
+.rank-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+@media (max-width: 640px) {
+  .rank-row { grid-template-columns: 40px minmax(0, 1fr); }
+  .rank-actions { grid-column: 2; }
+}
+
+/* Roster sides */
+.side-hero{display:flex;align-items:center;gap:14px;padding:18px;margin-bottom:14px;border:1px solid #29434f;border-radius:13px;background:#0c1922}
+.side-icon{font-size:34px}.side-hero h3{margin:2px 0 4px}.side-hero p{margin:0;color:#91a5af}
+.rank-add{grid-template-columns:2fr 100px 170px auto}
+.rank-row{grid-template-columns:65px 1fr auto auto}
+.rank-side-badge{display:inline-flex;align-items:center;justify-content:center;padding:5px 9px;border-radius:999px;background:#102b36;border:1px solid #31535f;color:#dff5f5;font-size:11px;font-weight:800;white-space:nowrap}
+@media(max-width:800px){.rank-add{grid-template-columns:1fr}.rank-row{grid-template-columns:45px 1fr}.rank-side-badge{grid-column:2;justify-self:start}.rank-actions{grid-column:2}}
+
+/* Roster rank tiers */
+.rank-tier-badge{display:inline-flex;align-items:center;justify-content:center;padding:5px 9px;border-radius:999px;font-size:11px;font-weight:900;white-space:nowrap;border:1px solid #31535f;background:#102b36;color:#dff5f5}
+.rank-tier-gold{border-color:#a98228;background:#3a2d0d;color:#f8d66d}
+.rank-tier-silver{border-color:#73808a;background:#252c31;color:#d9e0e5}
+.rank-tier-bronze{border-color:#8a5b3c;background:#362117;color:#d99b6c}
+@media(max-width:800px){.rank-tier-badge{grid-column:2;justify-self:start}}
+
+/* FiveRoster-inspired roster presentation */
+.fiveroster-shell{margin-bottom:14px}
+.fiveroster-hero{display:flex;align-items:center;gap:16px;padding:20px;border:1px solid #263f4b;border-radius:14px;background:linear-gradient(135deg,#0a1822,#0d2530);box-shadow:0 12px 30px rgba(0,0,0,.22)}
+.fiveroster-crest{width:68px;height:68px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-weight:1000;letter-spacing:1px;font-size:18px;background:#102e3a;border:1px solid #315766;color:#dff8ff}
+.fiveroster-title{flex:1}.fiveroster-title h3{margin:3px 0 4px;font-size:22px}.fiveroster-title p{margin:0;color:#91a5af}
+.fiveroster-stats{display:flex;gap:18px}.fiveroster-stats div{text-align:center;min-width:68px}.fiveroster-stats strong{display:block;font-size:22px}.fiveroster-stats span{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:#91a5af}
+.fiveroster-switcher{display:flex;gap:6px;margin-top:10px;padding:5px;background:#08131c;border:1px solid #203542;border-radius:10px}
+.fiveroster-switch{border:0;background:transparent;color:#91a5af;padding:9px 14px;border-radius:7px;cursor:pointer;font-weight:800}
+.fiveroster-switch:hover,.fiveroster-switch.active{background:#153744;color:#fff}
+.fiveroster-rank-group{margin:16px 0;border:1px solid #203542;border-radius:13px;overflow:hidden;background:#09151e}
+.fiveroster-rank-head{display:flex;align-items:center;gap:12px;padding:12px 15px;background:#0d202a;border-bottom:1px solid #203542}
+.fiveroster-rank-number{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:#102b36;border:1px solid #31535f;color:#dff5f5;font-weight:900}
+.fiveroster-rank-name{font-size:15px;font-weight:900}.fiveroster-rank-meta{font-size:11px;color:#91a5af;margin-top:2px}.fiveroster-rank-head .rank-tier-badge{margin-left:auto}
+.fiveroster-member-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:#203542}
+.fiveroster-member-list .staff-card{border:0;border-radius:0;background:#0b1821;padding:14px}
+.staff-card{min-height:74px}
+@media(max-width:800px){.fiveroster-hero{align-items:flex-start;flex-wrap:wrap}.fiveroster-stats{width:100%;justify-content:flex-start}.fiveroster-member-list{grid-template-columns:1fr}.fiveroster-rank-head .rank-tier-badge{margin-left:auto}}
+
+/* Roster: default (non-command) rank */
+.rank-tier-default{opacity:.7;border-style:dashed;}
+
+
+/* Medication rank authorisation / dose reference */
+.med-authority-head{display:flex;justify-content:space-between;gap:20px;align-items:flex-end;margin-bottom:14px}
+.med-authority-head input{min-width:260px}
+.med-authority-note{padding:12px 14px;border:1px solid rgba(80,190,255,.28);border-radius:10px;background:rgba(20,45,70,.45);margin-bottom:14px}
+.med-authority-table-wrap{overflow:auto;border:1px solid rgba(120,150,190,.18);border-radius:12px}
+.med-authority-table{width:100%;border-collapse:collapse;min-width:1050px}
+.med-authority-table th{background:#34445c;color:#fff;text-align:left;padding:12px}
+.med-authority-table td{padding:11px;border-top:1px solid rgba(120,150,190,.16);vertical-align:top}
+.med-rank-chip{display:inline-block;margin:2px 4px 2px 0;padding:4px 8px;border-radius:999px;background:rgba(30,110,160,.25);border:1px solid rgba(70,190,255,.3);font-size:.82rem}
+.med-dose-unspecified{color:#9aa8b8;font-style:italic}
+@media(max-width:800px){.med-authority-head{flex-direction:column;align-items:stretch}.med-authority-head input{min-width:0;width:100%}}
+
+
+.med-dose-note{display:block;margin-top:4px;opacity:.75;font-size:.78rem;line-height:1.3}
