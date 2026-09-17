@@ -10915,3 +10915,143 @@ document.addEventListener('change', (event) => {
     populateRankSelect(document.getElementById('editRank')?.value || '', event.target.value);
   }
 });
+
+
+/* =========================================================
+   PHASE 2 — GLOBAL KNOWLEDGE SEARCH
+========================================================= */
+(function initPhase2KnowledgeSearch(){
+  const badgeMap = {
+    dashboard:['Knowledge Hub'],
+    abcde:['STUDY','REAL-WORLD REFERENCE','FIVEM RP'],
+    trauma:['STUDY','REAL-WORLD REFERENCE','FIVEM RP'],
+    emergencies:['STUDY','FIVEM RP'],
+    'emergency-mode':['FIVEM RP','RP PROCEDURE'],
+    scenes:['FIVEM RP','RP PROCEDURE'],
+    procedures:['STUDY','FIVEM RP','RP PROCEDURE'],
+    surgeries:['STUDY','FIVEM RP','RP PROCEDURE'],
+    meds:['STUDY','REAL-WORLD REFERENCE','FIVEM RP'],
+    equipment:['STUDY','FIVEM RP'],
+    cardiac:['STUDY','REAL-WORLD REFERENCE','FIVEM RP'],
+    respiratory:['STUDY','REAL-WORLD REFERENCE','FIVEM RP'],
+    pain:['STUDY','REAL-WORLD REFERENCE','FIVEM RP'],
+    documentation:['STUDY','FIVEM RP','RP PROCEDURE'],
+    rp:['FIVEM RP','RP PROCEDURE'],
+    documents:['REAL-WORLD REFERENCE','STUDY']
+  };
+
+  function addKnowledgeBadges(){
+    document.querySelectorAll('section.section').forEach(section=>{
+      const labels=badgeMap[section.id];
+      if(!labels || section.querySelector('.knowledge-badges')) return;
+      const heading=section.querySelector('h1,h2,h3');
+      if(!heading) return;
+      const wrap=document.createElement('div');
+      wrap.className='knowledge-badges';
+      labels.forEach(label=>{
+        const b=document.createElement('span');
+        b.className='knowledge-badge';
+        b.textContent=label;
+        wrap.appendChild(b);
+      });
+      heading.insertAdjacentElement('afterend',wrap);
+    });
+  }
+
+  function buildIndex(){
+    const entries=[];
+    document.querySelectorAll('section.section').forEach(section=>{
+      const title=(section.querySelector('h1,h2,h3')?.textContent||section.id||'').trim();
+      const text=(section.innerText||'').replace(/\s+/g,' ').trim();
+      if(text) entries.push({id:section.id,title,text});
+    });
+    return entries;
+  }
+
+  let entries=[];
+  let selected=-1;
+
+  function openSearch(){
+    let overlay=document.getElementById('uhsGlobalSearch');
+    if(!overlay){
+      overlay=document.createElement('div');
+      overlay.id='uhsGlobalSearch';
+      overlay.className='uhs-global-search';
+      overlay.innerHTML='<div class="uhs-search-dialog" role="dialog" aria-modal="true" aria-label="Global knowledge search"><div class="uhs-search-top"><input id="uhsSearchInput" class="uhs-search-input" autocomplete="off" placeholder="Search the Clinical Desk… (Ctrl+K)" aria-label="Search knowledge"><button type="button" class="uhs-search-close" id="uhsSearchClose">Close</button></div><div class="uhs-search-hint">Search clinical topics, procedures, medications, equipment, RP actions and documents.</div><div class="uhs-search-results" id="uhsSearchResults"></div></div>';
+      document.body.appendChild(overlay);
+      overlay.addEventListener('click',e=>{if(e.target===overlay) closeSearch();});
+      document.getElementById('uhsSearchClose').addEventListener('click',closeSearch);
+    }
+    entries=buildIndex();
+    overlay.classList.add('open');
+    const input=document.getElementById('uhsSearchInput');
+    input.value='';
+    selected=-1;
+    renderResults('');
+    setTimeout(()=>input.focus(),0);
+  }
+
+  function closeSearch(){
+    document.getElementById('uhsGlobalSearch')?.classList.remove('open');
+  }
+
+  function renderResults(query){
+    const box=document.getElementById('uhsSearchResults');
+    if(!box) return;
+    const q=query.trim().toLowerCase();
+    if(!q){
+      box.innerHTML='<div class="uhs-search-empty">Start typing to search the Clinical Desk.</div>';
+      return;
+    }
+    const terms=q.split(/\s+/).filter(Boolean);
+    const results=entries.map(item=>{
+      const hay=(item.title+' '+item.text).toLowerCase();
+      const score=terms.reduce((s,t)=>s+(item.title.toLowerCase().includes(t)?8:0)+(hay.includes(t)?1:0),0);
+      return {...item,score};
+    }).filter(x=>x.score>0).sort((a,b)=>b.score-a.score).slice(0,30);
+    if(!results.length){box.innerHTML='<div class="uhs-search-empty">No matching knowledge found.</div>';selected=-1;return;}
+    box.innerHTML=results.map((r,i)=>{
+      const pos=r.text.toLowerCase().indexOf(q);
+      const snippet=pos>=0?r.text.slice(Math.max(0,pos-80),pos+180):r.text.slice(0,220);
+      return '<button type="button" class="uhs-search-result'+(i===selected?' selected':'')+'" data-search-section="'+r.id+'"><strong>'+escapeHtml(r.title)+'</strong><small>'+escapeHtml(snippet)+'</small></button>';
+    }).join('');
+    box.querySelectorAll('[data-search-section]').forEach(btn=>btn.addEventListener('click',()=>{
+      const id=btn.dataset.searchSection;
+      closeSearch();
+      if(typeof showSection==='function') showSection(id);
+      const target=document.getElementById(id);
+      if(target) target.scrollIntoView({behavior:'smooth',block:'start'});
+    }));
+  }
+
+  function escapeHtml(value){
+    return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  document.addEventListener('keydown',e=>{
+    if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){
+      e.preventDefault(); openSearch(); return;
+    }
+    const overlay=document.getElementById('uhsGlobalSearch');
+    if(!overlay?.classList.contains('open')) return;
+    if(e.key==='Escape'){e.preventDefault();closeSearch();}
+    if(e.key==='ArrowDown'||e.key==='ArrowUp'){
+      const buttons=[...document.querySelectorAll('.uhs-search-result')];
+      if(!buttons.length) return;
+      e.preventDefault();
+      selected=Math.max(0,Math.min(buttons.length-1,selected+(e.key==='ArrowDown'?1:-1)));
+      buttons.forEach((b,i)=>b.classList.toggle('selected',i===selected));
+      buttons[selected]?.scrollIntoView({block:'nearest'});
+    }
+    if(e.key==='Enter'&&selected>=0){
+      e.preventDefault();
+      document.querySelectorAll('.uhs-search-result')[selected]?.click();
+    }
+  });
+  document.addEventListener('input',e=>{
+    if(e.target?.id==='uhsSearchInput'){selected=-1;renderResults(e.target.value);}
+  });
+
+  addKnowledgeBadges();
+  window.openGlobalKnowledgeSearch=openSearch;
+})();

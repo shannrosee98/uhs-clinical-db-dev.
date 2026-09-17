@@ -1140,3 +1140,22 @@ h1,h2,h3,h4{
   background:rgba(22,67,99,.95);
   box-shadow:0 0 0 1px rgba(57,189,248,.16),0 5px 16px rgba(0,0,0,.18);
 }
+
+/* =========================================================
+   PHASE 2 — GLOBAL KNOWLEDGE SEARCH + CONTENT BADGES
+========================================================= */
+.uhs-global-search{position:fixed;inset:0;z-index:10000;display:none;background:rgba(2,10,22,.78);backdrop-filter:blur(6px);padding:7vh 18px 18px}
+.uhs-global-search.open{display:block}
+.uhs-search-dialog{max-width:900px;margin:0 auto;background:#071a2d;border:1px solid #29445f;border-radius:14px;box-shadow:0 24px 80px rgba(0,0,0,.55);overflow:hidden}
+.uhs-search-top{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid #29445f}
+.uhs-search-input{flex:1;background:#0b243b!important;border:1px solid #3a5873!important;color:#fff!important;border-radius:9px!important;padding:13px 14px!important;font-size:16px!important}
+.uhs-search-close{background:transparent;border:1px solid #3a5873;color:#c9d8e8;border-radius:8px;padding:9px 12px;cursor:pointer}
+.uhs-search-hint{padding:0 16px 10px;color:#8ea4b9;font-size:12px}
+.uhs-search-results{max-height:65vh;overflow:auto;padding:6px 10px 12px}
+.uhs-search-result{display:block;width:100%;text-align:left;background:transparent;border:0;border-radius:9px;padding:12px;color:#dce8f3;cursor:pointer}
+.uhs-search-result:hover,.uhs-search-result.selected{background:#102d47}
+.uhs-search-result strong{display:block;color:#fff;margin-bottom:4px}
+.uhs-search-result small{display:block;color:#91a8bd;line-height:1.4}
+.uhs-search-empty{padding:28px 16px;text-align:center;color:#91a8bd}
+.uhs-search-badge,.knowledge-badge{display:inline-flex;align-items:center;border:1px solid #3a5873;border-radius:999px;padding:3px 8px;margin:0 6px 6px 0;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#cfe1f1;background:#0b243b}
+.knowledge-badges{display:flex;flex-wrap:wrap;margin:6px 0 10px}
