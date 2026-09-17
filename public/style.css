@@ -1272,3 +1272,17 @@ h1,h2,h3,h4{
 @media(max-width:700px){
   .info:hover,.med-card:hover,.scene-grid > *:hover,.surgery-role-block:hover{transform:none}
 }
+
+/* Phase 3 — block editor quick-add palette */
+.cms2-block-palette{margin:0 0 14px;padding:12px;border:1px solid #29434f;border-radius:10px;background:#0f2029}
+.cms2-block-palette-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:10px}
+.cms2-block-palette-head strong{font-size:13px;color:#eaf2f4}
+.cms2-block-palette-head span{font-size:11px;color:#7a95a3}
+.cms2-block-palette-actions{display:flex;gap:7px;flex-wrap:wrap}
+.cms2-block-preset{border:1px solid #355363;background:#122733;color:#c9d6da;border-radius:7px;padding:7px 10px;font-size:12px;font-weight:700;cursor:pointer}
+.cms2-block-preset:hover,.cms2-block-preset:focus{border-color:#41b6e6;color:#fff;outline:none}
+@media(max-width:680px){
+ .cms2-block-palette-head{display:block}
+ .cms2-block-palette-head span{display:block;margin-top:4px}
+ .cms2-block-preset{flex:1 1 calc(50% - 7px)}
+}

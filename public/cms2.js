@@ -785,12 +785,58 @@ function cms2BindClinicalTypeSelector(item) {
   });
 }
 
+
+var CMS2_BLOCK_PRESETS = {
+  text: { type:'text', text:'Write your content here.' },
+  heading: { type:'heading', text:'Section heading' },
+  alert: { type:'alert', severity:'warning', message:'Important information.' },
+  checklist: { type:'checklist', items:['First item','Second item'] },
+  card: { type:'card', title:'Card title', text:'Card content.' },
+  button: { type:'button', label:'Open', url:'#' },
+  image: { type:'image', url:'https://', alt:'Image description' },
+  video: { type:'video', url:'https://', title:'Video' },
+  accordion: { type:'accordion', title:'Expandable section', content:'Details go here.' }
+};
+
+function cms2BlockPaletteHtml(fieldKey) {
+  var html = '<div class="cms2-block-palette" data-block-palette="' + escapeHtml(fieldKey) + '">' +
+    '<div class="cms2-block-palette-head"><strong>Quick add block</strong><span>Build the content from ready-made blocks instead of typing JSON.</span></div>' +
+    '<div class="cms2-block-palette-actions">';
+  Object.keys(CMS2_BLOCK_PRESETS).forEach(function(type) {
+    html += '<button type="button" class="cms2-block-preset" data-add-block="' + escapeHtml(type) + '">' + escapeHtml(cms2PrettyKey(type)) + '</button>';
+  });
+  html += '</div></div>';
+  return html;
+}
+
+function cms2BlockAdd(fieldKey, type) {
+  var state = cms2VisualState[fieldKey];
+  if (!Array.isArray(state)) {
+    if (state && typeof state === 'object' && Object.keys(state).length) {
+      state = [state];
+    } else {
+      state = [];
+    }
+    cms2VisualState[fieldKey] = state;
+  }
+  var preset = CMS2_BLOCK_PRESETS[type];
+  if (!preset) return;
+  state.push(cms2Clone(preset));
+  cms2RenderVisualJson(fieldKey);
+  cms2VisualBind(fieldKey);
+  var host = document.querySelector('[data-json-builder="' + fieldKey + '"]');
+  if (host) {
+    var last = host.querySelector('.cms2-varray-item:last-child');
+    if (last) last.scrollIntoView({behavior:'smooth', block:'nearest'});
+  }
+}
+
 function cms2RenderVisualJson(fieldKey) {
   var host = document.querySelector('[data-json-builder="' + fieldKey + '"]');
   if (!host) return;
   var state = cms2VisualState[fieldKey];
   if (state === undefined || state === null) state = {};
-  host.innerHTML = cms2VisualNode(state, [], undefined, 0);
+  host.innerHTML = cms2BlockPaletteHtml(fieldKey) + cms2VisualNode(state, [], undefined, 0);
 }
 
 function cms2InferEmptyValue() {
@@ -846,6 +892,10 @@ function cms2VisualBind(fieldKey) {
     cms2SetPath(cms2VisualState[fieldKey], parts, value);
   });
   host.addEventListener('click', function(e) {
+    var preset = e.target.closest('[data-add-block]');
+    if (preset) {
+      cms2BlockAdd(fieldKey, preset.getAttribute('data-add-block')); return;
+    }
     var add = e.target.closest('[data-vaddfield]');
     if (add) {
       cms2VisualAddField(fieldKey, add.getAttribute('data-vaddfield')); return;
