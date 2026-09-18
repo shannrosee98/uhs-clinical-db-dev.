@@ -3721,10 +3721,18 @@
         <div id="cms2Form"></div>
         <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
           <button class="primary" onclick="cms2Save()">Save Item</button>
+          <button class="secondary" type="button" onclick="cms2PreviewCurrent()">Preview</button>
           <button class="secondary" onclick="cms2CloseEditor()">Cancel</button>
         </div>
       </div>
     </div>
+
+        <div id="cms2PreviewModal" class="cms2-preview-modal" style="display:none" role="dialog" aria-modal="true" aria-labelledby="cms2PreviewTitle">
+          <div class="cms2-preview-card">
+            <div class="cms2-preview-head"><div><span class="knowledge-kicker">UHS KNOWLEDGE HUB</span><h3 id="cms2PreviewTitle">Content Preview</h3></div><button type="button" class="secondary" onclick="cms2ClosePreview()">Close</button></div>
+            <div id="cms2PreviewBody" class="cms2-preview-body"></div>
+          </div>
+        </div>
 
         <div id="adminBackupTab" class="admin-panel" style="display:none">
       <div class="section-head"><h2>📥 Backup & Restore</h2><p>Export or import site data for backup purposes.</p></div>

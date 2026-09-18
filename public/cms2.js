@@ -301,9 +301,20 @@ function cms2VisualNode(value, path, key, depth) {
       html += '<div class="cms2-vempty">No items yet. Click <b>+ Add item</b> to add one.</div>';
     } else {
       value.forEach(function(item, i) {
-        html += '<div class="cms2-varray-item"><div class="cms2-varray-title">Item ' + (i + 1) +
-          '<button type="button" class="cms2-mini-danger" data-vremove="' + escapeHtml(cms2PathKey(path.concat([i]))) + '">Remove</button></div>' +
-          cms2VisualNode(item, path.concat([i]), undefined, depth + 1) + '</div>';
+        var itemPath = path.concat([i]);
+        var itemKey = cms2PathKey(itemPath);
+        html += '<div class="cms2-varray-item cms2-editor-block" draggable="true" data-vitem="' + escapeHtml(itemKey) + '">' +
+          '<div class="cms2-varray-title">' +
+          '<span class="cms2-block-drag" title="Drag to reorder" aria-label="Drag to reorder">⋮⋮</span>' +
+          '<strong>Block ' + (i + 1) + '</strong>' +
+          '<span class="cms2-block-type">' + escapeHtml(item && typeof item === 'object' && item.type ? cms2PrettyKey(item.type) : 'Content') + '</span>' +
+          '<span class="cms2-block-actions">' +
+          '<button type="button" class="cms2-mini-btn" data-vmove-up="' + escapeHtml(itemKey) + '" ' + (i === 0 ? 'disabled' : '') + '>↑</button>' +
+          '<button type="button" class="cms2-mini-btn" data-vmove-down="' + escapeHtml(itemKey) + '" ' + (i === value.length - 1 ? 'disabled' : '') + '>↓</button>' +
+          '<button type="button" class="cms2-mini-btn" data-vduplicate="' + escapeHtml(itemKey) + '">Duplicate</button>' +
+          '<button type="button" class="cms2-mini-danger" data-vremove="' + escapeHtml(itemKey) + '">Remove</button>' +
+          '</span></div>' +
+          cms2VisualNode(item, itemPath, undefined, depth + 1) + '</div>';
       });
     }
     return html + '</div>';
@@ -338,6 +349,81 @@ function cms2VisualNode(value, path, key, depth) {
 ========================================================= */
 
 var CMS2_CLINICAL_FORMS = {
+  text: {
+    label:'Text',
+    intro:'Write readable clinical content with lightweight formatting.',
+    sections:[{title:'Content',fields:[
+      {key:'text',label:'Text content',kind:'long',aliases:['content','body'],placeholder:'Write the information readers need...'}
+    ]}]
+  },
+  heading: {
+    label:'Heading',
+    intro:'Create a clear section heading for the knowledge page.',
+    sections:[{title:'Heading',fields:[
+      {key:'text',label:'Heading text',kind:'text',aliases:['title'],placeholder:'Enter the heading'}
+    ]}]
+  },
+  alert: {
+    label:'Alert',
+    intro:'Highlight an important note, warning or operational reminder.',
+    sections:[
+      {title:'Alert content',fields:[
+        {key:'title',label:'Alert title',kind:'text',aliases:['heading'],placeholder:'Important'}
+        ,{key:'severity',label:'Severity',kind:'text',aliases:['level'],placeholder:'info, warning, danger or success'}
+        ,{key:'message',label:'Message',kind:'long',aliases:['text','content'],placeholder:'Write the alert message...'}
+      ]}
+    ]
+  },
+  checklist: {
+    label:'Checklist',
+    intro:'Build a practical step-by-step checklist.',
+    sections:[{title:'Checklist items',fields:[
+      {key:'items',label:'Items',kind:'list',aliases:['steps','checklist'],placeholder:'Add a checklist item'}
+    ]}]
+  },
+  card: {
+    label:'Card',
+    intro:'Create a compact knowledge card with a title and supporting information.',
+    sections:[{title:'Card content',fields:[
+      {key:'title',label:'Card title',kind:'text',aliases:['heading'],placeholder:'Card title'},
+      {key:'text',label:'Card content',kind:'long',aliases:['content','body'],placeholder:'Card information...'}
+    ]}]
+  },
+  button: {
+    label:'Button',
+    intro:'Add a navigational action to the content.',
+    sections:[{title:'Button',fields:[
+      {key:'label',label:'Button label',kind:'text',aliases:['text','title'],placeholder:'Open resource'},
+      {key:'url',label:'Destination URL',kind:'text',aliases:['href','link'],placeholder:'https://...'}
+    ]}]
+  },
+  image: {
+    label:'Image',
+    intro:'Add an image reference with accessible alternative text.',
+    sections:[{title:'Image',fields:[
+      {key:'url',label:'Image URL',kind:'text',aliases:['src'],placeholder:'https://...'},
+      {key:'alt',label:'Alternative text',kind:'text',aliases:['altText','description'],placeholder:'Describe the image'},
+      {key:'caption',label:'Caption',kind:'long',aliases:['text'],placeholder:'Optional caption'}
+    ]}]
+  },
+  video: {
+    label:'Video',
+    intro:'Add a video reference and describe what it contains.',
+    sections:[{title:'Video',fields:[
+      {key:'url',label:'Video URL',kind:'text',aliases:['src'],placeholder:'https://...'},
+      {key:'title',label:'Video title',kind:'text',aliases:['name'],placeholder:'Video title'},
+      {key:'description',label:'Description',kind:'long',aliases:['text','content'],placeholder:'What should the learner know before watching?'}
+    ]}]
+  },
+  accordion: {
+    label:'Accordion',
+    intro:'Create expandable supporting information without cluttering the page.',
+    sections:[{title:'Expandable content',fields:[
+      {key:'title',label:'Accordion title',kind:'text',aliases:['heading'],placeholder:'Expandable section'},
+      {key:'content',label:'Accordion content',kind:'long',aliases:['text','body'],placeholder:'Details shown when expanded...'}
+    ]}]
+  },
+
   procedure: {
     label: 'Procedure',
     intro: 'Describe what staff need to know and do for this procedure.',
@@ -837,6 +923,7 @@ function cms2RenderVisualJson(fieldKey) {
   var state = cms2VisualState[fieldKey];
   if (state === undefined || state === null) state = {};
   host.innerHTML = cms2BlockPaletteHtml(fieldKey) + cms2VisualNode(state, [], undefined, 0);
+  cms2BindBlockDrag(fieldKey);
 }
 
 function cms2InferEmptyValue() {
@@ -866,6 +953,36 @@ function cms2VisualAddItem(fieldKey, pathKey) {
   var sample = arr.length ? arr[0] : '';
   arr.push(cms2Clone(sample));
   cms2RenderVisualJson(fieldKey);
+}
+
+
+function cms2VisualMove(fieldKey, pathKey, direction) {
+  var parts = pathKey ? pathKey.split('/').map(function(p) { return p.replace(/~1/g, '/').replace(/~0/g, '~'); }) : [];
+  if (!parts.length) return;
+  var index = Number(parts[parts.length - 1]);
+  if (!Number.isInteger(index)) return;
+  var parentParts = parts.slice(0, -1);
+  var arr = cms2GetPath(cms2VisualState[fieldKey], parentParts);
+  if (!Array.isArray(arr)) return;
+  var target = index + direction;
+  if (target < 0 || target >= arr.length) return;
+  var tmp = arr[index];
+  arr[index] = arr[target];
+  arr[target] = tmp;
+  cms2RenderVisualJson(fieldKey);
+  cms2VisualBind(fieldKey);
+}
+
+function cms2VisualDuplicate(fieldKey, pathKey) {
+  var parts = pathKey ? pathKey.split('/').map(function(p) { return p.replace(/~1/g, '/').replace(/~0/g, '~'); }) : [];
+  if (!parts.length) return;
+  var index = Number(parts[parts.length - 1]);
+  if (!Number.isInteger(index)) return;
+  var arr = cms2GetPath(cms2VisualState[fieldKey], parts.slice(0, -1));
+  if (!Array.isArray(arr) || !arr[index]) return;
+  arr.splice(index + 1, 0, cms2Clone(arr[index]));
+  cms2RenderVisualJson(fieldKey);
+  cms2VisualBind(fieldKey);
 }
 
 function cms2VisualRemove(fieldKey, pathKey) {
@@ -904,11 +1021,112 @@ function cms2VisualBind(fieldKey) {
     if (addItem) {
       cms2VisualAddItem(fieldKey, addItem.getAttribute('data-vadd')); return;
     }
+    var moveUp = e.target.closest('[data-vmove-up]');
+    if (moveUp) {
+      cms2VisualMove(fieldKey, moveUp.getAttribute('data-vmove-up'), -1); return;
+    }
+    var moveDown = e.target.closest('[data-vmove-down]');
+    if (moveDown) {
+      cms2VisualMove(fieldKey, moveDown.getAttribute('data-vmove-down'), 1); return;
+    }
+    var duplicate = e.target.closest('[data-vduplicate]');
+    if (duplicate) {
+      cms2VisualDuplicate(fieldKey, duplicate.getAttribute('data-vduplicate')); return;
+    }
     var remove = e.target.closest('[data-vremove]');
     if (remove) {
       if (confirm('Remove this field/item?')) cms2VisualRemove(fieldKey, remove.getAttribute('data-vremove'));
     }
   });
+}
+
+
+function cms2BindBlockDrag(fieldKey) {
+  var host = document.querySelector('[data-json-builder="' + fieldKey + '"]');
+  if (!host || host.dataset.cms2DragBound === "1") return;
+  host.dataset.cms2DragBound = "1";
+  var dragPath = null;
+  host.addEventListener('dragstart', function(e) {
+    var item = e.target.closest('[data-vitem]');
+    if (!item) return;
+    dragPath = item.getAttribute('data-vitem');
+    item.classList.add('cms2-dragging');
+    if (e.dataTransfer) {
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', dragPath);
+    }
+  });
+  host.addEventListener('dragend', function(e) {
+    var item = e.target.closest('[data-vitem]');
+    if (item) item.classList.remove('cms2-dragging');
+    dragPath = null;
+    host.querySelectorAll('.cms2-drag-over').forEach(function(el){ el.classList.remove('cms2-drag-over'); });
+  });
+  host.addEventListener('dragover', function(e) {
+    var target = e.target.closest('[data-vitem]');
+    if (!target || !dragPath || target.getAttribute('data-vitem') === dragPath) return;
+    e.preventDefault();
+    target.classList.add('cms2-drag-over');
+    if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+  });
+  host.addEventListener('dragleave', function(e) {
+    var target = e.target.closest('[data-vitem]');
+    if (target && !target.contains(e.relatedTarget)) target.classList.remove('cms2-drag-over');
+  });
+  host.addEventListener('drop', function(e) {
+    var target = e.target.closest('[data-vitem]');
+    if (!target || !dragPath) return;
+    e.preventDefault();
+    target.classList.remove('cms2-drag-over');
+    var fromParts = dragPath.split('/').map(function(x){ return x.replace(/~1/g,'/').replace(/~0/g,'~'); });
+    var toPath = target.getAttribute('data-vitem');
+    var toParts = toPath.split('/').map(function(x){ return x.replace(/~1/g,'/').replace(/~0/g,'~'); });
+    if (!fromParts.length || !toParts.length) return;
+    var from = Number(fromParts[fromParts.length-1]), to = Number(toParts[toParts.length-1]);
+    var fromParent = cms2GetPath(cms2VisualState[fieldKey], fromParts.slice(0,-1));
+    var toParent = cms2GetPath(cms2VisualState[fieldKey], toParts.slice(0,-1));
+    if (!Array.isArray(fromParent) || fromParent !== toParent || from === to) return;
+    var moved = fromParent.splice(from,1)[0];
+    fromParent.splice(to,0,moved);
+    cms2RenderVisualJson(fieldKey);
+    cms2VisualBind(fieldKey);
+    cms2BindBlockDrag(fieldKey);
+  });
+}
+
+function cms2PreviewEscape(value) {
+  return escapeHtml(value == null ? '' : String(value));
+}
+function cms2PreviewBlock(block) {
+  if (!block || typeof block !== 'object') return '<p>' + cms2PreviewEscape(block) + '</p>';
+  var type = String(block.type || 'text').toLowerCase();
+  if (type === 'heading') return '<h2>' + cms2PreviewEscape(block.text || block.title || 'Heading') + '</h2>';
+  if (type === 'alert') return '<div class="cms2-preview-alert ' + cms2PreviewEscape(block.severity || 'info') + '"><strong>' + cms2PreviewEscape(block.title || 'Important') + '</strong><p>' + cms2PreviewEscape(block.message || block.text || '') + '</p></div>';
+  if (type === 'checklist') {
+    var items = Array.isArray(block.items) ? block.items : [];
+    return '<div class="cms2-preview-section"><h4>Checklist</h4><ul class="cms2-preview-checklist">' + items.map(function(x){return '<li>☐ '+cms2PreviewEscape(typeof x==='object' ? (x.text||x.label||'') : x)+'</li>';}).join('')+'</ul></div>';
+  }
+  if (type === 'card') return '<article class="cms2-preview-card-block"><h3>'+cms2PreviewEscape(block.title||'Card')+'</h3><p>'+cms2PreviewEscape(block.text||block.content||'')+'</p></article>';
+  if (type === 'button') return '<p><span class="cms2-preview-button">'+cms2PreviewEscape(block.label||'Open')+'</span></p>';
+  if (type === 'image') return '<figure><div class="cms2-preview-media">Image: '+cms2PreviewEscape(block.alt||block.url||'')+'</div></figure>';
+  if (type === 'video') return '<div class="cms2-preview-media">Video: '+cms2PreviewEscape(block.title||block.url||'')+'</div>';
+  if (type === 'accordion') return '<details class="cms2-preview-accordion"><summary>'+cms2PreviewEscape(block.title||'Expandable section')+'</summary><p>'+cms2PreviewEscape(block.content||block.text||'')+'</p></details>';
+  return '<div class="cms2-preview-text">'+cms2PreviewEscape(block.text||block.content||block.message||'')+'</div>';
+}
+function cms2PreviewCurrent() {
+  var modal=document.getElementById('cms2PreviewModal'), body=document.getElementById('cms2PreviewBody');
+  if (!modal || !body) return;
+  var def=CMS2_TYPES[cms2CurrentType]||{};
+  var title=(document.getElementById('cms2EditorTitle')||{}).textContent || 'Content Preview';
+  var state=cms2VisualState.content;
+  var blocks=Array.isArray(state) ? state : (state && typeof state==='object' ? [state] : []);
+  document.getElementById('cms2PreviewTitle').textContent=title+' — Preview';
+  body.innerHTML=blocks.length ? blocks.map(cms2PreviewBlock).join('') : '<p class="muted">Nothing has been added yet.</p>';
+  modal.style.display='flex';
+}
+function cms2ClosePreview() {
+  var modal=document.getElementById('cms2PreviewModal');
+  if (modal) modal.style.display='none';
 }
 
 function cms2ReadVisualJson(fieldKey) {
@@ -1082,3 +1300,5 @@ window.cms2Save = cms2Save;
 window.cms2Delete = cms2Delete;
 window.cms2Duplicate = cms2Duplicate;
 window.cms2SetStatus = cms2SetStatus;
+window.cms2PreviewCurrent = cms2PreviewCurrent;
+window.cms2ClosePreview = cms2ClosePreview;
