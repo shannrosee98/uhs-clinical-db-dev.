@@ -11721,6 +11721,11 @@ window.uhsStrokeData = {
     'HART Advanced Paramedic','HART Paramedic','HEMS Doctor','HEMS Paramedic',
     'Consultant Doctor','Senior Doctor','Junior Doctor','Medical Student'
   ],
+  sourceDocuments: [
+    {title:'Stroke Roleplay Addendum — Real Doses, Observations & Playable Pathways', status:'supplied source material'},
+    {title:'FiveM Stroke SOP — Field Response, Hospital Management, Rank Permissions & MDT', status:'supplied source material'},
+    {title:'FiveM Stroke Guide — UK/NHS-Informed Roleplay Protocol', status:'supplied source material'}
+  ],
   contentTypes: [
     'strokeTypes','strokeSymptoms','strokeObservations','strokePathways',
     'strokeMedications','strokePermissions','strokeEquipment','strokeScenarios',

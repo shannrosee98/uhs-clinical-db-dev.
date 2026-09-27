@@ -1659,3 +1659,30 @@ main > section[id] textarea:focus-visible{
   font-size:12px;
   line-height:1.5;
 }
+
+
+/* Stroke supplied-reference library */
+.stroke-reference-actions{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 18px}
+.stroke-reference-doc{margin:14px 0;border:1px solid rgba(120,160,200,.22);border-radius:14px;background:rgba(10,22,34,.55);overflow:hidden}
+.stroke-reference-doc summary{cursor:pointer;list-style:none;padding:16px 18px;font-weight:800;color:#eaf4ff;display:flex;align-items:center;gap:10px}
+.stroke-reference-doc summary::-webkit-details-marker{display:none}
+.stroke-reference-doc summary:before{content:"＋";font-weight:900;opacity:.75}
+.stroke-reference-doc[open] summary:before{content:"−"}
+.stroke-markdown{padding:0 18px 20px;color:#cbd8e6;line-height:1.65}
+.stroke-markdown h1,.stroke-markdown h2,.stroke-markdown h3,.stroke-markdown h4{color:#f4f8fc;margin:24px 0 10px;line-height:1.25}
+.stroke-markdown h1{font-size:1.45rem}.stroke-markdown h2{font-size:1.2rem}.stroke-markdown h3{font-size:1.05rem}
+.stroke-markdown p{margin:8px 0}
+.stroke-markdown ul,.stroke-markdown ol{padding-left:24px}
+.stroke-markdown li{margin:4px 0}
+.stroke-markdown blockquote{margin:14px 0;padding:12px 16px;border-left:4px solid #5aa9e6;background:rgba(90,169,230,.08);border-radius:8px}
+.stroke-markdown code{padding:2px 5px;border-radius:5px;background:rgba(255,255,255,.08)}
+.stroke-markdown pre{overflow:auto;padding:14px;border-radius:10px;background:#07121d;border:1px solid rgba(120,160,200,.18)}
+.stroke-markdown table{width:100%;border-collapse:collapse;margin:14px 0;font-size:.92rem}
+.stroke-markdown th,.stroke-markdown td{padding:9px 10px;border:1px solid rgba(120,160,200,.2);text-align:left;vertical-align:top}
+.stroke-markdown th{background:rgba(90,169,230,.12);color:#f2f7fc}
+.stroke-markdown a{color:#79c4ff}
+@media(max-width:700px){
+ .stroke-markdown{padding:0 12px 16px;font-size:.92rem}
+ .stroke-markdown table{display:block;overflow-x:auto;white-space:nowrap}
+ .stroke-reference-doc summary{padding:14px}
+}
