@@ -1522,6 +1522,128 @@
         <div class="section-head"><div class="tag">NEUROLOGICAL</div><h2>Neurological assessment</h2></div>
         <div class="two-col"><article class="info"><h3>Consciousness</h3><p>Use AVPU for a rapid assessment and GCS when a more detailed assessment is required.</p></article><article class="info"><h3>Pupils</h3><p>Record size, equality and reaction to light.</p></article><article class="info"><h3>Glucose</h3><p>Check blood glucose when altered consciousness or other clinical indications make it relevant.</p></article><article class="info"><h3>Stroke screen</h3><p>Assess facial movement, arm strength and speech/language changes, noting exact onset/last-known-well time.</p></article></div>
       
+
+          <div class="stroke-guide" id="stroke-guide">
+            <div class="section-head">
+              <div class="tag">STROKE GUIDE</div>
+              <h2>Suspected Stroke — Recognition, Actions & Handover</h2>
+              <p>Use this as a structured study / FiveM RP reference. In real emergencies, follow current NHS and local ambulance-service pathways.</p>
+            </div>
+
+            <div class="clinical-alert clinical-alert--critical">
+              <strong>🚨 TIME-CRITICAL:</strong> Suspected stroke is an emergency. Use FAST, establish the exact symptom onset or last-known-well time, and activate the appropriate emergency pathway. NHS guidance says to call 999 immediately for suspected stroke, including when symptoms have stopped.
+            </div>
+
+            <div class="scenario-tabs stroke-tabs" role="tablist" aria-label="Stroke guide">
+              <button type="button" class="scenario-tab active" onclick="showStrokeTab('recognise')">🧠 Recognise</button>
+              <button type="button" class="scenario-tab" onclick="showStrokeTab('actions')">🚑 Immediate Actions</button>
+              <button type="button" class="scenario-tab" onclick="showStrokeTab('assessment')">🔎 Assessment</button>
+              <button type="button" class="scenario-tab" onclick="showStrokeTab('history')">📋 History</button>
+              <button type="button" class="scenario-tab" onclick="showStrokeTab('handover')">📡 Handover</button>
+              <button type="button" class="scenario-tab" onclick="showStrokeTab('rp')">🎭 RP Actions</button>
+            </div>
+
+            <div id="stroke-tab-recognise" class="scenario-tab-panel active">
+              <div class="two-col">
+                <article class="info"><h3>F — Face</h3><p>Ask the patient to smile. Look for new facial weakness or asymmetry.</p></article>
+                <article class="info"><h3>A — Arms</h3><p>Ask the patient to raise both arms and note new weakness, numbness or drift on one side.</p></article>
+                <article class="info"><h3>S — Speech</h3><p>Listen for slurred or garbled speech and assess whether the patient can communicate or understand normally.</p></article>
+                <article class="info"><h3>T — Time</h3><p>Record the exact time symptoms started if known, or the last time the patient was definitely known to be well.</p></article>
+              </div>
+              <div class="clinical-card">
+                <h3>Other sudden neurological symptoms</h3>
+                <ul class="action-list">
+                  <li>Sudden one-sided weakness or numbness</li>
+                  <li>Sudden visual disturbance or loss of vision</li>
+                  <li>Sudden confusion or difficulty finding/understanding words</li>
+                  <li>Sudden dizziness, loss of balance or coordination</li>
+                  <li>Sudden severe headache, with or without nausea/vomiting</li>
+                </ul>
+              </div>
+              <div class="clinical-card">
+                <h3>TIA warning</h3>
+                <p>Symptoms that resolve can still represent a TIA or stroke pathway. Do not dismiss resolved symptoms; document when they started and when they resolved and seek urgent assessment.</p>
+              </div>
+            </div>
+
+            <div id="stroke-tab-actions" class="scenario-tab-panel">
+              <div class="clinical-step-list">
+                <div class="clinical-step"><span>01</span><div><strong>Scene safety & immediate overview</strong><p>Confirm safety, identify the patient, obtain an immediate impression and start an ABCDE assessment if clinically required.</p></div></div>
+                <div class="clinical-step"><span>02</span><div><strong>Recognise stroke quickly</strong><p>Perform FAST and identify any other sudden neurological deficit.</p></div></div>
+                <div class="clinical-step"><span>03</span><div><strong>Establish time</strong><p>Ask when the patient was last known well. If the patient woke with symptoms, record the last time they were definitely normal before sleep.</p></div></div>
+                <div class="clinical-step"><span>04</span><div><strong>Check reversible contributors</strong><p>Assess consciousness, pupils and blood glucose as part of the neurological/ABCDE assessment, following local protocol.</p></div></div>
+                <div class="clinical-step"><span>05</span><div><strong>Escalate early</strong><p>Activate the appropriate emergency/stroke pathway and communicate the suspected stroke and time information clearly.</p></div></div>
+                <div class="clinical-step"><span>06</span><div><strong>Monitor and reassess</strong><p>Repeat observations and neurological findings, watching for deterioration while awaiting or during transfer.</p></div></div>
+              </div>
+              <div class="clinical-alert">
+                <strong>Do not delay escalation:</strong> the key early priorities are recognition, exact timing, structured assessment, appropriate emergency activation and clear communication.
+              </div>
+            </div>
+
+            <div id="stroke-tab-assessment" class="scenario-tab-panel">
+              <div class="two-col">
+                <article class="info"><h3>Airway & breathing</h3><p>Use ABCDE. Look for reduced consciousness, airway compromise or abnormal breathing and manage according to local protocol.</p></article>
+                <article class="info"><h3>Circulation</h3><p>Record pulse, blood pressure and other relevant observations. Identify instability and escalate appropriately.</p></article>
+                <article class="info"><h3>Disability</h3><p>Record AVPU/ACVPU or GCS as appropriate, pupils, blood glucose and focused neurological findings.</p></article>
+                <article class="info"><h3>Neurology</h3><p>Document facial movement, arm power/drift, speech/language, sensation and any additional focal deficit observed.</p></article>
+              </div>
+              <div class="clinical-card">
+                <h3>Record objectively</h3>
+                <ul class="action-list">
+                  <li>Exact onset / last-known-well time</li>
+                  <li>What changed and which side is affected</li>
+                  <li>FAST findings</li>
+                  <li>Consciousness and pupil findings</li>
+                  <li>Blood glucose and relevant observations</li>
+                  <li>Any deterioration or improvement and when it occurred</li>
+                </ul>
+              </div>
+            </div>
+
+            <div id="stroke-tab-history" class="scenario-tab-panel">
+              <div class="two-col">
+                <article class="info"><h3>AMPLE</h3><p><strong>A</strong>llergies · <strong>M</strong>edications · <strong>P</strong>ast medical history · <strong>L</strong>ast oral intake · <strong>E</strong>vents leading to presentation.</p></article>
+                <article class="info"><h3>Medication focus</h3><p>Ask about anticoagulants, antiplatelets and other regular medicines where relevant, and document the information for handover.</p></article>
+                <article class="info"><h3>Baseline</h3><p>Establish the patient's normal speech, mobility, cognition and independence where possible.</p></article>
+                <article class="info"><h3>Witness information</h3><p>Speak with relatives, carers or witnesses when available. Confirm the last-known-well time and what was first noticed.</p></article>
+              </div>
+            </div>
+
+            <div id="stroke-tab-handover" class="scenario-tab-panel">
+              <div class="clinical-card">
+                <h3>Stroke handover structure</h3>
+                <div class="handover-grid">
+                  <div><span class="tag">SITUATION</span><p>Suspected stroke/TIA and current neurological deficit.</p></div>
+                  <div><span class="tag">TIME</span><p>Exact onset or last-known-well time.</p></div>
+                  <div><span class="tag">ASSESSMENT</span><p>FAST findings, consciousness, pupils, glucose and relevant observations.</p></div>
+                  <div><span class="tag">BACKGROUND</span><p>Baseline function, relevant history, medicines and witness account.</p></div>
+                  <div><span class="tag">CHANGE</span><p>Any deterioration or improvement since first assessment.</p></div>
+                  <div><span class="tag">PLAN</span><p>Destination/pathway, monitoring, reassessment and outstanding information.</p></div>
+                </div>
+              </div>
+            </div>
+
+            <div id="stroke-tab-rp" class="scenario-tab-panel">
+              <div class="clinical-card">
+                <h3>FiveM RP action sequence</h3>
+                <div class="action-list stroke-rp-actions">
+                  <div class="action-row"><span>/me kneels beside the patient and begins a rapid neurological assessment</span><button type="button" class="copy-action" onclick="copyText('/me kneels beside the patient and begins a rapid neurological assessment')">COPY</button></div>
+                  <div class="action-row"><span>/me asks the patient to smile and checks for facial asymmetry</span><button type="button" class="copy-action" onclick="copyText('/me asks the patient to smile and checks for facial asymmetry')">COPY</button></div>
+                  <div class="action-row"><span>/me asks the patient to raise both arms and observes for weakness or drift</span><button type="button" class="copy-action" onclick="copyText('/me asks the patient to raise both arms and observes for weakness or drift')">COPY</button></div>
+                  <div class="action-row"><span>/me asks the patient simple questions and assesses speech and comprehension</span><button type="button" class="copy-action" onclick="copyText('/me asks the patient simple questions and assesses speech and comprehension')">COPY</button></div>
+                  <div class="action-row"><span>/me confirms the last-known-well time with the patient and witnesses</span><button type="button" class="copy-action" onclick="copyText('/me confirms the last-known-well time with the patient and witnesses')">COPY</button></div>
+                  <div class="action-row"><span>/me checks the patient's pupils and records the neurological findings</span><button type="button" class="copy-action" onclick="copyText('/me checks the patient's pupils and records the neurological findings')">COPY</button></div>
+                  <div class="action-row"><span>/me checks a capillary blood glucose and records the result</span><button type="button" class="copy-action" onclick="copyText('/me checks a capillary blood glucose and records the result')">COPY</button></div>
+                  <div class="action-row"><span>/me relays the suspected stroke, neurological findings and last-known-well time to the receiving team</span><button type="button" class="copy-action" onclick="copyText('/me relays the suspected stroke, neurological findings and last-known-well time to the receiving team')">COPY</button></div>
+                  <div class="action-row"><span>/me continues monitoring and reassesses the patient's neurological status during transport</span><button type="button" class="copy-action" onclick="copyText(&quot;/me continues monitoring and reassesses the patient's neurological status during transport&quot;)">COPY</button></div>
+                </div>
+              </div>
+              <div class="clinical-alert">
+                <strong>RP note:</strong> These actions are written for FiveM roleplay. For real-world care, use current NHS/local ambulance guidance and only perform interventions you are trained and authorised to perform.
+              </div>
+            </div>
+          </div>
+
           <div class="pdf-doc-section">
             <div class="pdf-doc-head">
               <div class="tag">PDF DOCUMENT</div>
@@ -3693,7 +3815,7 @@
       <div class="admin-toolbar" style="margin-bottom:14px">
         <select id="cms2TypeSelect" onchange="cms2List()" style="background:#0f2029;border:1px solid #29434f;border-radius:8px;color:#eaf2f4;padding:10px 14px;font-size:14px;flex:1;min-width:220px"></select>
         <button class="primary" onclick="cms2OpenEditor(null)">+ Add</button>
-        <button class="secondary" onclick="cms2List()">Refresh</button>
+        <button class="secondary" onclick="cms2List()">Refresh</button><button class="secondary" type="button" onclick="cms4ToggleStructure()">Structure</button>
       </div>
 
       <article class="info" style="margin-bottom:14px">
@@ -3711,6 +3833,29 @@
         <div id="cmsRetirementCheckResult" style="display:none;margin-top:12px"></div>
       </article>
 
+      <div class="cms4-core-dashboard" id="cms4CoreDashboard">
+        <div class="cms4-core-head">
+          <div>
+            <span class="knowledge-kicker">UHS CMS CORE</span>
+            <h3>Structured CMS control centre</h3>
+            <p class="muted">Manage pages, sections, content blocks, navigation and categories. Published structured content is the authoritative source; legacy content remains available only as compatibility fallback.</p>
+          </div>
+          <button class="secondary" type="button" onclick="cms4LoadOverview()">↻ Refresh overview</button>
+        </div>
+        <div id="cms4CoreStats" class="cms4-core-stats">
+          <div class="cms4-stat"><span>Pages</span><strong>—</strong><small>Loading</small></div>
+          <div class="cms4-stat"><span>Sections</span><strong>—</strong><small>Loading</small></div>
+          <div class="cms4-stat"><span>Blocks</span><strong>—</strong><small>Loading</small></div>
+          <div class="cms4-stat"><span>Navigation</span><strong>—</strong><small>Loading</small></div>
+          <div class="cms4-stat"><span>Categories</span><strong>—</strong><small>Loading</small></div>
+          <div class="cms4-stat"><span>Revisions</span><strong>—</strong><small>Loading</small></div>
+        </div>
+        <div class="cms4-core-guidance">
+          <span>1. Build</span><span>2. Save as draft</span><span>3. Review</span><span>4. Publish</span><span>5. Verify navigation</span>
+        </div>
+      </div>
+
+      <div id="cms4Structure" class="cms4-structure" style="display:none"></div>
       <div id="cms2List" class="staff-list">
         <p class="muted">Select a type to manage items.</p>
       </div>
@@ -3726,6 +3871,13 @@
         </div>
       </div>
     </div>
+
+        <div id="cms2VersionsModal" class="cms2-preview-modal" style="display:none" role="dialog" aria-modal="true" aria-labelledby="cms2VersionsTitle">
+  <div class="cms2-preview-card">
+    <div class="cms2-preview-head"><div><span class="knowledge-kicker">UHS KNOWLEDGE HUB</span><h3 id="cms2VersionsTitle">Revision History</h3></div><button type="button" class="secondary" onclick="cms2CloseVersions()">Close</button></div>
+    <div id="cms2VersionsBody" class="cms2-preview-body"></div>
+  </div>
+</div>
 
         <div id="cms2PreviewModal" class="cms2-preview-modal" style="display:none" role="dialog" aria-modal="true" aria-labelledby="cms2PreviewTitle">
           <div class="cms2-preview-card">

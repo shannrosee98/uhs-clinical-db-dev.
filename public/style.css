@@ -741,7 +741,7 @@ button:focus-visible{outline:2px solid #41b6e6;outline-offset:2px}
 .cms2-rich-surface{min-height:110px;padding:11px 13px;background:#07141b;color:#eef5f7;outline:none;line-height:1.6}
 .cms2-rich-surface:empty:before{content:attr(data-placeholder);color:#6f8792;pointer-events:none}
 .cms2-rich-surface:focus{box-shadow:inset 0 0 0 1px #41b6e6}
-.cms2-rich-surface h3{margin:8px 0 5px;font-size:17px}
+.cms2-rich-surface h3{margin:8px 0 5px;font-size:17px}\n.cms2-rich-surface h2{margin:10px 0 6px;font-size:20px}.cms2-rich-surface h4{margin:8px 0 5px;font-size:15px}.cms2-rich-surface blockquote{margin:9px 0;padding:9px 12px;border-left:3px solid #41b6e6;background:#0d2530;color:#dce9ee;border-radius:6px}.cms2-rich-btn{min-width:34px}.cms2-rich-btn:focus-visible{outline:2px solid #41b6e6;outline-offset:1px}
 .cms2-rich-surface p{margin:6px 0}
 .cms2-rich-surface ul,.cms2-rich-surface ol{padding-left:24px}
 .cms2-rich-help{display:block;padding:6px 11px;color:#718894;background:#091820}
@@ -1542,3 +1542,198 @@ main > section[id] textarea:focus-visible{
 .cms2-rich-toolbar{display:flex;flex-wrap:wrap;gap:6px;padding:8px;background:rgba(255,255,255,.035);border-bottom:1px solid rgba(255,255,255,.08)}
 .cms2-rich-surface{min-height:130px;border:0;border-radius:0;outline:none}
 @media(max-width:700px){.cms2-clinical-list-item{grid-template-columns:30px 1fr}.cms2-clinical-list-item .cms2-clinical-remove{grid-column:2}.cms2-clinical-label{display:block}.cms2-clinical-placeholder{display:block;margin-top:3px}}
+
+/* CMS Phase 3 publishing workflow */
+.cms2-workflow-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 0 14px;padding:12px 14px;border:1px solid #203542;border-radius:12px;background:#0a151d}
+.cms2-workflow-label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.12em;opacity:.65;margin-bottom:4px}
+.cms2-status-pill{display:inline-flex;align-items:center;padding:4px 9px;border-radius:999px;border:1px solid #36505e;font-size:12px;font-weight:700;text-transform:capitalize}
+.cms2-workflow-actions{display:flex;gap:8px;flex-wrap:wrap}
+.cms2-version-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;border:1px solid #203542;border-radius:10px;background:#0b1821;margin-bottom:8px}
+.cms2-version-row>div{display:flex;flex-direction:column;gap:3px}
+@media(max-width:640px){.cms2-workflow-bar{align-items:stretch}.cms2-workflow-actions{width:100%}.cms2-workflow-actions button{flex:1}}
+
+/* =========================================================
+   CMS PHASE 4 — CORE CONTROL CENTRE
+========================================================= */
+.cms4-core-dashboard{margin:0 0 16px;padding:16px;border:1px solid #29434f;border-radius:14px;background:linear-gradient(180deg,#0e202a,#0b1820);box-shadow:0 10px 30px rgba(0,0,0,.14)}
+.cms4-core-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.cms4-core-head h3{margin:3px 0 5px;font-size:18px}
+.cms4-core-head p{max-width:900px;margin:0;line-height:1.5}
+.cms4-core-stats{display:grid;grid-template-columns:repeat(6,minmax(110px,1fr));gap:8px;margin-top:14px}
+.cms4-stat{padding:12px;border:1px solid #243d49;border-radius:10px;background:#0c1922}
+.cms4-stat span{display:block;color:#7f9aa7;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}
+.cms4-stat strong{display:block;font-size:25px;margin:3px 0}
+.cms4-stat small{color:#91a7b0}
+.cms4-core-guidance{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.cms4-core-guidance span{font-size:11px;font-weight:800;padding:6px 9px;border:1px solid #29434f;border-radius:999px;color:#c9d6da;background:#102630}
+.cms4-list-toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 12px;margin-bottom:8px;border:1px solid #29434f;border-radius:10px;background:#0c1922}
+.cms4-list-toolbar input,.cms4-list-toolbar select{min-height:36px;background:#0f2029;border:1px solid #29434f;border-radius:8px;color:#eaf2f4;padding:7px 10px}
+.cms4-list-toolbar input{flex:1;min-width:180px}
+.cms4-select-all{display:flex;align-items:center;gap:6px;font-size:12px;color:#aebfc5}
+.cms4-row-selected{outline:1px solid #557482;background:#102630!important}
+.cms4-status{font-size:10px;font-weight:800;padding:2px 7px;border-radius:999px;border:1px solid #405965;color:#b7c8ce}
+.cms4-status.published{color:#b9dfc6;border-color:#315f46}
+.cms4-status.draft{color:#e6d09b;border-color:#66532b}
+.cms4-status.hidden{color:#f1c6cc;border-color:#663c3c}
+@media(max-width:850px){.cms4-core-stats{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:520px){.cms4-core-stats{grid-template-columns:repeat(2,1fr)}.cms4-list-toolbar>*{width:100%}.cms4-list-toolbar input{min-width:0}}
+
+/* Phase 4 CMS hierarchy management */
+.cms4-structure{margin:0 0 16px;padding:16px;border:1px solid #29434f;border-radius:12px;background:#0b1821}
+.cms4-structure-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;margin-bottom:12px}
+.cms4-structure-head h3{margin:3px 0 5px;color:#eaf2f4}
+.cms4-tree{display:flex;flex-direction:column;gap:6px}
+.cms4-tree-row{display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;gap:9px;align-items:center;padding:9px 10px;margin-left:calc(var(--depth,0) * 22px);border:1px solid #203542;border-radius:9px;background:#0f2029}
+.cms4-tree-row:hover{border-color:#376070}
+.cms4-tree-row strong{color:#eaf2f4}
+.cms4-tree-row small{display:block;color:#7f98a4;font-size:11px;margin-top:2px}
+.cms4-tree-branch{color:#54717d;min-width:15px}
+.cms4-tree-icon{font-size:16px}
+.cms4-tree-empty{padding:18px;text-align:center;color:#7f98a4;border:1px dashed #29434f;border-radius:9px}
+.cms4-tree-group{margin-bottom:12px}
+.cms4-tree-group h4{margin:0 0 6px;color:#c9d6da}
+@media(max-width:700px){
+ .cms4-structure-head{flex-direction:column}
+ .cms4-tree-row{grid-template-columns:auto auto minmax(0,1fr);margin-left:calc(var(--depth,0) * 12px)}
+ .cms4-tree-row button{grid-column:3;justify-self:start}
+}
+
+
+/* Phase 4 CMS publishing safeguards */
+.cms4-validation{margin:10px 0;padding:12px 14px;border:1px solid var(--border,#2b3440);border-radius:12px;background:var(--panel,#111820);line-height:1.6}
+.cms4-validation strong{display:block;margin-bottom:4px}
+.cms4-validation.is-ready{border-color:#3d8f68}
+.cms4-validation.has-warnings{border-color:#a77b36}
+.cms4-validation.has-errors{border-color:#a94a4a}
+.cms4-list-toolbar .primary{min-height:38px}
+@media(max-width:760px){
+ .cms4-list-toolbar{display:grid;grid-template-columns:1fr 1fr}
+ .cms4-list-toolbar input{grid-column:1/-1}
+ .cms4-list-toolbar .cms4-select-all{grid-column:1/-1}
+}
+
+/* Phase 5 rich editor finishing layer */
+.cms2-rich-btn[data-rich-table], .cms2-rich-btn[data-rich-image] { min-width: 54px; }
+.cms2-rich-surface img { max-width: 100%; height: auto; border-radius: 10px; display: block; margin: 10px 0; }
+.cms2-rich-surface table, .cms2-preview-table-wrap table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+.cms2-rich-surface th, .cms2-rich-surface td, .cms2-preview-table-wrap th, .cms2-preview-table-wrap td { border: 1px solid var(--border, #334155); padding: 9px 10px; text-align: left; }
+.cms2-rich-surface th, .cms2-preview-table-wrap th { font-weight: 700; }
+.cms2-rich-surface blockquote { margin: 12px 0; padding: 12px 16px; border-left: 4px solid currentColor; border-radius: 8px; background: rgba(255,255,255,.04); }
+.cms2-autosaved { opacity: .9; }
+.cms2-preview-table-wrap { overflow-x: auto; }
+@media (max-width: 700px) {
+  .cms2-rich-toolbar { display:flex; flex-wrap:wrap; gap:5px; }
+  .cms2-rich-btn { min-height:36px; }
+}
+
+
+/* Stroke guide — ABCDE-style clinical presentation */
+.stroke-guide {
+  margin-top: 24px;
+}
+.stroke-guide .clinical-alert {
+  margin: 16px 0;
+}
+.stroke-guide .clinical-alert--critical {
+  border-left: 4px solid var(--danger, #ef4444);
+}
+.stroke-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 18px 0;
+}
+.stroke-tabs .scenario-tab {
+  min-height: 42px;
+}
+.stroke-guide .scenario-tab-panel {
+  display: none;
+  animation: strokePanelIn .18s ease;
+}
+.stroke-guide .scenario-tab-panel.active {
+  display: block;
+}
+@keyframes strokePanelIn {
+  from { opacity: .45; transform: translateY(3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.stroke-guide .clinical-step-list {
+  display: grid;
+  gap: 10px;
+}
+.stroke-guide .clinical-step {
+  display: grid;
+  grid-template-columns: 46px 1fr;
+  gap: 14px;
+  align-items: start;
+  padding: 16px;
+  border: 1px solid var(--border, rgba(255,255,255,.1));
+  border-radius: 14px;
+  background: var(--panel, rgba(255,255,255,.03));
+}
+.stroke-guide .clinical-step > span {
+  display: grid;
+  place-items: center;
+  min-height: 34px;
+  border-radius: 9px;
+  font-weight: 800;
+  font-size: 12px;
+  background: rgba(59,130,246,.14);
+  color: var(--accent, #60a5fa);
+}
+.stroke-guide .clinical-step strong {
+  display: block;
+  margin-bottom: 4px;
+}
+.stroke-guide .clinical-step p,
+.stroke-guide .info p,
+.stroke-guide .clinical-card p {
+  margin-bottom: 0;
+}
+.stroke-guide .action-list {
+  display: grid;
+  gap: 8px;
+}
+.stroke-guide .stroke-rp-actions .action-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.stroke-guide .stroke-rp-actions .action-row > span {
+  flex: 1;
+}
+.stroke-guide .handover-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.stroke-guide .handover-grid > div {
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border, rgba(255,255,255,.1));
+  background: rgba(255,255,255,.025);
+}
+.stroke-guide .handover-grid .tag {
+  display: inline-block;
+  margin-bottom: 7px;
+}
+@media (max-width: 760px) {
+  .stroke-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 4px;
+  }
+  .stroke-tabs .scenario-tab {
+    flex: 0 0 auto;
+  }
+  .stroke-guide .handover-grid {
+    grid-template-columns: 1fr;
+  }
+  .stroke-guide .stroke-rp-actions .action-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .stroke-guide .stroke-rp-actions .copy-action {
+    width: 100%;
+  }
+}

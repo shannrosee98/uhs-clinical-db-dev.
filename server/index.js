@@ -951,6 +951,193 @@ function assertVideoType(type, name) {
    This is exposed to authenticated admins so Free Render
    plans do not need Shell/SSH access to inspect production.
 ========================================================= */
+
+app.get('/api/admin/cms-overview', admin, async (req, res) => {
+  try {
+    const queries = await Promise.all([
+      pool.query(`SELECT
+        COUNT(*)::int AS total,
+        COUNT(*) FILTER (WHERE status='published')::int AS published,
+        COUNT(*) FILTER (WHERE status='draft')::int AS drafts,
+        COUNT(*) FILTER (WHERE status='hidden')::int AS hidden,
+        COUNT(*) FILTER (WHERE status='archived')::int AS archived
+        FROM cms_pages WHERE deleted_at IS NULL`),
+      pool.query(`SELECT COUNT(*)::int AS total,
+        COUNT(*) FILTER (WHERE status='published')::int AS published,
+        COUNT(*) FILTER (WHERE status='draft')::int AS drafts
+        FROM cms_page_sections WHERE deleted_at IS NULL`),
+      pool.query(`SELECT COUNT(*)::int AS total,
+        COUNT(*) FILTER (WHERE status='published')::int AS published,
+        COUNT(*) FILTER (WHERE status='draft')::int AS drafts
+        FROM cms_content_blocks WHERE deleted_at IS NULL`),
+      pool.query(`SELECT COUNT(*)::int AS total,
+        COUNT(*) FILTER (WHERE status='published')::int AS published,
+        COUNT(*) FILTER (WHERE status='draft')::int AS drafts
+        FROM cms_navigation WHERE deleted_at IS NULL`),
+      pool.query(`SELECT COUNT(*)::int AS total,
+        COUNT(*) FILTER (WHERE status='published')::int AS published,
+        COUNT(*) FILTER (WHERE status='draft')::int AS drafts
+        FROM cms_categories WHERE deleted_at IS NULL`),
+      pool.query(`SELECT COUNT(*)::int AS total FROM cms_content_versions`)
+    ]);
+    const [pages, sections, blocks, navigation, categories, versions] = queries.map(q => q.rows[0]);
+    res.json({ pages, sections, blocks, navigation, categories, versions });
+  } catch (error) {
+    console.error('CMS overview failed:', error);
+    res.status(500).json({ error: 'CMS overview failed', message: error.message || 'Unknown error' });
+  }
+});
+
+
+
+/* ---- CMS PUBLISH VALIDATION ---- */
+async function validateCmsPublishRecord(client, type, id) {
+  const checks = {
+    page: async () => {
+      const q = await client.query(
+        `SELECT p.*, (SELECT COUNT(*) FROM cms_page_sections s WHERE s.page_id=p.id AND s.deleted_at IS NULL) AS section_count
+         FROM cms_pages p WHERE p.id=$1 AND p.deleted_at IS NULL`, [id]);
+      if (!q.rows.length) return { errors: ['Page does not exist.'] };
+      const r=q.rows[0], errors=[], warnings=[];
+      if (!String(r.name||'').trim()) errors.push('Page name is required.');
+      if (!String(r.slug||'').trim()) errors.push('Page slug is required.');
+      if (Number(r.section_count||0)===0) warnings.push('Page has no sections.');
+      return {errors,warnings};
+    },
+    'page-section': async () => {
+      const q=await client.query(
+        `SELECT s.*, p.name AS page_name FROM cms_page_sections s LEFT JOIN cms_pages p ON p.id=s.page_id
+         WHERE s.id=$1 AND s.deleted_at IS NULL`,[id]);
+      if(!q.rows.length) return {errors:['Section does not exist.']};
+      const r=q.rows[0],errors=[],warnings=[];
+      if(!String(r.title||'').trim()) errors.push('Section title is required.');
+      if(!r.page_id || !r.page_name) errors.push('Section must belong to an existing page.');
+      if(r.page_id) {
+        const pg=await client.query(`SELECT status FROM cms_pages WHERE id=$1 AND deleted_at IS NULL`,[r.page_id]);
+        if(pg.rows[0] && pg.rows[0].status!=='published') warnings.push('Parent page is not published.');
+      }
+      return {errors,warnings};
+    },
+    'content-block': async () => {
+      const q=await client.query(
+        `SELECT b.*, p.name AS page_name, s.title AS section_title
+         FROM cms_content_blocks b
+         LEFT JOIN cms_pages p ON p.id=b.page_id
+         LEFT JOIN cms_page_sections s ON s.id=b.section_id
+         WHERE b.id=$1 AND b.deleted_at IS NULL`,[id]);
+      if(!q.rows.length) return {errors:['Content block does not exist.']};
+      const r=q.rows[0],errors=[],warnings=[];
+      if(!String(r.block_type||'').trim()) errors.push('Block type is required.');
+      if(!r.page_id || !r.page_name) errors.push('Block must belong to an existing page.');
+      if(r.section_id && !r.section_title) errors.push('Block references a missing section.');
+      if(r.content==null) warnings.push('Block has no content payload.');
+      return {errors,warnings};
+    },
+    navigation: async () => {
+      const q=await client.query(`SELECT * FROM cms_navigation WHERE id=$1 AND deleted_at IS NULL`,[id]);
+      if(!q.rows.length) return {errors:['Navigation item does not exist.']};
+      const r=q.rows[0],errors=[],warnings=[];
+      if(!String(r.label||'').trim()) errors.push('Navigation label is required.');
+      if(!r.url && !r.page_id) errors.push('Navigation item needs a URL or page link.');
+      if(r.page_id) {
+        const pg=await client.query(`SELECT status FROM cms_pages WHERE id=$1 AND deleted_at IS NULL`,[r.page_id]);
+        if(!pg.rows.length) errors.push('Linked page does not exist.');
+        else if(pg.rows[0].status!=='published') warnings.push('Linked page is not published.');
+      }
+      if(r.parent_id) {
+        const parent=await client.query(`SELECT status FROM cms_navigation WHERE id=$1 AND deleted_at IS NULL`,[r.parent_id]);
+        if(!parent.rows.length) errors.push('Parent navigation item does not exist.');
+        else if(parent.rows[0].status!=='published') warnings.push('Parent navigation item is not published.');
+      }
+      return {errors,warnings};
+    },
+    category: async () => {
+      const q=await client.query(`SELECT * FROM cms_categories WHERE id=$1 AND deleted_at IS NULL`,[id]);
+      if(!q.rows.length) return {errors:['Category does not exist.']};
+      const r=q.rows[0],errors=[],warnings=[];
+      if(!String(r.name||'').trim()) errors.push('Category name is required.');
+      if(!String(r.slug||'').trim()) errors.push('Category slug is required.');
+      if(r.parent_id) {
+        const parent=await client.query(`SELECT status FROM cms_categories WHERE id=$1 AND deleted_at IS NULL`,[r.parent_id]);
+        if(!parent.rows.length) errors.push('Parent category does not exist.');
+        else if(parent.rows[0].status!=='published') warnings.push('Parent category is not published.');
+      }
+      return {errors,warnings};
+    }
+  };
+  return checks[type] ? checks[type]() : {errors:['Unsupported CMS type.'],warnings:[]};
+}
+
+app.get('/api/admin/cms-publish-check', admin, async (req,res)=>{
+  const type=String(req.query.type||''), id=String(req.query.id||'');
+  if(!id) return res.status(400).json({error:'CMS item id is required.'});
+  const client=await pool.connect();
+  try {
+    const result=await validateCmsPublishRecord(client,type,id);
+    res.json({ok:result.errors.length===0,type,id,...result});
+  } catch(error) {
+    console.error('CMS publish check failed:',error);
+    res.status(500).json({error:'CMS publish check failed',message:error.message||'Unknown error'});
+  } finally { client.release(); }
+});
+
+app.post('/api/admin/cms-bulk-status', admin, async (req, res) => {
+  const tableMap = {
+    page: 'cms_pages',
+    'page-section': 'cms_page_sections',
+    'content-block': 'cms_content_blocks',
+    navigation: 'cms_navigation',
+    category: 'cms_categories'
+  };
+  const type = String(req.body?.type || '');
+  const status = String(req.body?.status || '');
+  const ids = Array.isArray(req.body?.ids) ? req.body.ids : [];
+  if (!tableMap[type]) return res.status(400).json({ error: 'Unsupported CMS type' });
+  if (!['published','draft','hidden','archived'].includes(status)) {
+    return res.status(400).json({ error: 'Invalid status' });
+  }
+  if (!ids.length || ids.length > 100) return res.status(400).json({ error: 'Select between 1 and 100 items' });
+
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    let updated = 0;
+    for (const id of ids) {
+      if (status === 'published') {
+        const validation = await validateCmsPublishRecord(client, type, id);
+        if (validation.errors.length) {
+          await client.query('ROLLBACK');
+          return res.status(422).json({
+            error: 'Publish validation failed',
+            id: String(id),
+            validation
+          });
+        }
+      }
+      const result = await client.query(
+        `UPDATE ${tableMap[type]} SET status=$1, updated_at=NOW() WHERE id=$2 AND deleted_at IS NULL`,
+        [status, id]
+      );
+      updated += result.rowCount;
+      if (result.rowCount) {
+        await client.query(
+          `INSERT INTO audit_log (actor_id, action, target_type, target_id, metadata)
+           VALUES ($1,$2,$3,$4,$5)`,
+          [req.user?.id || null, 'cms_status_bulk_update', type, String(id), JSON.stringify({ status })]
+        );
+      }
+    }
+    await client.query('COMMIT');
+    res.json({ updated, status });
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('CMS bulk status failed:', error);
+    res.status(500).json({ error: 'CMS bulk status failed', message: error.message || 'Unknown error' });
+  } finally {
+    client.release();
+  }
+});
+
 app.get('/api/admin/cms-retirement-check', admin, async (req, res) => {
   try {
     const frontendSource = fs.readFileSync(
@@ -2987,6 +3174,26 @@ app.get('/api/public/cms/categories/:contentType', async (req, res) => {
   }
 });
 
+/* CMS hierarchy safety helpers: prevent self-parenting and ancestor cycles. */
+async function cmsParentWouldCycle(table, id, parentId) {
+  if (!parentId) return false;
+  if (id && String(id) === String(parentId)) return true;
+  const allowed = new Set(['cms_pages', 'cms_navigation', 'cms_categories']);
+  if (!allowed.has(table)) return false;
+  let current = parentId;
+  const seen = new Set();
+  for (let depth = 0; depth < 100 && current; depth++) {
+    const key = String(current);
+    if (seen.has(key)) return true;
+    seen.add(key);
+    const q = await pool.query(`SELECT parent_id FROM ${table} WHERE id=$1 AND deleted_at IS NULL`, [current]);
+    if (!q.rows.length) return false;
+    current = q.rows[0].parent_id;
+    if (id && current && String(current) === String(id)) return true;
+  }
+  return !!current;
+}
+
 /* ---- CMS PAGES ---- */
 
 app.get('/api/cms-pages', admin, async (req, res) => {
@@ -3018,6 +3225,7 @@ app.post('/api/cms-pages', admin, async (req, res) => {
   try {
     const { name, slug, description, icon, parent_id, template, order_index, status, visibility } = req.body;
     if (!name || !slug) return res.status(400).json({ error: 'Name and slug are required' });
+    if (await cmsParentWouldCycle('cms_pages', null, parent_id)) return res.status(400).json({ error: 'Invalid parent page hierarchy.' });
     const id = crypto.randomUUID();
     const maxOrder = await pool.query('SELECT COALESCE(MAX(order_index), 0) + 1 AS o FROM cms_pages');
     await pool.query(
@@ -3037,6 +3245,7 @@ app.put('/api/cms-pages/:id', admin, async (req, res) => {
   try {
     const { name, slug, description, icon, parent_id, template, order_index, status, visibility } = req.body;
     const id = req.params.id;
+    if (await cmsParentWouldCycle('cms_pages', id, parent_id)) return res.status(400).json({ error: 'Invalid parent: this would create a page hierarchy cycle.' });
     await pool.query(
       `UPDATE cms_pages
        SET name=COALESCE($1,name), slug=COALESCE($2,slug), description=$3, icon=$4,
@@ -3359,6 +3568,19 @@ app.post('/api/cms-blocks', admin, async (req, res) => {
 
 app.put('/api/cms-blocks/:id', admin, async (req, res) => {
   try {
+    const before = await pool.query('SELECT id, block_type, title, content, status, visibility FROM cms_content_blocks WHERE id=$1 AND deleted_at IS NULL', [req.params.id]);
+    if (!before.rows.length) return res.status(404).json({ error: 'Block not found' });
+    const prior = before.rows[0];
+    const versionKey = 'cms-block:' + prior.id;
+    const maxVer = await pool.query('SELECT COALESCE(MAX(version),0)+1 AS v FROM cms_content_versions WHERE content_key=$1', [versionKey]);
+    await pool.query(
+      `INSERT INTO cms_content_versions (content_key, content_type, version, content, created_by)
+       VALUES ($1,'content-block',$2,$3,$4)`,
+      [versionKey, maxVer.rows[0].v, JSON.stringify({
+        block_type: prior.block_type, title: prior.title, content: prior.content,
+        status: prior.status, visibility: prior.visibility
+      }), req.user.id]
+    );
     const { block_key, title, content, block_type, category, parent_id, section_id, page_id, order_index, status, visibility } = req.body;
     await pool.query(
       `UPDATE cms_content_blocks
@@ -3418,6 +3640,74 @@ app.post('/api/cms-blocks/reorder', admin, async (req, res) => {
   }
 });
 
+
+/* ---- CMS STRUCTURED BLOCK VERSIONS ---- */
+
+app.get('/api/cms-blocks/:id/versions', admin, async (req, res) => {
+  try {
+    const q = await pool.query(
+      `SELECT v.id, v.version, v.content, v.created_by, v.created_at
+       FROM cms_content_versions v
+       WHERE v.content_key=$1 ORDER BY v.version DESC`,
+      ['cms-block:' + req.params.id]
+    );
+    res.json({ ok: true, versions: q.rows });
+  } catch (error) {
+    console.error('CMS structured block versions list error:', error);
+    res.status(500).json({ error: 'Failed to list block versions' });
+  }
+});
+
+app.post('/api/cms-blocks/:id/versions', admin, async (req, res) => {
+  try {
+    const q = await pool.query('SELECT id, block_type, title, content, status, visibility FROM cms_content_blocks WHERE id=$1 AND deleted_at IS NULL', [req.params.id]);
+    if (!q.rows.length) return res.status(404).json({ error: 'Block not found' });
+    const block = q.rows[0];
+    const key = 'cms-block:' + block.id;
+    const max = await pool.query('SELECT COALESCE(MAX(version),0)+1 AS v FROM cms_content_versions WHERE content_key=$1', [key]);
+    const snapshot = {
+      block_type: block.block_type,
+      title: block.title,
+      content: block.content,
+      status: block.status,
+      visibility: block.visibility
+    };
+    await pool.query(
+      `INSERT INTO cms_content_versions (content_key, content_type, version, content, created_by)
+       VALUES ($1,$2,$3,$4,$5)`,
+      [key, 'content-block', max.rows[0].v, JSON.stringify(snapshot), req.user.id]
+    );
+    res.status(201).json({ ok: true, version: Number(max.rows[0].v) });
+  } catch (error) {
+    console.error('CMS structured block version create error:', error);
+    res.status(500).json({ error: 'Failed to create block version' });
+  }
+});
+
+app.post('/api/cms-blocks/:id/versions/restore/:version', admin, async (req, res) => {
+  try {
+    const key = 'cms-block:' + req.params.id;
+    const ver = await pool.query('SELECT content FROM cms_content_versions WHERE content_key=$1 AND version=$2', [key, Number(req.params.version)]);
+    if (!ver.rows.length) return res.status(404).json({ error: 'Version not found' });
+    const snapshot = ver.rows[0].content || {};
+    await pool.query(
+      `UPDATE cms_content_blocks
+       SET block_type=COALESCE($1,block_type), title=$2, content=COALESCE($3,content),
+           status=COALESCE($4,status), visibility=COALESCE($5,visibility),
+           updated_by=$6, updated_at=NOW()
+       WHERE id=$7`,
+      [snapshot.block_type || null, snapshot.title ?? null,
+       snapshot.content !== undefined ? JSON.stringify(snapshot.content) : null,
+       snapshot.status || null, snapshot.visibility || null, req.user.id, req.params.id]
+    );
+    await logAction(req.user.id, 'cms.block.version.restore', 'content-block', req.params.id, { version: Number(req.params.version) });
+    res.json({ ok: true });
+  } catch (error) {
+    console.error('CMS structured block version restore error:', error);
+    res.status(500).json({ error: 'Failed to restore block version' });
+  }
+});
+
 /* ---- CMS NAVIGATION ---- */
 
 app.get('/api/cms-navigation', admin, async (req, res) => {
@@ -3434,6 +3724,7 @@ app.post('/api/cms-navigation', admin, async (req, res) => {
   try {
     const { label, url, icon, page_id, parent_id, target, is_external, role_required, order_index, status, visibility } = req.body;
     if (!label) return res.status(400).json({ error: 'Label is required' });
+    if (await cmsParentWouldCycle('cms_navigation', null, parent_id)) return res.status(400).json({ error: 'Invalid parent navigation hierarchy.' });
     const id = crypto.randomUUID();
     const maxOrder = await pool.query('SELECT COALESCE(MAX(order_index),0)+1 AS o FROM cms_navigation');
     await pool.query('INSERT INTO cms_navigation (id,label,url,icon,page_id,parent_id,order_index,target,is_external,role_required,status,visibility,created_by) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)',
@@ -3449,6 +3740,7 @@ app.post('/api/cms-navigation', admin, async (req, res) => {
 app.put('/api/cms-navigation/:id', admin, async (req, res) => {
   try {
     const { label, url, icon, page_id, parent_id, target, is_external, role_required, order_index, status, visibility } = req.body;
+    if (await cmsParentWouldCycle('cms_navigation', req.params.id, parent_id)) return res.status(400).json({ error: 'Invalid parent: this would create a navigation cycle.' });
     await pool.query(
       `UPDATE cms_navigation
        SET label=COALESCE($1,label), url=$2, icon=$3, page_id=$4, parent_id=$5,
@@ -3497,12 +3789,30 @@ app.post('/api/cms-navigation/reorder', admin, async (req, res) => {
     const { parent_id, order } = req.body;
     if (!Array.isArray(order)) return res.status(400).json({ error: 'Order array required' });
     for (let i = 0; i < order.length; i++) {
-      await pool.query('UPDATE cms_navigation SET order_index=$1, updated_at=NOW() WHERE id=$2', [i, order[i]]);
+      await pool.query('UPDATE cms_navigation SET order_index=$1, updated_at=NOW() WHERE id=$2 AND COALESCE(parent_id::text,\'\')=COALESCE($3::text,\'\')', [i, order[i], parent_id || null]);
     }
     res.json({ ok: true });
   } catch (error) {
     console.error('CMS nav reorder error:', error);
     res.status(500).json({ error: 'Failed to reorder navigation' });
+  }
+});
+
+app.post('/api/cms-categories/reorder', admin, async (req, res) => {
+  try {
+    const { parent_id, content_type, order } = req.body;
+    if (!Array.isArray(order)) return res.status(400).json({ error: 'Order array required' });
+    for (let i = 0; i < order.length; i++) {
+      await pool.query(
+        'UPDATE cms_categories SET order_index=$1, updated_at=NOW() WHERE id=$2 AND COALESCE(parent_id::text,\'\')=COALESCE($3::text,\'\') AND ($4::text IS NULL OR content_type=$4)',
+        [i, order[i], parent_id || null, content_type || null]
+      );
+    }
+    await logAction(req.user.id, 'cms.category.reorder', 'cms_category', null, { count: order.length, parent_id: parent_id || null, content_type: content_type || null });
+    res.json({ ok: true });
+  } catch (error) {
+    console.error('CMS category reorder error:', error);
+    res.status(500).json({ error: 'Failed to reorder categories' });
   }
 });
 
@@ -3526,6 +3836,7 @@ app.post('/api/cms-categories', admin, async (req, res) => {
   try {
     const { name, slug, description, icon, parent_id, content_type, order_index, status, visibility } = req.body;
     if (!name || !slug || !content_type) return res.status(400).json({ error: 'name, slug, content_type required' });
+    if (await cmsParentWouldCycle('cms_categories', null, parent_id)) return res.status(400).json({ error: 'Invalid parent category hierarchy.' });
     const id = crypto.randomUUID();
     const maxOrder = await pool.query('SELECT COALESCE(MAX(order_index),0)+1 AS o FROM cms_categories');
     await pool.query('INSERT INTO cms_categories (id,name,slug,description,icon,parent_id,content_type,order_index,status,visibility,created_by) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',
@@ -3541,6 +3852,7 @@ app.post('/api/cms-categories', admin, async (req, res) => {
 app.put('/api/cms-categories/:id', admin, async (req, res) => {
   try {
     const { name, slug, description, icon, parent_id, content_type, order_index, status, visibility } = req.body;
+    if (await cmsParentWouldCycle('cms_categories', req.params.id, parent_id)) return res.status(400).json({ error: 'Invalid parent: this would create a category cycle.' });
     await pool.query(
       `UPDATE cms_categories
        SET name=COALESCE($1,name), slug=COALESCE($2,slug), description=$3, icon=$4,

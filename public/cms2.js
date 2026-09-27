@@ -123,6 +123,181 @@ function cms2LabelFor(type, id) {
   return String(id);
 }
 
+async function cms4LoadOverview() {
+  var host = document.getElementById('cms4CoreStats');
+  if (!host) return;
+  try {
+    var data = await api('/api/admin/cms-overview');
+    var items = [
+      ['Pages', data.pages], ['Sections', data.sections], ['Blocks', data.blocks],
+      ['Navigation', data.navigation], ['Categories', data.categories], ['Revisions', data.versions]
+    ];
+    host.innerHTML = items.map(function(pair) {
+      var d = pair[1] || {};
+      var total = Number(d.total || 0);
+      var pub = d.published === undefined ? '' : Number(d.published || 0) + ' published';
+      var drafts = d.drafts === undefined ? '' : Number(d.drafts || 0) + ' draft';
+      var detail = [pub, drafts].filter(Boolean).join(' • ') || 'Version snapshots';
+      return '<div class="cms4-stat"><span>' + escapeHtml(pair[0]) + '</span><strong>' + total + '</strong><small>' + escapeHtml(detail) + '</small></div>';
+    }).join('');
+  } catch (e) {
+    host.innerHTML = '<div class="info" style="grid-column:1/-1"><strong>Overview unavailable</strong><br><span class="muted">' +
+      escapeHtml((e && e.message) || 'Unable to load CMS overview.') + '</span></div>';
+  }
+}
+
+function cms4FilterList() {
+  var input = document.getElementById('cms4ListSearch');
+  var status = document.getElementById('cms4StatusFilter');
+  var query = String(input && input.value || '').trim().toLowerCase();
+  var wanted = String(status && status.value || 'all');
+  document.querySelectorAll('#cms2List .cms4-item').forEach(function(row) {
+    var hay = String(row.getAttribute('data-search') || '').toLowerCase();
+    var rowStatus = row.getAttribute('data-status') || 'published';
+    row.style.display = (!query || hay.indexOf(query) !== -1) && (wanted === 'all' || rowStatus === wanted) ? '' : 'none';
+  });
+}
+
+function cms4UpdateSelection() {
+  var boxes = Array.prototype.slice.call(document.querySelectorAll('#cms2List .cms4-check'));
+  var visible = boxes.filter(function(b){ return b.closest('.cms4-item') && b.closest('.cms4-item').style.display !== 'none'; });
+  var selected = boxes.filter(function(b){ return b.checked; });
+  var all = document.getElementById('cms4SelectAll');
+  if (all) {
+    all.checked = visible.length > 0 && visible.every(function(b){ return b.checked; });
+    all.indeterminate = visible.some(function(b){ return b.checked; }) && !all.checked;
+  }
+  var count = document.getElementById('cms4SelectionCount');
+  if (count) count.textContent = selected.length + ' selected';
+}
+
+function cms4ToggleAll(checked) {
+  document.querySelectorAll('#cms2List .cms4-check').forEach(function(b){
+    var row = b.closest('.cms4-item');
+    if (row && row.style.display !== 'none') b.checked = checked;
+  });
+  cms4UpdateSelection();
+}
+
+async function cms4ValidateSelected() {
+  var boxes=Array.prototype.slice.call(document.querySelectorAll('#cms2List .cms4-check:checked'));
+  var ids=boxes.map(function(b){return b.value;}).filter(Boolean);
+  if(!ids.length){showToast('Select at least one item.','error');return;}
+  var results=[];
+  for(var i=0;i<ids.length;i++){
+    try{
+      var r=await api('/api/admin/cms-publish-check?type='+encodeURIComponent(cms2CurrentType)+'&id='+encodeURIComponent(ids[i]));
+      results.push({id:ids[i],name:boxes[i]&&boxes[i].closest('.cms4-item') ? (boxes[i].closest('.cms4-item').querySelector('.cms4-item-title')||{}).textContent : ids[i],ok:r.ok,errors:r.errors||[],warnings:r.warnings||[]});
+    }catch(e){results.push({id:ids[i],ok:false,errors:[e.message||'Validation failed'],warnings:[]});}
+  }
+  var bad=results.filter(function(r){return !r.ok;});
+  var warnings=results.filter(function(r){return r.warnings.length;});
+  var lines=results.map(function(r){
+    var label=r.name||r.id;
+    if(r.ok && !r.warnings.length)return '✓ '+label+' — ready';
+    return (r.ok?'⚠ ':'✕ ')+label+' — '+r.errors.concat(r.warnings).join(' ');
+  });
+  var host=document.getElementById('cms4ValidationResult');
+  if(host) host.innerHTML='<div class="cms4-validation '+(bad.length?'has-errors':warnings.length?'has-warnings':'is-ready')+'"><strong>'+ (bad.length ? bad.length+' item(s) need attention' : warnings.length ? 'Ready with warnings' : 'All selected items are ready to publish') +'</strong><div>'+lines.map(escapeHtml).join('<br>')+'</div></div>';
+  showToast(bad.length ? 'Validation found '+bad.length+' issue(s).' : 'Validation complete.',bad.length?'error':'success');
+}
+
+async function cms4BulkStatus(status) {
+  var boxes = Array.prototype.slice.call(document.querySelectorAll('#cms2List .cms4-check:checked'));
+  var ids = boxes.map(function(b){ return b.value; }).filter(Boolean);
+  if (!ids.length) { showToast('Select at least one item.', 'error'); return; }
+  if (!confirm('Set ' + ids.length + ' selected item(s) to ' + status + '?')) return;
+  try {
+    var result = await api('/api/admin/cms-bulk-status', {
+      method:'POST',
+      body:{ type:cms2CurrentType, ids:ids, status:status }
+    });
+    showToast((result.updated || 0) + ' item(s) updated to ' + status, 'success');
+    await cms2List();
+    cms4LoadOverview();
+  } catch(e) {
+    showToast('Bulk update failed: ' + ((e && e.message) || ''), 'error');
+  }
+}
+
+
+function cms4ToggleStructure() {
+  var host = document.getElementById('cms4Structure');
+  if (!host) return;
+  var open = host.style.display !== 'none';
+  host.style.display = open ? 'none' : 'block';
+  if (!open) cms4RenderStructure();
+}
+
+function cms4TreeRows(rows, parentId, depth, labelField) {
+  var out = [];
+  rows.filter(function(r) {
+    return String(r.parent_id || '') === String(parentId || '');
+  }).sort(function(a,b) {
+    return Number(a.order_index || 0) - Number(b.order_index || 0) || String(a[labelField] || a.name || a.label || '').localeCompare(String(b[labelField] || b.name || b.label || ''));
+  }).forEach(function(r) {
+    out.push({ row:r, depth:depth });
+    out = out.concat(cms4TreeRows(rows, r.id, depth + 1, labelField));
+  });
+  return out;
+}
+
+async function cms4RenderStructure() {
+  var host = document.getElementById('cms4Structure');
+  if (!host) return;
+  var type = cms2CurrentType || 'page';
+  var rows = cms2Cache[type] || [];
+  if (!rows.length) {
+    try {
+      var def=CMS2_TYPES[type]||{};
+      var res=await api(def.listEndpoint);
+      rows=res && (res.pages||res.sections||res.items||res.blocks||res.categories||[]);
+      cms2Cache[type]=rows||[];
+    } catch(e) { rows=[]; }
+  }
+  var cfg = {
+    page:{title:'Page hierarchy', icon:'📄', field:'name', parent:'page', hint:'Drag-free hierarchy view. Use Edit to change a parent or order.'},
+    navigation:{title:'Navigation tree', icon:'🧭', field:'label', parent:'navigation', hint:'Review menu nesting before publishing.'},
+    category:{title:'Category tree', icon:'🏷️', field:'name', parent:'category', hint:'Categories can be nested and reused by content type.'},
+    'page-section':{title:'Section order', icon:'📑', field:'title', parent:null, hint:'Sections are grouped by their parent page.'},
+    'content-block':{title:'Content block map', icon:'🧩', field:'title', parent:null, hint:'Blocks show their assigned page and section.'}
+  }[type];
+  if (!cfg) {
+    host.innerHTML='<div class="info"><strong>Structure view</strong><p class="muted">This content type is intentionally flat. Use the list editor for ordering and relationships.</p></div>';
+    return;
+  }
+  var html='<div class="cms4-structure-head"><div><span class="knowledge-kicker">UHS CMS STRUCTURE</span><h3>'+cfg.icon+' '+escapeHtml(cfg.title)+'</h3><p class="muted">'+escapeHtml(cfg.hint)+'</p></div><button class="secondary" type="button" onclick="cms4RenderStructure()">↻ Refresh</button></div>';
+  if (type==='page' || type==='navigation' || type==='category') {
+    var tree=cms4TreeRows(rows,null,0,cfg.field);
+    html+='<div class="cms4-tree">';
+    tree.forEach(function(x){
+      var r=x.row, nm=r[cfg.field]||r.name||r.label||r.title||r.id;
+      var meta=[];
+      if(r.slug) meta.push(r.slug);
+      if(r.content_type) meta.push(r.content_type);
+      if(r.status) meta.push(r.status);
+      html+='<div class="cms4-tree-row" style="--depth:'+x.depth+'"><span class="cms4-tree-branch">'+(x.depth?'└─':'')+'</span><span class="cms4-tree-icon">'+cfg.icon+'</span><div><strong>'+escapeHtml(nm)+'</strong><small>'+escapeHtml(meta.join(' • ')||'No metadata')+'</small></div><button class="secondary" type="button" onclick="cms2OpenEditor(\''+escapeHtml(String(r.id))+'\')">Edit</button></div>';
+    });
+    if(!tree.length) html+='<div class="cms4-tree-empty">No hierarchy items found.</div>';
+    html+='</div>';
+  } else if(type==='page-section') {
+    var pages=cms2Sources.page||[];
+    pages.forEach(function(pg){
+      var sec=rows.filter(function(r){return String(r.page_id)===String(pg.id);}).sort(function(a,b){return Number(a.order_index||0)-Number(b.order_index||0);});
+      if(!sec.length) return;
+      html+='<div class="cms4-tree-group"><h4>📄 '+escapeHtml(pg.name||pg.slug||pg.id)+'</h4>';
+      sec.forEach(function(r,i){html+='<div class="cms4-tree-row" style="--depth:1"><span class="cms4-tree-branch">└─</span><span class="cms4-tree-icon">📑</span><div><strong>'+(i+1)+'. '+escapeHtml(r.title||'Untitled section')+'</strong><small>'+escapeHtml(r.section_type||'content')+' • '+escapeHtml(r.status||'published')+'</small></div><button class="secondary" type="button" onclick="cms2OpenEditor(\''+escapeHtml(String(r.id))+'\')">Edit</button></div>';});
+      html+='</div>';
+    });
+  } else {
+    rows.slice().sort(function(a,b){return String(a.page_id||'').localeCompare(String(b.page_id||''))||Number(a.order_index||0)-Number(b.order_index||0);}).forEach(function(r){
+      var page=cms2LabelFor('page',r.page_id), sec=cms2LabelFor('section',r.section_id);
+      html+='<div class="cms4-tree-row"><span class="cms4-tree-icon">🧩</span><div><strong>'+escapeHtml(r.title||r.block_key||r.id)+'</strong><small>'+escapeHtml([r.block_type,page,sec,r.status||'published'].filter(Boolean).join(' • '))+'</small></div><button class="secondary" type="button" onclick="cms2OpenEditor(\''+escapeHtml(String(r.id))+'\')">Edit</button></div>';
+    });
+  }
+  host.innerHTML=html;
+}
+
 async function cms2List() {
   var sel = document.getElementById('cms2TypeSelect');
   if (sel) cms2CurrentType = sel.value || 'page';
@@ -134,26 +309,39 @@ async function cms2List() {
     var res = await api(def.listEndpoint);
     var rows = res && (res.pages || res.sections || res.items || res.blocks || res.categories || []);
     cms2Cache[cms2CurrentType] = rows || [];
+    var structure = document.getElementById('cms4Structure'); if (structure && structure.style.display !== 'none') cms4RenderStructure();
     if (!rows.length) {
-      container.innerHTML = '<div class="empty-state"><div class="empty-icon">\uD83D\uDCED</div><h3>No ' + (def.plural || def.label) + ' yet</h3><p>Click "+ Add" to create your first one.</p></div>';
+      container.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><h3>No ' + (def.plural || def.label) + ' yet</h3><p>Click "+ Add" to create your first one.</p></div>';
       return;
     }
-    var html = '';
+    var html = '<div class="cms4-list-toolbar">' +
+      '<input id="cms4ListSearch" type="search" placeholder="Search ' + escapeHtml(def.plural || def.label || 'items') + '…" oninput="cms4FilterList()">' +
+      '<select id="cms4StatusFilter" onchange="cms4FilterList()"><option value="all">All statuses</option><option value="published">Published</option><option value="draft">Draft</option><option value="hidden">Hidden</option><option value="archived">Archived</option></select>' +
+      '<label class="cms4-select-all"><input id="cms4SelectAll" type="checkbox" onchange="cms4ToggleAll(this.checked)"> Select visible</label>' +
+      '<span id="cms4SelectionCount" class="muted">0 selected</span>' +
+      '<button type="button" class="secondary" onclick="cms4ValidateSelected()">✓ Validate</button>' +
+      '<button type="button" class="secondary" onclick="cms4BulkStatus(\'draft\')">Draft</button>' +
+      '<button type="button" class="primary" onclick="cms4BulkStatus(\'published\')">Publish</button>' +
+      '<button type="button" class="secondary" onclick="cms4BulkStatus(\'hidden\')">Hide</button>' +
+      '</div><div id="cms4ValidationResult"></div>';
     rows.forEach(function(it) {
       var name = it[def.nameField] || it.name || it.label || it.title || it.block_key || it.id;
-      var badge = (it.status && it.status !== 'published') ? '<span style="display:inline-block;font-size:10px;font-weight:800;padding:2px 8px;border-radius:999px;background:' + (it.status === 'hidden' ? '#3b2026;color:#f1c6cc' : '#352b18;color:#e6d09b') + ';border:1px solid #44596b;margin-left:6px">' + it.status.toUpperCase() + '</span>' : '';
+      var status = it.status || 'published';
       var info = [];
       if (it.slug) info.push(it.slug);
       if (it.url) info.push(it.url);
       if (it.block_type) info.push(it.block_type);
-      html += '<div class="staff-row" style="grid-template-columns:auto 1fr auto;align-items:center;gap:10px;padding:10px 12px">';
-      html += '<span style="font-size:18px">' + (def.icon || '\uD83D\uDCC4') + '</span>';
-      html += '<div><strong style="color:#eaf2f4">' + escapeHtml(name) + '</strong>' + badge + '<br><span style="font-size:11px;color:#7a95a3">' + escapeHtml(info.join(' \u2022 ')) + '</span></div>';
+      if (it.page_name) info.push(it.page_name);
+      var search = [name].concat(info).join(' ');
+      html += '<div class="staff-row cms4-item" data-status="' + escapeHtml(status) + '" data-search="' + escapeHtml(search) + '" style="grid-template-columns:auto 1fr auto;align-items:center;gap:10px;padding:10px 12px">';
+      html += '<input class="cms4-check" type="checkbox" value="' + escapeHtml(String(it.id)) + '" onchange="cms4UpdateSelection()" aria-label="Select ' + escapeHtml(name) + '">';
+      html += '<span style="font-size:18px">' + (def.icon || '📄') + '</span>';
+      html += '<div><strong style="color:#eaf2f4">' + escapeHtml(name) + '</strong> <span class="cms4-status ' + escapeHtml(status) + '">' + escapeHtml(status.toUpperCase()) + '</span><br><span style="font-size:11px;color:#7a95a3">' + escapeHtml(info.join(' • ')) + '</span></div>';
       html += '<div style="display:flex;gap:5px;flex-wrap:wrap">';
-      html += '<button class="edit-small" onclick="cms2OpenEditor(\'' + it.id + '\')">\u270F\uFE0F</button>';
-      html += '<button class="secondary" onclick="cms2Duplicate(\'' + it.id + '\')" title="Duplicate">\u2B09</button>';
-      if (it.status !== 'published') html += '<button class="secondary" onclick="cms2SetStatus(\'' + it.id + '\',\'published\')" title="Publish">\u2705</button>';
-      html += '<button class="danger-small" onclick="cms2Delete(\'' + it.id + '\')">\u2716</button>';
+      html += '<button class="edit-small" onclick="cms2OpenEditor(\'' + escapeHtml(String(it.id)) + '\')">✏️</button>';
+      html += '<button class="secondary" onclick="cms2Duplicate(\'' + escapeHtml(String(it.id)) + '\')" title="Duplicate">⤴</button>';
+      if (status !== 'published') html += '<button class="secondary" onclick="cms2SetStatus(\'' + escapeHtml(String(it.id)) + '\',\'published\')" title="Publish">✅</button>';
+      html += '<button class="danger-small" onclick="cms2Delete(\'' + escapeHtml(String(it.id)) + '\')">✖</button>';
       html += '</div></div>';
     });
     container.innerHTML = html;
@@ -161,6 +349,7 @@ async function cms2List() {
     container.innerHTML = '<div class="empty-state"><h3>Could not load</h3><p>' + escapeHtml((e && e.message) || 'Unknown error') + '</p></div>';
   }
 }
+
 
 function cms2FieldInput(field, value) {
   var v = value === undefined || value === null ? '' : value;
@@ -661,11 +850,10 @@ function cms2RichEscapeHtml(value) {
 
 function cms2RichSanitize(value) {
   var input = String(value == null ? '' : value);
-  /* The editor only needs a small, safe formatting vocabulary. */
   if (!/[<>]/.test(input)) return cms2RichEscapeHtml(input).replace(/\n/g, '<br>');
   var template = document.createElement('template');
   template.innerHTML = input;
-  var allowed = {B:1,STRONG:1,I:1,EM:1,U:1,S:1,P:1,BR:1,UL:1,OL:1,LI:1,H3:1,H4:1,A:1};
+  var allowed = {B:1,STRONG:1,I:1,EM:1,U:1,S:1,P:1,BR:1,UL:1,OL:1,LI:1,H2:1,H3:1,H4:1,BLOCKQUOTE:1,A:1,IMG:1,TABLE:1,THEAD:1,TBODY:1,TR:1,TH:1,TD:1};
   function clean(node) {
     Array.from(node.childNodes).forEach(function(child) {
       if (child.nodeType === 1) {
@@ -684,6 +872,11 @@ function cms2RichSanitize(value) {
               child.setAttribute('target', '_blank');
               child.setAttribute('rel', 'noopener noreferrer');
             }
+          } else if (child.tagName === 'IMG' && (attr.name === 'src' || attr.name === 'alt')) {
+            if (attr.name === 'src' && !/^https:\/\//i.test(attr.value.trim())) child.removeAttribute('src');
+            else child.setAttribute(attr.name, attr.value.trim());
+          } else if (child.tagName === 'TH' || child.tagName === 'TD') {
+            if (attr.name !== 'colspan' && attr.name !== 'rowspan') child.removeAttribute(attr.name);
           } else child.removeAttribute(attr.name);
         });
         clean(child);
@@ -692,6 +885,45 @@ function cms2RichSanitize(value) {
   }
   clean(template.content);
   return template.innerHTML;
+}
+
+function cms2RichApply(surface, command, value) {
+  if (!surface) return;
+  surface.focus();
+  try { document.execCommand(command, false, value == null ? null : value); } catch (_) {}
+  surface.innerHTML = cms2RichSanitize(surface.innerHTML);
+}
+
+function cms2RichLink(surface) {
+  if (!surface) return;
+  surface.focus();
+  var href = window.prompt('Link URL (https://...)');
+  if (!href) return;
+  href = href.trim();
+  if (!/^https?:\/\//i.test(href)) {
+    window.alert('Only http:// and https:// links are allowed.');
+    return;
+  }
+  cms2RichApply(surface, 'createLink', href);
+}
+
+function cms2RichInsertTable(surface) {
+  if (!surface) return;
+  surface.focus();
+  var html = '<table><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Value</td><td>Value</td></tr><tr><td>Value</td><td>Value</td></tr></tbody></table><p></p>';
+  try { document.execCommand('insertHTML', false, html); } catch (_) {}
+  surface.innerHTML = cms2RichSanitize(surface.innerHTML);
+}
+function cms2RichInsertImage(surface) {
+  if (!surface) return;
+  var src = window.prompt('Image URL (https://...)');
+  if (!src) return;
+  src = src.trim();
+  if (!/^https:\/\//i.test(src)) { window.alert('Only HTTPS image URLs are allowed.'); return; }
+  var alt = window.prompt('Accessible image description (alt text):') || '';
+  surface.focus();
+  try { document.execCommand('insertHTML', false, '<img src="' + cms2RichEscapeHtml(src) + '" alt="' + cms2RichEscapeHtml(alt) + '"><p></p>'); } catch (_) {}
+  surface.innerHTML = cms2RichSanitize(surface.innerHTML);
 }
 
 function cms2ClinicalFieldHtml(field, state) {
@@ -726,12 +958,20 @@ function cms2ClinicalFieldHtml(field, state) {
     return head +
       '<div class="cms2-rich-editor" data-rich-editor="' + escapeHtml(key) + '">' +
         '<div class="cms2-rich-toolbar" role="toolbar" aria-label="' + escapeHtml(field.label) + ' formatting">' +
-          '<button type="button" class="cms2-rich-btn" data-rich-cmd="bold" title="Bold"><strong>B</strong></button>' +
-          '<button type="button" class="cms2-rich-btn" data-rich-cmd="italic" title="Italic"><em>I</em></button>' +
-          '<button type="button" class="cms2-rich-btn" data-rich-cmd="underline" title="Underline"><u>U</u></button>' +
+          '<button type="button" class="cms2-rich-btn" data-rich-cmd="undo" title="Undo (Ctrl/Cmd+Z)">↶</button>' +
+          '<button type="button" class="cms2-rich-btn" data-rich-cmd="redo" title="Redo (Ctrl/Cmd+Y)">↷</button>' +
+          '<button type="button" class="cms2-rich-btn" data-rich-cmd="bold" title="Bold (Ctrl/Cmd+B)"><strong>B</strong></button>' +
+          '<button type="button" class="cms2-rich-btn" data-rich-cmd="italic" title="Italic (Ctrl/Cmd+I)"><em>I</em></button>' +
+          '<button type="button" class="cms2-rich-btn" data-rich-cmd="underline" title="Underline (Ctrl/Cmd+U)"><u>U</u></button>' +
+          '<button type="button" class="cms2-rich-btn" data-rich-cmd="strikeThrough" title="Strikethrough"><s>S</s></button>' +
           '<button type="button" class="cms2-rich-btn" data-rich-cmd="insertUnorderedList" title="Bullet list">• List</button>' +
           '<button type="button" class="cms2-rich-btn" data-rich-cmd="insertOrderedList" title="Numbered list">1. List</button>' +
-          '<button type="button" class="cms2-rich-btn" data-rich-block="h3" title="Heading">Heading</button>' +
+          '<button type="button" class="cms2-rich-btn" data-rich-block="h2" title="Large heading">H2</button>' +
+          '<button type="button" class="cms2-rich-btn" data-rich-block="h3" title="Heading">H3</button>' +
+          '<button type="button" class="cms2-rich-btn" data-rich-block="blockquote" title="Clinical quote/callout">❝</button>' +
+          '<button type="button" class="cms2-rich-btn" data-rich-link="1" title="Insert secure link">Link</button>' +
+          '<button type="button" class="cms2-rich-btn" data-rich-table="1" title="Insert clinical table">Table</button>' +
+          '<button type="button" class="cms2-rich-btn" data-rich-image="1" title="Insert HTTPS image">Image</button>' +
           '<button type="button" class="cms2-rich-btn" data-rich-cmd="removeFormat" title="Clear formatting">Clear</button>' +
         '</div>' +
         '<div class="cms2-rich-surface" contenteditable="true" spellcheck="true" data-rich-value="' + escapeHtml(key) + '" data-placeholder="' + cms2ClinicalEscapeAttr(field.placeholder || '') + '">' + richValue + '</div>' +
@@ -763,10 +1003,33 @@ function cms2RenderClinicalEditor(fieldKey, blockType) {
       e.preventDefault();
       var surface = richBtn.closest('[data-rich-editor]').querySelector('[data-rich-value]');
       if (surface) {
-        surface.focus();
-        document.execCommand(richBtn.getAttribute('data-rich-cmd'), false, null);
+        cms2RichApply(surface, richBtn.getAttribute('data-rich-cmd'));
         cms2VisualState[fieldKey][richBtn.closest('[data-rich-editor]').getAttribute('data-rich-editor')] = cms2RichSanitize(surface.innerHTML);
       }
+      return;
+    }
+    var linkBtn = e.target.closest('[data-rich-link]');
+    if (linkBtn) {
+      e.preventDefault();
+      var linkSurface = linkBtn.closest('[data-rich-editor]').querySelector('[data-rich-value]');
+      cms2RichLink(linkSurface);
+      if (linkSurface) cms2VisualState[fieldKey][linkBtn.closest('[data-rich-editor]').getAttribute('data-rich-editor')] = cms2RichSanitize(linkSurface.innerHTML);
+      return;
+    }
+    var tableBtn = e.target.closest('[data-rich-table]');
+    if (tableBtn) {
+      e.preventDefault();
+      var tableSurface = tableBtn.closest('[data-rich-editor]').querySelector('[data-rich-value]');
+      cms2RichInsertTable(tableSurface);
+      if (tableSurface) cms2VisualState[fieldKey][tableBtn.closest('[data-rich-editor]').getAttribute('data-rich-editor')] = cms2RichSanitize(tableSurface.innerHTML);
+      return;
+    }
+    var imageBtn = e.target.closest('[data-rich-image]');
+    if (imageBtn) {
+      e.preventDefault();
+      var imageSurface = imageBtn.closest('[data-rich-editor]').querySelector('[data-rich-value]');
+      cms2RichInsertImage(imageSurface);
+      if (imageSurface) cms2VisualState[fieldKey][imageBtn.closest('[data-rich-editor]').getAttribute('data-rich-editor')] = cms2RichSanitize(imageSurface.innerHTML);
       return;
     }
     var headingBtn = e.target.closest('[data-rich-block]');
@@ -774,8 +1037,8 @@ function cms2RenderClinicalEditor(fieldKey, blockType) {
       e.preventDefault();
       var surface2 = headingBtn.closest('[data-rich-editor]').querySelector('[data-rich-value]');
       if (surface2) {
-        surface2.focus();
-        document.execCommand('formatBlock', false, '<h3>');
+        var block = headingBtn.getAttribute('data-rich-block');
+        cms2RichApply(surface2, 'formatBlock', block === 'blockquote' ? '<blockquote>' : '<' + block + '>');
         cms2VisualState[fieldKey][headingBtn.closest('[data-rich-editor]').getAttribute('data-rich-editor')] = cms2RichSanitize(surface2.innerHTML);
       }
       return;
@@ -820,6 +1083,31 @@ function cms2RenderClinicalEditor(fieldKey, blockType) {
       cms2VisualState[fieldKey][key] = el.value;
     }
   };
+  host.addEventListener('keydown', function(e) {
+    var surface = e.target.closest('[data-rich-value]');
+    if (!surface) return;
+    if ((e.ctrlKey || e.metaKey) && !e.shiftKey) {
+      var key = e.key.toLowerCase();
+      if (key === 'b' || key === 'i' || key === 'u') {
+        e.preventDefault();
+        cms2RichApply(surface, key === 'b' ? 'bold' : key === 'i' ? 'italic' : 'underline');
+        var editor = surface.closest('[data-rich-editor]');
+        if (editor) cms2VisualState[fieldKey][editor.getAttribute('data-rich-editor')] = cms2RichSanitize(surface.innerHTML);
+      }
+    }
+  });
+  host.addEventListener('paste', function(e) {
+    var surface = e.target.closest('[data-rich-value]');
+    if (!surface || !e.clipboardData) return;
+    e.preventDefault();
+    var html = e.clipboardData.getData('text/html');
+    var text = e.clipboardData.getData('text/plain');
+    var safe = html ? cms2RichSanitize(html) : cms2RichEscapeHtml(text).replace(/\n/g, '<br>');
+    document.execCommand('insertHTML', false, safe);
+    var editor = surface.closest('[data-rich-editor]');
+    if (editor) cms2VisualState[fieldKey][editor.getAttribute('data-rich-editor')] = cms2RichSanitize(surface.innerHTML);
+  });
+
   var dragKey = null;
   host.ondragstart = function(e) {
     var row = e.target.closest('[data-clinical-drag]');
@@ -881,7 +1169,9 @@ var CMS2_BLOCK_PRESETS = {
   button: { type:'button', label:'Open', url:'#' },
   image: { type:'image', url:'https://', alt:'Image description' },
   video: { type:'video', url:'https://', title:'Video' },
-  accordion: { type:'accordion', title:'Expandable section', content:'Details go here.' }
+  accordion: { type:'accordion', title:'Expandable section', content:'Details go here.' },
+  table: { type:'table', headers:['Column 1','Column 2'], rows:[['Value','Value'],['Value','Value']] },
+  callout: { type:'callout', severity:'clinical', title:'Clinical note', text:'Add a concise clinical note here.' }
 };
 
 function cms2BlockPaletteHtml(fieldKey) {
@@ -1110,6 +1400,14 @@ function cms2PreviewBlock(block) {
   if (type === 'button') return '<p><span class="cms2-preview-button">'+cms2PreviewEscape(block.label||'Open')+'</span></p>';
   if (type === 'image') return '<figure><div class="cms2-preview-media">Image: '+cms2PreviewEscape(block.alt||block.url||'')+'</div></figure>';
   if (type === 'video') return '<div class="cms2-preview-media">Video: '+cms2PreviewEscape(block.title||block.url||'')+'</div>';
+  if (type === 'table') {
+    var headers = Array.isArray(block.headers) ? block.headers : [];
+    var rows = Array.isArray(block.rows) ? block.rows : [];
+    return '<div class="cms2-preview-table-wrap"><table><thead><tr>' + headers.map(function(h){return '<th>'+cms2PreviewEscape(h)+'</th>';}).join('') + '</tr></thead><tbody>' +
+      rows.map(function(row){ return '<tr>' + (Array.isArray(row) ? row : []).map(function(cell){return '<td>'+cms2PreviewEscape(cell)+'</td>';}).join('') + '</tr>'; }).join('') +
+      '</tbody></table></div>';
+  }
+  if (type === 'callout') return '<div class="cms2-preview-alert '+cms2PreviewEscape(block.severity||'clinical')+'"><strong>'+cms2PreviewEscape(block.title||'Clinical note')+'</strong><p>'+cms2PreviewEscape(block.text||'')+'</p></div>';
   if (type === 'accordion') return '<details class="cms2-preview-accordion"><summary>'+cms2PreviewEscape(block.title||'Expandable section')+'</summary><p>'+cms2PreviewEscape(block.content||block.text||'')+'</p></details>';
   return '<div class="cms2-preview-text">'+cms2PreviewEscape(block.text||block.content||block.message||'')+'</div>';
 }
@@ -1180,7 +1478,22 @@ function cms2OpenEditor(id) {
   def.fields.forEach(function(f) { html += cms2FieldInput(f, item ? item[f.k] : undefined); });
   html += '</div>';
   body.innerHTML = html;
+  var oldWorkflow = body.parentNode.querySelector('.cms2-workflow-bar');
+  if (oldWorkflow) oldWorkflow.remove();
+  var workflow = document.createElement('div');
+  workflow.className = 'cms2-workflow-bar';
+  workflow.innerHTML = '<div><span class="cms2-workflow-label">Publishing</span><span id="cms2WorkflowStatus" class="cms2-status-pill">Draft</span></div>' +
+    '<div class="cms2-workflow-actions">' +
+    '<button type="button" class="secondary" onclick="cms2SaveAs(\'draft\')">Save Draft</button>' +
+    '<button type="button" class="primary" onclick="cms2SaveAs(\'published\')">Publish</button>' +
+    (id ? '<button type="button" class="secondary" onclick="cms2ShowVersions()">Revision History</button>' : '') +
+    '</div>';
+  body.parentNode.insertBefore(workflow, body);
   cms2InitVisualEditors(item);
+  if (item && item.status) {
+    var statusPill = document.getElementById('cms2WorkflowStatus');
+    if (statusPill) statusPill.textContent = String(item.status).replace(/^./, function(c){return c.toUpperCase();});
+  }
   if (!id) {
     var nameInput = body.querySelector('[data-f="name"]');
     var slugInput = body.querySelector('[data-f="slug"]');
@@ -1205,6 +1518,12 @@ function cms2OpenEditor(id) {
   }
   editor.style.display = 'block';
   editor.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  var cmsForm = document.getElementById('cms2Form');
+  if (cmsForm) {
+    cmsForm.addEventListener('input', cms2ScheduleAutoSave);
+    cmsForm.addEventListener('change', cms2ScheduleAutoSave);
+  }
+  cms2RestoreLocalDraft();
 }
 
 function cms2CloseEditor() {
@@ -1213,7 +1532,68 @@ function cms2CloseEditor() {
   cms2EditId = null;
 }
 
-async function cms2Save() {
+
+var cms2AutoSaveTimer = null;
+function cms2AutoSaveKey() {
+  return 'uhs-cms2-autosave:' + String(cms2CurrentType || 'content') + ':' + String(cms2EditId || 'new');
+}
+function cms2CollectFormSnapshot() {
+  var def = CMS2_TYPES[cms2CurrentType] || {};
+  var body = document.getElementById('cms2Form');
+  var values = {};
+  if (!body) return values;
+  (def.fields || []).forEach(function(f) {
+    if (f.type === 'visual-json') return;
+    var el = body.querySelector('[data-f="' + f.k + '"]');
+    if (!el) return;
+    values[f.k] = f.type === 'checkbox' ? !!el.checked : el.value;
+  });
+  return values;
+}
+function cms2ScheduleAutoSave() {
+  clearTimeout(cms2AutoSaveTimer);
+  cms2AutoSaveTimer = setTimeout(function() {
+    try {
+      localStorage.setItem(cms2AutoSaveKey(), JSON.stringify({
+        savedAt: Date.now(),
+        values: cms2CollectFormSnapshot(),
+        visual: cms2Clone(cms2VisualState.content)
+      }));
+      var pill = document.getElementById('cms2WorkflowStatus');
+      if (pill) {
+        pill.textContent = 'Local draft';
+        pill.classList.add('cms2-autosaved');
+      }
+    } catch (_) {}
+  }, 700);
+}
+function cms2RestoreLocalDraft() {
+  try {
+    var raw = localStorage.getItem(cms2AutoSaveKey());
+    if (!raw) return;
+    var saved = JSON.parse(raw);
+    if (!saved || !saved.savedAt || Date.now() - Number(saved.savedAt) > 1000 * 60 * 60 * 24 * 7) return;
+    if (!confirm('A recent local draft was found for this CMS item. Restore it?')) return;
+    var body = document.getElementById('cms2Form');
+    var def = CMS2_TYPES[cms2CurrentType] || {};
+    Object.keys(saved.values || {}).forEach(function(k) {
+      var el = body && body.querySelector('[data-f="' + k + '"]');
+      if (!el) return;
+      if (el.type === 'checkbox') el.checked = !!saved.values[k];
+      else el.value = saved.values[k] == null ? '' : saved.values[k];
+    });
+    if (saved.visual !== undefined) {
+      cms2VisualState.content = saved.visual;
+      cms2InitVisualEditors(null);
+    }
+    showToast('Local draft restored', 'success');
+  } catch (_) {}
+}
+function cms2ClearLocalDraft() {
+  try { localStorage.removeItem(cms2AutoSaveKey()); } catch (_) {}
+}
+
+async function cms2Save(statusOverride) {
   var def = CMS2_TYPES[cms2CurrentType] || {};
   var body = document.getElementById('cms2Form');
   if (!body) return;
@@ -1240,6 +1620,7 @@ async function cms2Save() {
     }
     data[f.k] = el.value;
   }
+  if (statusOverride && def.fields.some(function(f){ return f.k === 'status'; })) data.status = statusOverride;
   for (var j = 0; j < def.fields.length; j++) {
     if (def.fields[j].required && !data[def.fields[j].k]) {
       showToast('"' + def.fields[j].label + '" is required', 'error'); return;
@@ -1252,12 +1633,49 @@ async function cms2Save() {
       await api(def.listEndpoint, { method: 'POST', body: data });
     }
     showToast('Saved', 'success');
+    cms2ClearLocalDraft();
     cms2CloseEditor();
     await cms2RefreshSources();
     await cms2List();
   } catch(e) {
     showToast('Save failed: ' + ((e&&e.message)||''), 'error');
   }
+}
+
+
+async function cms2SaveAs(status) {
+  await cms2Save(status);
+}
+async function cms2ShowVersions() {
+  if (!cms2EditId || cms2CurrentType !== 'content-block') {
+    showToast('Revision history is currently available for content blocks.', 'error'); return;
+  }
+  try {
+    var data = await api('/api/cms-blocks/' + cms2EditId + '/versions');
+    var versions = Array.isArray(data.versions) ? data.versions : [];
+    var modal = document.getElementById('cms2VersionsModal');
+    var body = document.getElementById('cms2VersionsBody');
+    if (!modal || !body) return;
+    body.innerHTML = versions.length ? versions.map(function(v) {
+      var when = v.created_at ? new Date(v.created_at).toLocaleString() : 'Unknown time';
+      return '<div class="cms2-version-row"><div><strong>Version ' + escapeHtml(v.version) + '</strong><span class="muted">' + escapeHtml(when) + '</span></div>' +
+        '<button type="button" class="secondary" onclick="cms2RestoreVersion(' + Number(v.version) + ')">Restore</button></div>';
+    }).join('') : '<p class="muted">No revisions have been recorded yet. A revision is created automatically before an edit is saved.</p>';
+    modal.style.display='flex';
+  } catch(e) { showToast('Could not load revision history', 'error'); }
+}
+async function cms2RestoreVersion(version) {
+  if (!cms2EditId || !confirm('Restore version ' + version + '? The current item will remain recoverable in revision history.')) return;
+  try {
+    await api('/api/cms-blocks/' + cms2EditId + '/versions/restore/' + encodeURIComponent(version), {method:'POST'});
+    showToast('Revision restored', 'success');
+    var modal=document.getElementById('cms2VersionsModal'); if(modal) modal.style.display='none';
+    await cms2RefreshSources(); await cms2List();
+    cms2OpenEditor(cms2EditId);
+  } catch(e) { showToast('Restore failed: ' + ((e&&e.message)||''), 'error'); }
+}
+function cms2CloseVersions() {
+  var modal=document.getElementById('cms2VersionsModal'); if(modal) modal.style.display='none';
 }
 
 async function cms2Delete(id) {
@@ -1296,9 +1714,17 @@ window.cms2Init = cms2Init;
 window.cms2List = cms2List;
 window.cms2OpenEditor = cms2OpenEditor;
 window.cms2CloseEditor = cms2CloseEditor;
-window.cms2Save = cms2Save;
+window.cms2Save = cms2Save; window.cms2SaveAs = cms2SaveAs; window.cms2ShowVersions = cms2ShowVersions; window.cms2RestoreVersion = cms2RestoreVersion; window.cms2CloseVersions = cms2CloseVersions;
 window.cms2Delete = cms2Delete;
 window.cms2Duplicate = cms2Duplicate;
 window.cms2SetStatus = cms2SetStatus;
 window.cms2PreviewCurrent = cms2PreviewCurrent;
 window.cms2ClosePreview = cms2ClosePreview;
+
+(function cms4Boot() {
+  function load() {
+    if (typeof cms4LoadOverview === 'function') cms4LoadOverview();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', load);
+  else load();
+})();

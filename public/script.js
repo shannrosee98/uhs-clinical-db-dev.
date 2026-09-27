@@ -11701,3 +11701,17 @@ document.addEventListener('change', (event) => {
   addKnowledgeBadges();
   window.openGlobalKnowledgeSearch=openSearch;
 })();
+
+
+// Stroke guide tabs — Neurology
+function showStrokeTab(tab) {
+  const root = document.getElementById('stroke-guide');
+  if (!root) return;
+  root.querySelectorAll('.stroke-tabs .scenario-tab').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('onclick') === `showStrokeTab('${tab}')`);
+  });
+  root.querySelectorAll('.stroke-tabs + .scenario-tab-panel, .scenario-tab-panel[id^="stroke-tab-"]').forEach(panel => {
+    panel.classList.toggle('active', panel.id === `stroke-tab-${tab}`);
+  });
+}
+window.showStrokeTab = showStrokeTab;
