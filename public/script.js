@@ -6642,10 +6642,49 @@ var emergencyData = {
   }
 };
 
+function renderEmergencyFullReference(key, data) {
+  var box = document.getElementById('emergency-full-reference');
+  if (!box || !data) return;
+  var list = function(items, cls) {
+    if (!items || !items.length) return '<p class="muted">No information listed in the current emergency dataset.</p>';
+    return '<ul class="' + (cls || 'emergency-reference-list') + '">' +
+      items.map(function(item) { return '<li>' + escapeHtml(item) + '</li>'; }).join('') +
+      '</ul>';
+  };
+  var actions = (data.rp || []).map(function(action) {
+    return '<div class="emergency-reference-action"><code>' + escapeHtml(action) + '</code>' +
+      '<button type="button" class="secondary" onclick="copyTextInline(' + JSON.stringify(action) + ')">Copy /me</button></div>';
+  }).join('');
+  var actionBlock = actions ?
+    '<div class="emergency-reference-block"><h4>🎭 RP Action Library</h4><div class="emergency-reference-actions">' + actions + '</div></div>' :
+    '<div class="emergency-reference-block"><h4>🎭 RP Action Library</h4><p class="muted">No RP actions are listed in the current emergency dataset.</p></div>';
+
+  box.innerHTML =
+    '<div class="emergency-reference-shell">' +
+      '<div class="emergency-reference-head">' +
+        '<div class="emergency-reference-kicker">FULL EMERGENCY REFERENCE</div>' +
+        '<h3>' + escapeHtml(data.title || key) + '</h3>' +
+        '<p>Expanded reference built from the existing UHS Emergency Mode dataset: priorities, assessment, management, red flags, patient questions, RP actions and handover.</p>' +
+        '<div class="emergency-reference-note">Source basis: current UHS Clinical Desk emergency-mode content. This panel does not add independently verified clinical guidance; local UHS SOP/CMS review remains required before real-world use.</div>' +
+      '</div>' +
+      '<div class="emergency-reference-grid">' +
+        '<div class="emergency-reference-block"><h4>🚑 Immediate Priorities</h4>' + list(data.priorities) + '</div>' +
+        '<div class="emergency-reference-block"><h4>🔍 Assessment</h4>' + list(data.assessment) + '</div>' +
+        '<div class="emergency-reference-block"><h4>💊 Management & Interventions</h4>' + list(data.management) + '</div>' +
+        '<div class="emergency-reference-block"><h4>🚨 Red Flags</h4>' + list(data.redflags) + '</div>' +
+        '<div class="emergency-reference-block"><h4>💬 Patient Questions</h4>' + list(data.questions) + '</div>' +
+        actionBlock +
+        '<div class="emergency-reference-block" style="grid-column:1/-1"><h4>📋 Handover Template</h4><div class="emergency-reference-handover">' + escapeHtml(data.handover || '') + '</div><div style="margin-top:8px"><button type="button" class="primary" onclick="copyEmergencyHandover()">Copy Handover</button></div></div>' +
+      '</div>' +
+    '</div>';
+  box.style.display = 'block';
+}
+
 function activateEmergency(key) {
   var data = emergencyData[key];
   if (!data) return;
   document.getElementById('emergency-title').textContent = data.title;
+  renderEmergencyFullReference(key, data);
   document.getElementById('emergency-priorities').innerHTML = '<ul style="list-style:none;padding:0;margin:0;display:grid;gap:6px">' + (data.priorities || []).map(function(p, i) { return '<li style="padding:6px 10px;background:#0f2029;border-radius:6px;font-size:13px;border-left:3px solid #41b6e6">' + (i+1) + '. ' + escapeHtml(p) + '</li>'; }).join('') + '</ul>' || '<p class="muted">No priorities listed.</p>';
   document.getElementById('emergency-assessment').innerHTML = '<ul style="list-style:none;padding:0;margin:0;display:grid;gap:6px">' + (data.assessment || []).map(function(p) { return '<li style="padding:6px 10px;background:#0f2029;border-radius:6px;font-size:13px">' + escapeHtml(p) + '</li>'; }).join('') + '</ul>' || '<p class="muted">No assessment steps listed.</p>';
   document.getElementById('emergency-management').innerHTML = '<ul style="list-style:none;padding:0;margin:0;display:grid;gap:6px">' + (data.management || []).map(function(p) { return '<li style="padding:6px 10px;background:#0f2029;border-radius:6px;font-size:13px;border-left:3px solid #005eb8">' + escapeHtml(p) + '</li>'; }).join('') + '</ul>' || '<p class="muted">No management steps listed.</p>';
@@ -6662,6 +6701,11 @@ function activateEmergency(key) {
 
 function deactivateEmergency() {
   document.getElementById('emergency-active').style.display = 'none';
+  var fullReference = document.getElementById('emergency-full-reference');
+  if (fullReference) {
+    fullReference.style.display = 'none';
+    fullReference.innerHTML = '';
+  }
 }
 
 function copyEmergencyHandover() {
