@@ -74,6 +74,7 @@
           <button class="nav" role="button" tabindex="0" data-section="respiratory">◌ Respiratory</button>
           <button class="nav" role="button" tabindex="0" data-section="trauma">✚ Trauma</button>
           <button class="nav" role="button" tabindex="0" data-section="neuro">◎ Neurological</button>
+          <button class="nav" role="button" tabindex="0" data-section="stroke">🧠 Stroke Pathways</button>
           <button class="nav" role="button" tabindex="0" data-section="pain">🩹 Pain</button>
           <button class="nav" role="button" tabindex="0" data-section="blood">🩸 Blood &amp; Transfusion</button>
           <button class="nav" role="button" tabindex="0" data-section="fluids">💧 Fluids</button>
@@ -1522,128 +1523,6 @@
         <div class="section-head"><div class="tag">NEUROLOGICAL</div><h2>Neurological assessment</h2></div>
         <div class="two-col"><article class="info"><h3>Consciousness</h3><p>Use AVPU for a rapid assessment and GCS when a more detailed assessment is required.</p></article><article class="info"><h3>Pupils</h3><p>Record size, equality and reaction to light.</p></article><article class="info"><h3>Glucose</h3><p>Check blood glucose when altered consciousness or other clinical indications make it relevant.</p></article><article class="info"><h3>Stroke screen</h3><p>Assess facial movement, arm strength and speech/language changes, noting exact onset/last-known-well time.</p></article></div>
       
-
-          <div class="stroke-guide" id="stroke-guide">
-            <div class="section-head">
-              <div class="tag">STROKE GUIDE</div>
-              <h2>Suspected Stroke — Recognition, Actions & Handover</h2>
-              <p>Use this as a structured study / FiveM RP reference. In real emergencies, follow current NHS and local ambulance-service pathways.</p>
-            </div>
-
-            <div class="clinical-alert clinical-alert--critical">
-              <strong>🚨 TIME-CRITICAL:</strong> Suspected stroke is an emergency. Use FAST, establish the exact symptom onset or last-known-well time, and activate the appropriate emergency pathway. NHS guidance says to call 999 immediately for suspected stroke, including when symptoms have stopped.
-            </div>
-
-            <div class="scenario-tabs stroke-tabs" role="tablist" aria-label="Stroke guide">
-              <button type="button" class="scenario-tab active" onclick="showStrokeTab('recognise')">🧠 Recognise</button>
-              <button type="button" class="scenario-tab" onclick="showStrokeTab('actions')">🚑 Immediate Actions</button>
-              <button type="button" class="scenario-tab" onclick="showStrokeTab('assessment')">🔎 Assessment</button>
-              <button type="button" class="scenario-tab" onclick="showStrokeTab('history')">📋 History</button>
-              <button type="button" class="scenario-tab" onclick="showStrokeTab('handover')">📡 Handover</button>
-              <button type="button" class="scenario-tab" onclick="showStrokeTab('rp')">🎭 RP Actions</button>
-            </div>
-
-            <div id="stroke-tab-recognise" class="scenario-tab-panel active">
-              <div class="two-col">
-                <article class="info"><h3>F — Face</h3><p>Ask the patient to smile. Look for new facial weakness or asymmetry.</p></article>
-                <article class="info"><h3>A — Arms</h3><p>Ask the patient to raise both arms and note new weakness, numbness or drift on one side.</p></article>
-                <article class="info"><h3>S — Speech</h3><p>Listen for slurred or garbled speech and assess whether the patient can communicate or understand normally.</p></article>
-                <article class="info"><h3>T — Time</h3><p>Record the exact time symptoms started if known, or the last time the patient was definitely known to be well.</p></article>
-              </div>
-              <div class="clinical-card">
-                <h3>Other sudden neurological symptoms</h3>
-                <ul class="action-list">
-                  <li>Sudden one-sided weakness or numbness</li>
-                  <li>Sudden visual disturbance or loss of vision</li>
-                  <li>Sudden confusion or difficulty finding/understanding words</li>
-                  <li>Sudden dizziness, loss of balance or coordination</li>
-                  <li>Sudden severe headache, with or without nausea/vomiting</li>
-                </ul>
-              </div>
-              <div class="clinical-card">
-                <h3>TIA warning</h3>
-                <p>Symptoms that resolve can still represent a TIA or stroke pathway. Do not dismiss resolved symptoms; document when they started and when they resolved and seek urgent assessment.</p>
-              </div>
-            </div>
-
-            <div id="stroke-tab-actions" class="scenario-tab-panel">
-              <div class="clinical-step-list">
-                <div class="clinical-step"><span>01</span><div><strong>Scene safety & immediate overview</strong><p>Confirm safety, identify the patient, obtain an immediate impression and start an ABCDE assessment if clinically required.</p></div></div>
-                <div class="clinical-step"><span>02</span><div><strong>Recognise stroke quickly</strong><p>Perform FAST and identify any other sudden neurological deficit.</p></div></div>
-                <div class="clinical-step"><span>03</span><div><strong>Establish time</strong><p>Ask when the patient was last known well. If the patient woke with symptoms, record the last time they were definitely normal before sleep.</p></div></div>
-                <div class="clinical-step"><span>04</span><div><strong>Check reversible contributors</strong><p>Assess consciousness, pupils and blood glucose as part of the neurological/ABCDE assessment, following local protocol.</p></div></div>
-                <div class="clinical-step"><span>05</span><div><strong>Escalate early</strong><p>Activate the appropriate emergency/stroke pathway and communicate the suspected stroke and time information clearly.</p></div></div>
-                <div class="clinical-step"><span>06</span><div><strong>Monitor and reassess</strong><p>Repeat observations and neurological findings, watching for deterioration while awaiting or during transfer.</p></div></div>
-              </div>
-              <div class="clinical-alert">
-                <strong>Do not delay escalation:</strong> the key early priorities are recognition, exact timing, structured assessment, appropriate emergency activation and clear communication.
-              </div>
-            </div>
-
-            <div id="stroke-tab-assessment" class="scenario-tab-panel">
-              <div class="two-col">
-                <article class="info"><h3>Airway & breathing</h3><p>Use ABCDE. Look for reduced consciousness, airway compromise or abnormal breathing and manage according to local protocol.</p></article>
-                <article class="info"><h3>Circulation</h3><p>Record pulse, blood pressure and other relevant observations. Identify instability and escalate appropriately.</p></article>
-                <article class="info"><h3>Disability</h3><p>Record AVPU/ACVPU or GCS as appropriate, pupils, blood glucose and focused neurological findings.</p></article>
-                <article class="info"><h3>Neurology</h3><p>Document facial movement, arm power/drift, speech/language, sensation and any additional focal deficit observed.</p></article>
-              </div>
-              <div class="clinical-card">
-                <h3>Record objectively</h3>
-                <ul class="action-list">
-                  <li>Exact onset / last-known-well time</li>
-                  <li>What changed and which side is affected</li>
-                  <li>FAST findings</li>
-                  <li>Consciousness and pupil findings</li>
-                  <li>Blood glucose and relevant observations</li>
-                  <li>Any deterioration or improvement and when it occurred</li>
-                </ul>
-              </div>
-            </div>
-
-            <div id="stroke-tab-history" class="scenario-tab-panel">
-              <div class="two-col">
-                <article class="info"><h3>AMPLE</h3><p><strong>A</strong>llergies · <strong>M</strong>edications · <strong>P</strong>ast medical history · <strong>L</strong>ast oral intake · <strong>E</strong>vents leading to presentation.</p></article>
-                <article class="info"><h3>Medication focus</h3><p>Ask about anticoagulants, antiplatelets and other regular medicines where relevant, and document the information for handover.</p></article>
-                <article class="info"><h3>Baseline</h3><p>Establish the patient's normal speech, mobility, cognition and independence where possible.</p></article>
-                <article class="info"><h3>Witness information</h3><p>Speak with relatives, carers or witnesses when available. Confirm the last-known-well time and what was first noticed.</p></article>
-              </div>
-            </div>
-
-            <div id="stroke-tab-handover" class="scenario-tab-panel">
-              <div class="clinical-card">
-                <h3>Stroke handover structure</h3>
-                <div class="handover-grid">
-                  <div><span class="tag">SITUATION</span><p>Suspected stroke/TIA and current neurological deficit.</p></div>
-                  <div><span class="tag">TIME</span><p>Exact onset or last-known-well time.</p></div>
-                  <div><span class="tag">ASSESSMENT</span><p>FAST findings, consciousness, pupils, glucose and relevant observations.</p></div>
-                  <div><span class="tag">BACKGROUND</span><p>Baseline function, relevant history, medicines and witness account.</p></div>
-                  <div><span class="tag">CHANGE</span><p>Any deterioration or improvement since first assessment.</p></div>
-                  <div><span class="tag">PLAN</span><p>Destination/pathway, monitoring, reassessment and outstanding information.</p></div>
-                </div>
-              </div>
-            </div>
-
-            <div id="stroke-tab-rp" class="scenario-tab-panel">
-              <div class="clinical-card">
-                <h3>FiveM RP action sequence</h3>
-                <div class="action-list stroke-rp-actions">
-                  <div class="action-row"><span>/me kneels beside the patient and begins a rapid neurological assessment</span><button type="button" class="copy-action" onclick="copyText('/me kneels beside the patient and begins a rapid neurological assessment')">COPY</button></div>
-                  <div class="action-row"><span>/me asks the patient to smile and checks for facial asymmetry</span><button type="button" class="copy-action" onclick="copyText('/me asks the patient to smile and checks for facial asymmetry')">COPY</button></div>
-                  <div class="action-row"><span>/me asks the patient to raise both arms and observes for weakness or drift</span><button type="button" class="copy-action" onclick="copyText('/me asks the patient to raise both arms and observes for weakness or drift')">COPY</button></div>
-                  <div class="action-row"><span>/me asks the patient simple questions and assesses speech and comprehension</span><button type="button" class="copy-action" onclick="copyText('/me asks the patient simple questions and assesses speech and comprehension')">COPY</button></div>
-                  <div class="action-row"><span>/me confirms the last-known-well time with the patient and witnesses</span><button type="button" class="copy-action" onclick="copyText('/me confirms the last-known-well time with the patient and witnesses')">COPY</button></div>
-                  <div class="action-row"><span>/me checks the patient's pupils and records the neurological findings</span><button type="button" class="copy-action" onclick="copyText('/me checks the patient's pupils and records the neurological findings')">COPY</button></div>
-                  <div class="action-row"><span>/me checks a capillary blood glucose and records the result</span><button type="button" class="copy-action" onclick="copyText('/me checks a capillary blood glucose and records the result')">COPY</button></div>
-                  <div class="action-row"><span>/me relays the suspected stroke, neurological findings and last-known-well time to the receiving team</span><button type="button" class="copy-action" onclick="copyText('/me relays the suspected stroke, neurological findings and last-known-well time to the receiving team')">COPY</button></div>
-                  <div class="action-row"><span>/me continues monitoring and reassesses the patient's neurological status during transport</span><button type="button" class="copy-action" onclick="copyText(&quot;/me continues monitoring and reassesses the patient's neurological status during transport&quot;)">COPY</button></div>
-                </div>
-              </div>
-              <div class="clinical-alert">
-                <strong>RP note:</strong> These actions are written for FiveM roleplay. For real-world care, use current NHS/local ambulance guidance and only perform interventions you are trained and authorised to perform.
-              </div>
-            </div>
-          </div>
-
           <div class="pdf-doc-section">
             <div class="pdf-doc-head">
               <div class="tag">PDF DOCUMENT</div>
@@ -1656,7 +1535,274 @@
 
       
 
-<section id="meds" class="section">
+
+<section id="stroke" class="section">
+  <div class="knowledge-page-header" data-knowledge-header="stroke">
+    <div class="knowledge-page-copy">
+      <div class="knowledge-page-kicker">UHS KNOWLEDGE HUB</div>
+      <h2 class="knowledge-page-title">Stroke Clinical Pathways</h2>
+      <p class="knowledge-page-description">Recognition, assessment, escalation, specialist pathways and FiveM Serious RP simulation.</p>
+      <div class="knowledge-badges">
+        <span class="knowledge-badge" data-knowledge-type="study">STUDY</span>
+        <span class="knowledge-badge" data-knowledge-type="real-world">REAL-WORLD REFERENCE</span>
+        <span class="knowledge-badge" data-knowledge-type="rp">FIVEM RP</span>
+      </div>
+    </div>
+    <div class="knowledge-page-tools">
+      <button type="button" class="knowledge-search-link" onclick="openGlobalKnowledgeSearch()">Search stroke knowledge</button>
+    </div>
+  </div>
+
+  <div class="stroke-hero">
+    <div>
+      <div class="tag">TIME-CRITICAL NEUROLOGY</div>
+      <h2>Stroke — from dispatch to specialist handover</h2>
+      <p>Use this as a structured simulation reference. Confirm current local policy, scope of practice and specialist direction before any real-world intervention.</p>
+    </div>
+    <div class="stroke-hero-status"><span>LAST KNOWN WELL</span><strong>TIME CRITICAL</strong></div>
+  </div>
+
+  <div class="stroke-safety-banner">
+    <strong>FiveM Serious RP / educational simulation:</strong>
+    This content is not a substitute for professional training, prescribing guidance, local policy or clinical judgement.
+    Medication and intervention permissions are <strong>CMS-configurable</strong> and must not be treated as universal UK scope-of-practice claims.
+  </div>
+
+  <div class="stroke-grid stroke-grid--cards">
+    <article class="stroke-card stroke-card--urgent"><span class="stroke-card-icon">⚡</span><h3>Recognise</h3><p>Sudden facial weakness, arm weakness or speech disturbance are core FAST findings. Other sudden visual, balance, sensory or cognitive symptoms can also occur.</p></article>
+    <article class="stroke-card"><span class="stroke-card-icon">🕒</span><h3>Time</h3><p>Record exact symptom onset when known and the <strong>last-known-well</strong> time when onset is uncertain or unwitnessed.</p></article>
+    <article class="stroke-card"><span class="stroke-card-icon">🩺</span><h3>Assess</h3><p>ABCDE, glucose, FAST/BE-FAST, consciousness, pupils, focal neurology, observations and relevant medication history.</p></article>
+    <article class="stroke-card"><span class="stroke-card-icon">📡</span><h3>Escalate</h3><p>Use the configured pre-alert and destination pathway. Suspected LVO, deterioration, reduced consciousness and haemorrhage features require rapid senior/specialist escalation.</p></article>
+  </div>
+
+  <div class="stroke-tabs" role="tablist" aria-label="Stroke knowledge">
+    <button class="stroke-tab active" type="button" data-stroke-tab="overview">Overview</button>
+    <button class="stroke-tab" type="button" data-stroke-tab="scene">Scene Pathway</button>
+    <button class="stroke-tab" type="button" data-stroke-tab="abcde">Stroke ABCDE</button>
+    <button class="stroke-tab" type="button" data-stroke-tab="neuro">Neurology</button>
+    <button class="stroke-tab" type="button" data-stroke-tab="pathways">Specialist Pathways</button>
+    <button class="stroke-tab" type="button" data-stroke-tab="rp">RP Library</button>
+    <button class="stroke-tab" type="button" data-stroke-tab="sources">Sources &amp; Review</button>
+  </div>
+
+  <div class="stroke-panel active" data-stroke-panel="overview">
+    <div class="stroke-section-title"><div class="tag">CORE KNOWLEDGE</div><h3>Stroke types and recognition</h3></div>
+    <div class="stroke-grid">
+      <article class="stroke-card"><h3>Ischaemic stroke</h3><p>Brain injury caused by interruption of cerebral blood flow, commonly from thrombosis or embolism. Consider large-vessel occlusion (LVO) when there are severe focal deficits and follow the configured specialist pathway.</p><ul class="stroke-list"><li>Face/arm/leg weakness or numbness</li><li>Speech or language disturbance</li><li>Visual loss or field symptoms</li><li>Neglect, gaze deviation or ataxia</li><li>Reduced consciousness in severe cases</li></ul></article>
+      <article class="stroke-card"><h3>Intracerebral haemorrhage</h3><p>Bleeding within brain tissue. Sudden neurological deficit may occur with severe headache, vomiting, reduced consciousness, seizure or marked hypertension. Treat deterioration as an emergency and escalate.</p></article>
+      <article class="stroke-card"><h3>Subarachnoid haemorrhage</h3><p>Bleeding into the subarachnoid space. A thunderclap or sudden severe headache, collapse, vomiting, meningism, seizure or reduced consciousness are important red flags.</p></article>
+      <article class="stroke-card"><h3>TIA</h3><p>Transient neurological symptoms can resolve, but this does not make the event benign. NICE recommends immediate specialist assessment for suspected TIA and advises against using ABCD2 to determine urgency.</p></article>
+      <article class="stroke-card"><h3>Stroke mimics</h3><p>Consider hypoglycaemia, seizure/post-ictal weakness, migraine, Bell's palsy, intoxication, sepsis, syncope and functional neurological symptoms. A mimic should be investigated rather than assumed.</p></article>
+      <article class="stroke-card stroke-card--warning"><h3>Red flags</h3><p>Rapid neurological deterioration, falling GCS, severe headache at onset, seizure, anticoagulant use, vomiting, new pupillary abnormality, airway compromise or other critical ABCDE abnormality.</p></article>
+    </div>
+
+    <div class="stroke-section-title"><div class="tag">FAST / BE-FAST</div><h3>Rapid screen</h3></div>
+    <div class="stroke-grid stroke-grid--fast">
+      <article class="stroke-fast-card"><strong>F</strong><span>Face</span><p>Ask for a smile; look for asymmetry or facial weakness.</p></article>
+      <article class="stroke-fast-card"><strong>A</strong><span>Arms</span><p>Ask the patient to raise both arms; compare strength and drift.</p></article>
+      <article class="stroke-fast-card"><strong>S</strong><span>Speech</span><p>Listen for slurring, word-finding difficulty or abnormal language.</p></article>
+      <article class="stroke-fast-card"><strong>T</strong><span>Time</span><p>Record onset or last-known-well and activate the appropriate emergency pathway.</p></article>
+    </div>
+    <div class="stroke-callout"><strong>BE-FAST extension:</strong> Balance and Eyes can help identify additional sudden neurological symptoms, but use the locally validated screening tool required by your service.</div>
+
+    <div class="stroke-section-title"><div class="tag">OBSERVATIONS</div><h3>Example simulation observations</h3></div>
+    <div class="stroke-table-wrap"><table class="stroke-table"><thead><tr><th>Scenario</th><th>HR</th><th>BP</th><th>RR</th><th>SpO₂</th><th>Temp</th><th>Glucose</th><th>GCS</th></tr></thead>
+      <tbody>
+        <tr><td>Mild suspected ischaemic stroke</td><td>88</td><td>178/96</td><td>18</td><td>96%</td><td>36.7°C</td><td>6.2 mmol/L</td><td>14/15</td></tr>
+        <tr><td>Severe suspected LVO</td><td>92</td><td>184/102</td><td>20</td><td>95%</td><td>36.6°C</td><td>6.8 mmol/L</td><td>12/15</td></tr>
+        <tr><td>Suspected ICH</td><td>96</td><td>202/112</td><td>22</td><td>94%</td><td>36.8°C</td><td>7.1 mmol/L</td><td>10/15</td></tr>
+        <tr><td>Suspected SAH</td><td>104</td><td>188/104</td><td>21</td><td>97%</td><td>36.9°C</td><td>5.9 mmol/L</td><td>13/15</td></tr>
+        <tr><td>TIA after symptom resolution</td><td>76</td><td>156/88</td><td>16</td><td>98%</td><td>36.5°C</td><td>5.6 mmol/L</td><td>15/15</td></tr>
+        <tr><td>Hypoglycaemia mimic</td><td>82</td><td>142/82</td><td>18</td><td>97%</td><td>36.4°C</td><td>2.8 mmol/L</td><td>13/15</td></tr>
+      </tbody></table></div>
+    <p class="stroke-note">These are fictional RP examples, not diagnostic thresholds or treatment targets. Interpret observations in context and follow current local guidance.</p>
+  </div>
+
+  <div class="stroke-panel" data-stroke-panel="scene">
+    <div class="stroke-section-title"><div class="tag">DISPATCH → HANDOVER</div><h3>Scene stroke pathway</h3></div>
+    <div class="stroke-timeline">
+      <div><b>01</b><span><strong>Dispatch</strong> — review reported onset, patient age, location, access and hazards.</span></div>
+      <div><b>02</b><span><strong>Scene safety + PPE</strong> — protect crew and patient; identify infection/violence/environmental risks.</span></div>
+      <div><b>03</b><span><strong>Initial impression</strong> — responsiveness, airway, breathing, obvious neurological deficit.</span></div>
+      <div><b>04</b><span><strong>FAST / BE-FAST</strong> — identify focal symptoms and document the findings.</span></div>
+      <div><b>05</b><span><strong>ABCDE + glucose</strong> — treat life threats and reassess.</span></div>
+      <div><b>06</b><span><strong>Last-known-well</strong> — establish the exact timeline with patient/witnesses.</span></div>
+      <div><b>07</b><span><strong>History</strong> — anticoagulants, antiplatelets, allergies, comorbidities, baseline function and seizure/migraine history.</span></div>
+      <div><b>08</b><span><strong>Severity</strong> — focal deficits, consciousness, gaze, neglect, speech, limb power/sensation and suspected LVO features.</span></div>
+      <div><b>09</b><span><strong>Destination</strong> — use the configured stroke destination pathway; consider specialist/HEMS escalation where appropriate.</span></div>
+      <div><b>10</b><span><strong>Pre-alert</strong> — send time, findings, glucose, GCS, anticoagulants, treatment and ETA.</span></div>
+      <div><b>11</b><span><strong>Transport + reassessment</strong> — continuous monitoring and repeat neurological/ABCDE assessment when clinically indicated.</span></div>
+      <div><b>12</b><span><strong>Handover</strong> — ATMIST/SBAR-style structured transfer with last-known-well prominent.</span></div>
+    </div>
+
+    <div class="stroke-section-title"><div class="tag">LAST KNOWN WELL</div><h3>Timeline capture</h3></div>
+    <div class="stroke-grid">
+      <article class="stroke-card"><h3>Ask</h3><p>“When was the patient last seen completely normal?” Establish the source of the information and whether the time is exact or estimated.</p></article>
+      <article class="stroke-card"><h3>Wake-up stroke</h3><p>For symptoms first noticed on waking, record the last time the patient was known to be normal before sleep and the discovery time separately.</p></article>
+      <article class="stroke-card"><h3>Document</h3><p>Record symptom onset, last-known-well, discovery time, progression and witness account. Do not substitute discovery time for last-known-well when they differ.</p></article>
+    </div>
+
+    <div class="stroke-section-title"><div class="tag">PRE-ALERT</div><h3>Stroke pre-alert template</h3></div>
+    <div class="stroke-prealert"><div><b>Patient:</b> age / sex where relevant</div><div><b>Complaint:</b> suspected acute stroke</div><div><b>Time:</b> onset + last-known-well</div><div><b>FAST/neurology:</b> face / arm / speech / other focal findings</div><div><b>GCS:</b> current score + trend</div><div><b>Glucose:</b> current value</div><div><b>Observations:</b> BP / HR / RR / SpO₂ / temperature</div><div><b>Medication:</b> anticoagulants / antiplatelets / relevant medication</div><div><b>Treatment:</b> interventions already completed</div><div><b>ETA:</b> estimated arrival + destination</div></div>
+  </div>
+
+  <div class="stroke-panel" data-stroke-panel="abcde">
+    <div class="stroke-section-title"><div class="tag">ABCDE</div><h3>Stroke-specific primary assessment</h3></div>
+    <div class="stroke-grid">
+      <article class="stroke-card"><h3>A — Airway</h3><ul class="stroke-list"><li>Assess patency and protective reflexes.</li><li>Consider aspiration risk with reduced consciousness or bulbar dysfunction.</li><li>Prepare suction/airway equipment if indicated.</li><li>Escalate early for airway compromise.</li></ul></article>
+      <article class="stroke-card"><h3>B — Breathing</h3><ul class="stroke-list"><li>RR, effort, chest movement and SpO₂.</li><li>Assess aspiration/secretions and respiratory deterioration.</li><li>Use oxygen according to current local guidance and clinical indication.</li></ul></article>
+      <article class="stroke-card"><h3>C — Circulation</h3><ul class="stroke-list"><li>Pulse, BP, skin/perfusion and capillary refill.</li><li>ECG where clinically appropriate.</li><li>IV access/blood sampling where authorised and indicated.</li><li>Do not assume hypertension requires immediate treatment outside the relevant stroke pathway.</li></ul></article>
+      <article class="stroke-card"><h3>D — Disability</h3><ul class="stroke-list"><li>FAST / BE-FAST.</li><li>AVPU or GCS.</li><li>Pupils: size, equality and reaction.</li><li>Speech/language, facial symmetry, limb power and sensation.</li><li>Gaze, visual fields, neglect and coordination.</li><li>Blood glucose.</li><li>Last-known-well and symptom progression.</li><li>Anticoagulant/antiplatelet history.</li></ul></article>
+      <article class="stroke-card"><h3>E — Exposure</h3><ul class="stroke-list"><li>Temperature and skin.</li><li>Look for trauma, bleeding, medication patches and medical alert information.</li><li>Preserve dignity and minimise heat loss.</li><li>Look for additional clues such as infection or seizure-related injury.</li></ul></article>
+    </div>
+    <div class="stroke-callout stroke-callout--danger"><strong>Reassess:</strong> ABCDE is a cycle. Treat life-threatening abnormalities first, assess the effect of interventions and call for additional help early.</div>
+  </div>
+
+  <div class="stroke-panel" data-stroke-panel="neuro">
+    <div class="stroke-section-title"><div class="tag">NEUROLOGICAL ASSESSMENT</div><h3>Focused stroke examination</h3></div>
+    <div class="stroke-grid">
+      <article class="stroke-card"><h3>Consciousness</h3><p>Record AVPU for rapid assessment and GCS when a more detailed score is required. Document the trend rather than a single isolated number.</p></article>
+      <article class="stroke-card"><h3>Pupils</h3><p>Record size, equality and reaction to light. New asymmetry or deterioration should trigger urgent escalation.</p></article>
+      <article class="stroke-card"><h3>Motor</h3><p>Compare face, arm and leg movement. Note drift, power asymmetry and progression.</p></article>
+      <article class="stroke-card"><h3>Language</h3><p>Distinguish slurred speech from difficulty producing or understanding language where possible. Record the patient's baseline language.</p></article>
+      <article class="stroke-card"><h3>Visual / neglect</h3><p>Ask about sudden visual loss and look for gaze deviation or inattention/neglect when appropriate.</p></article>
+      <article class="stroke-card"><h3>Coordination / sensation</h3><p>Record new ataxia, sensory loss or coordination changes where the patient can safely participate.</p></article>
+    </div>
+    <div class="stroke-section-title"><div class="tag">NIHSS-STYLE</div><h3>Configurable specialist assessment</h3></div>
+    <div class="stroke-callout">A configurable NIHSS-style module should be used only with an authorised current scoring tool and trained users. This UHS implementation deliberately does not reproduce a hard-coded score table; the CMS can hold the approved local version and review date.</div>
+    <div class="stroke-permission-grid">
+      <div><strong>Assessment tool</strong><span>CMS configured</span></div>
+      <div><strong>Trainer / competence</strong><span>Required</span></div>
+      <div><strong>Standalone diagnosis</strong><span>Not appropriate</span></div>
+      <div><strong>Specialist escalation</strong><span>Follow local pathway</span></div>
+    </div>
+  </div>
+
+  <div class="stroke-panel" data-stroke-panel="pathways">
+    <div class="stroke-section-title"><div class="tag">IMAGING + SPECIALIST PATHWAYS</div><h3>Conditional clinical pathway</h3></div>
+    <div class="stroke-flow">
+      <span>Suspected stroke</span><i>→</i><span>Rapid assessment + glucose</span><i>→</i><span>Brain imaging</span><i>→</i><span>Ischaemic / haemorrhagic pathway</span>
+    </div>
+    <div class="stroke-grid">
+      <article class="stroke-card"><h3>CT / CTA</h3><p>NICE recommends immediate non-enhanced CT in specified higher-risk situations including potential thrombolysis/thrombectomy, anticoagulant use, bleeding tendency, depressed consciousness, progressive/fluctuating symptoms, papilloedema/neck stiffness/fever or severe headache at onset. CTA follows initial CT when thrombectomy may be indicated.</p></article>
+      <article class="stroke-card"><h3>Thrombolysis</h3><p>NICE currently lists alteplase and tenecteplase as options for eligible acute ischaemic stroke within 4.5 hours after symptom onset/last-known-well as applicable, after intracranial haemorrhage has been excluded. Treatment must occur in an appropriately organised stroke service with trained staff and imaging access.</p></article>
+      <article class="stroke-card"><h3>Thrombectomy</h3><p>NICE recommends rapid consideration for eligible proximal anterior circulation occlusion within 6 hours and selected patients up to 24 hours, including wake-up stroke, when appropriate imaging demonstrates potentially salvageable tissue. Posterior circulation pathways are also covered by current NICE recommendations.</p></article>
+      <article class="stroke-card"><h3>Haemorrhage</h3><p>Once haemorrhage is identified, follow the specialist haemorrhagic stroke pathway, including anticoagulant review/reversal where indicated, blood-pressure management according to the current pathway, neurosurgical discussion where appropriate and specialist monitoring.</p></article>
+      <article class="stroke-card"><h3>TIA</h3><p>NICE recommends immediate specialist assessment for suspected TIA, with review within 24 hours of symptom onset. Do not use ABCD2 to determine urgency of referral.</p></article>
+      <article class="stroke-card"><h3>Swallowing</h3><p>Acute stroke patients should have swallowing screened by an appropriately trained healthcare professional before oral food, fluid or medication is given.</p></article>
+    </div>
+
+    <div class="stroke-section-title"><div class="tag">MEDICATION GUIDE</div><h3>Source-verified medication reference</h3></div>
+    <div class="stroke-med-grid">
+      <article class="stroke-med-card"><div class="stroke-med-head"><h3>Aspirin</h3><span>ACUTE ISCHAEMIC / TIA</span></div><p><strong>NICE:</strong> suspected TIA — 300 mg daily unless contraindicated, started immediately. For acute ischaemic stroke, NICE recommends 300 mg as soon as possible and within 24 hours after intracerebral haemorrhage has been excluded, with route dependent on swallowing.</p><dl><dt>Authority</dt><dd>CMS-configured; follow local protocol</dd><dt>Key check</dt><dd>Intracranial haemorrhage excluded for acute ischaemic stroke pathway; allergy/intolerance and bleeding risk reviewed.</dd><dt>Source</dt><dd>NICE NG128</dd></dl></article>
+      <article class="stroke-med-card"><div class="stroke-med-head"><h3>Alteplase</h3><span>THROMBOLYSIS</span></div><p>Current UK SmPC: acute ischaemic stroke treatment started as early as possible and no later than 4.5 hours after last-known-well, after appropriate imaging excludes intracranial haemorrhage.</p><dl><dt>Dose</dt><dd>0.9 mg/kg IV, maximum 90 mg; 10% as initial IV bolus followed by the remainder over 60 minutes.</dd><dt>Authority</dt><dd>Physician experienced in neurovascular/thrombolytic care; service and local protocol requirements apply.</dd><dt>Source</dt><dd>Current UK Actilyse SmPC + NICE NG128</dd></dl></article>
+      <article class="stroke-med-card"><div class="stroke-med-head"><h3>Tenecteplase</h3><span>THROMBOLYSIS</span></div><p>Current UK SmPC: acute ischaemic stroke within 4.5 hours from last-known-well after intracranial haemorrhage has been excluded. Prescribed by physicians experienced in neurovascular care and thrombolysis, with monitoring facilities.</p><dl><dt>Dose</dt><dd>Weight-based; 0.25 mg/kg with a maximum 25 mg for acute ischaemic stroke. Use the current product presentation, preparation instructions and local protocol.</dd><dt>Route</dt><dd>IV single bolus; current SmPC specifies administration over approximately 5–10 seconds.</dd><dt>Source</dt><dd>Current UK Metalyse 25 mg SmPC + NICE TA990/NG128</dd></dl></article>
+      <article class="stroke-med-card"><div class="stroke-med-head"><h3>Hypoglycaemia treatment</h3><span>MIMIC / REVERSIBLE CAUSE</span></div><p>Check glucose in sudden neurological symptoms. Treatment must follow the current local hypoglycaemia protocol and patient-specific circumstances; do not assume a stroke is the cause before reversible mimics are addressed.</p><dl><dt>Authority</dt><dd>CMS-configured</dd><dt>Documentation</dt><dd>Pre-treatment glucose, treatment, repeat glucose and neurological response.</dd></dl></article>
+    </div>
+    <div class="stroke-callout stroke-callout--warning"><strong>Medication safety:</strong> the UHS permission matrix is intentionally configurable. A rank badge in this RP system does not itself grant real-world prescribing, preparation or administration authority.</div>
+
+    <div class="stroke-section-title"><div class="tag">CLINICAL AUTHORITY</div><h3>Configurable rank matrix</h3></div>
+    <div class="stroke-permission-table"><table class="stroke-table"><thead><tr><th>Role</th><th>Assessment</th><th>Prepare</th><th>Administer</th><th>Authorise specialist treatment</th></tr></thead><tbody>
+      <tr><td>Consultant Paramedic</td><td>Configured</td><td>Configured</td><td>Configured</td><td>CMS / local policy</td></tr>
+      <tr><td>Advanced Paramedic</td><td>Configured</td><td>Configured</td><td>Configured</td><td>CMS / local policy</td></tr>
+      <tr><td>Paramedic</td><td>Configured</td><td>Configured</td><td>Configured</td><td>CMS / local policy</td></tr>
+      <tr><td>Student Paramedic</td><td>Supervised</td><td>Supervised</td><td>Supervision required</td><td>Not independent</td></tr>
+      <tr><td>HART Advanced / Paramedic</td><td>Configured</td><td>Configured</td><td>Configured</td><td>CMS / local policy</td></tr>
+      <tr><td>HEMS Doctor</td><td>Specialist</td><td>Configured</td><td>Configured</td><td>CMS / local policy</td></tr>
+      <tr><td>HEMS Paramedic</td><td>Advanced / configured</td><td>Configured</td><td>Configured</td><td>CMS / local policy</td></tr>
+      <tr><td>Consultant / Senior / Junior Doctor</td><td>Hospital pathway</td><td>Configured</td><td>Configured</td><td>CMS / local policy</td></tr>
+      <tr><td>Medical Student</td><td>Supervised</td><td>Supervised</td><td>Supervision required</td><td>Not independent</td></tr>
+    </tbody></table></div>
+  </div>
+
+  <div class="stroke-panel" data-stroke-panel="rp">
+    <div class="stroke-section-title"><div class="tag">FIVEM SERIOUS RP</div><h3>Stroke /me and /do library</h3></div>
+    <div class="stroke-action-grid">
+      <article class="stroke-action-card"><h3>Arrival &amp; PPE</h3>
+        <button class="stroke-rp-action" data-rp="/me approaches the patient while maintaining scene awareness and prepares appropriate PPE.">/me approaches the patient while maintaining scene awareness and prepares appropriate PPE.<span>Copy</span></button>
+        <button class="stroke-rp-action" data-rp="/me performs hand hygiene and selects an appropriate pair of disposable gloves.">/me performs hand hygiene and selects an appropriate pair of disposable gloves.<span>Copy</span></button>
+        <button class="stroke-rp-action" data-rp="/me checks the gloves for visible damage before putting them on.">/me checks the gloves for visible damage before putting them on.<span>Copy</span></button>
+      </article>
+      <article class="stroke-action-card"><h3>FAST / Neurology</h3>
+        <button class="stroke-rp-action" data-rp="/me asks the patient to smile while assessing facial symmetry.">/me asks the patient to smile while assessing facial symmetry.<span>Copy</span></button>
+        <button class="stroke-rp-action" data-rp="/me asks the patient to raise both arms and observes for weakness or drift.">/me asks the patient to raise both arms and observes for weakness or drift.<span>Copy</span></button>
+        <button class="stroke-rp-action" data-rp="/me asks the patient to repeat a simple phrase and assesses speech and language.">/me asks the patient to repeat a simple phrase and assesses speech and language.<span>Copy</span></button>
+        <button class="stroke-rp-action" data-rp="/me checks the patient's pupils for size, equality and reaction to light.">/me checks the patient's pupils for size, equality and reaction to light.<span>Copy</span></button>
+        <button class="stroke-rp-action" data-rp="/me compares movement and sensation between both sides while monitoring the patient's response.">/me compares movement and sensation between both sides while monitoring the patient's response.<span>Copy</span></button>
+      </article>
+      <article class="stroke-action-card"><h3>Glucose &amp; Observations</h3>
+        <button class="stroke-rp-action" data-rp="/me prepares the blood glucose equipment and performs a finger-prick glucose check using appropriate infection-control precautions.">/me prepares the blood glucose equipment and performs a finger-prick glucose check using appropriate infection-control precautions.<span>Copy</span></button>
+        <button class="stroke-rp-action" data-rp="/me applies the blood pressure cuff and records the reading alongside the time taken.">/me applies the blood pressure cuff and records the reading alongside the time taken.<span>Copy</span></button>
+        <button class="stroke-rp-action" data-rp="/me attaches the pulse oximeter and observes the patient's oxygen saturation and pulse rate.">/me attaches the pulse oximeter and observes the patient's oxygen saturation and pulse rate.<span>Copy</span></button>
+        <button class="stroke-rp-action" data-rp="/me records the patient's neurological observations and compares them with the initial assessment.">/me records the patient's neurological observations and compares them with the initial assessment.<span>Copy</span></button>
+      </article>
+      <article class="stroke-action-card"><h3>Last-known-well</h3>
+        <button class="stroke-rp-action" data-rp="/me asks the relative when they last saw the patient behaving normally.">/me asks the relative when they last saw the patient behaving normally.<span>Copy</span></button>
+        <button class="stroke-rp-action" data-rp="/me confirms the reported last-known-well time and records the source of the information.">/me confirms the reported last-known-well time and records the source of the information.<span>Copy</span></button>
+        <button class="stroke-rp-action" data-rp="/me documents the symptom discovery time separately from the last-known-well time.">/me documents the symptom discovery time separately from the last-known-well time.<span>Copy</span></button>
+      </article>
+      <article class="stroke-action-card"><h3>Equipment / IV</h3>
+        <button class="stroke-rp-action" data-rp="/me prepares the monitor, ECG leads, blood pressure cuff, pulse oximeter and glucose equipment.">/me prepares the monitor, ECG leads, blood pressure cuff, pulse oximeter and glucose equipment.<span>Copy</span></button>
+        <button class="stroke-rp-action" data-rp="/me prepares IV equipment and confirms the intervention is within the current authorised scope.">/me prepares IV equipment and confirms the intervention is within the current authorised scope.<span>Copy</span></button>
+        <button class="stroke-rp-action" data-rp="/me labels and documents any prepared medication or sample according to the configured clinical procedure.">/me labels and documents any prepared medication or sample according to the configured clinical procedure.<span>Copy</span></button>
+      </article>
+      <article class="stroke-action-card"><h3>Medication preparation</h3>
+        <button class="stroke-rp-action" data-rp="/me checks the medication name, strength, expiry date, packaging integrity and authorised indication against the clinical record.">/me checks the medication name, strength, expiry date, packaging integrity and authorised indication against the clinical record.<span>Copy</span></button>
+        <button class="stroke-rp-action" data-rp="/me confirms the authorised dose and route against the current clinical protocol before preparation.">/me confirms the authorised dose and route against the current clinical protocol before preparation.<span>Copy</span></button>
+        <button class="stroke-rp-action" data-rp="/me prepares the medication using the appropriate aseptic technique and performs the final medication safety checks.">/me prepares the medication using the appropriate aseptic technique and performs the final medication safety checks.<span>Copy</span></button>
+        <button class="stroke-rp-action" data-rp="/me documents the medication, dose, route, time and observed response after administration.">/me documents the medication, dose, route, time and observed response after administration.<span>Copy</span></button>
+      </article>
+      <article class="stroke-action-card"><h3>Handover / Pre-alert</h3>
+        <button class="stroke-rp-action" data-rp="/me gives a structured stroke pre-alert including age, last-known-well, FAST findings, GCS, glucose, observations, anticoagulants, treatment and ETA.">/me gives a structured stroke pre-alert including age, last-known-well, FAST findings, GCS, glucose, observations, anticoagulants, treatment and ETA.<span>Copy</span></button>
+        <button class="stroke-rp-action" data-rp="/me hands over the patient using a structured ATMIST or SBAR format and clearly states the last-known-well time.">/me hands over the patient using a structured ATMIST or SBAR format and clearly states the last-known-well time.<span>Copy</span></button>
+        <button class="stroke-rp-action" data-rp="/me records the destination, receiving clinician, handover time and key clinical findings in the patient record.">/me records the destination, receiving clinician, handover time and key clinical findings in the patient record.<span>Copy</span></button>
+      </article>
+      <article class="stroke-action-card"><h3>Example /do responses</h3>
+        <div class="stroke-do">/do Patient has noticeable right-sided facial weakness.</div>
+        <div class="stroke-do">/do Speech is slurred and difficult to understand.</div>
+        <div class="stroke-do">/do Right arm drifts downward when held out.</div>
+        <div class="stroke-do">/do Blood glucose reads 6.1 mmol/L.</div>
+        <div class="stroke-do">/do BP reads 184/98 mmHg.</div>
+        <div class="stroke-do">/do Patient's GCS is recorded as 14/15.</div>
+        <div class="stroke-do">/do No obvious external trauma is visible.</div>
+      </article>
+    </div>
+
+    <div class="stroke-section-title"><div class="tag">SCENARIOS</div><h3>Interactive RP scenario set</h3></div>
+    <div class="stroke-scenario-grid">
+      <article><h3>01 — Mild ischaemic stroke</h3><p>Sudden unilateral weakness and dysarthria. Branch on glucose, last-known-well, anticoagulant history and neurological trend.</p></article>
+      <article><h3>02 — Suspected LVO</h3><p>Severe focal deficit with gaze deviation/neglect. Branch on pre-alert, specialist destination and HEMS escalation.</p></article>
+      <article><h3>03 — Intracerebral haemorrhage</h3><p>Severe headache, vomiting and neurological deterioration. Branch on anticoagulant history and specialist escalation.</p></article>
+      <article><h3>04 — SAH</h3><p>Thunderclap headache with collapse/vomiting. Branch on consciousness, seizure and urgent imaging pathway.</p></article>
+      <article><h3>05 — TIA</h3><p>Deficits have resolved before arrival. Branch on accurate timeline and urgent specialist pathway.</p></article>
+      <article><h3>06 — Hypoglycaemia mimic</h3><p>Stroke-like weakness with low glucose. Branch on treatment response and reassessment rather than assuming stroke.</p></article>
+      <article><h3>07 — Post-seizure weakness</h3><p>Transient focal weakness after a witnessed seizure. Branch on recovery, glucose and ongoing neurological deficit.</p></article>
+      <article><h3>08 — Wake-up stroke</h3><p>Symptoms found on waking. Record last-known-well before sleep separately from discovery time.</p></article>
+      <article><h3>09 — Deteriorating stroke</h3><p>Falling GCS and worsening airway/breathing. Prioritise ABCDE, escalation and reassessment.</p></article>
+    </div>
+  </div>
+
+  <div class="stroke-panel" data-stroke-panel="sources">
+    <div class="stroke-section-title"><div class="tag">EVIDENCE + GOVERNANCE</div><h3>Clinical sources and review control</h3></div>
+    <div class="stroke-source-grid">
+      <article class="stroke-source"><h3>NICE NG128</h3><p>Stroke and transient ischaemic attack in over 16s: diagnosis and initial management. Current page states the guideline was last updated 13 April 2022, with later amendments reflected in specific recommendations.</p><span>Last checked: 27 Sep 2026</span></article>
+      <article class="stroke-source"><h3>NICE TA990</h3><p>Tenecteplase for treating acute ischaemic stroke. Published 24 July 2024; current NICE recommendation is incorporated into NG128.</p><span>Last checked: 27 Sep 2026</span></article>
+      <article class="stroke-source"><h3>UK Metalyse SmPC</h3><p>Current electronic Medicines Compendium SmPC for the 25 mg stroke presentation. Last updated 16 September 2026.</p><span>Last checked: 27 Sep 2026</span></article>
+      <article class="stroke-source"><h3>UK Actilyse SmPC</h3><p>Current electronic Medicines Compendium SmPC including acute ischaemic stroke posology and monitoring requirements.</p><span>Last checked: 27 Sep 2026</span></article>
+      <article class="stroke-source"><h3>NHS stroke guidance</h3><p>Patient-facing recognition and treatment information, including FAST and urgent emergency action.</p><span>Last checked: 27 Sep 2026</span></article>
+      <article class="stroke-source"><h3>Resuscitation Council UK</h3><p>ABCDE approach: structured assessment, treatment of life threats, reassessment, early escalation and team communication.</p><span>Updated July 2024; 2025 guidance also reviewed.</span></article>
+    </div>
+    <div class="stroke-review-card">
+      <div><strong>Clinical content status</strong><span class="stroke-status stroke-status--review">REQUIRES LOCAL REVIEW BEFORE REAL-WORLD USE</span></div>
+      <div><strong>Version</strong><span>STROKE-1.0</span></div>
+      <div><strong>Last clinical review</strong><span>27 September 2026</span></div>
+      <div><strong>Reviewed by</strong><span>UHS Clinical Content — source verification pass</span></div>
+      <p>All rank permissions, local pathways and RP-only content should be maintained through the CMS. Where service-specific guidance differs from national guidance, label the service-specific rule and retain the source/date.</p>
+    </div>
+  </div>
+</section>
+
+      <section id="meds" class="section">
     <div class="knowledge-page-header" data-knowledge-header="meds">
       <div class="knowledge-page-copy">
         <div class="knowledge-page-kicker">UHS KNOWLEDGE HUB</div>

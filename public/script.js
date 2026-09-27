@@ -11703,15 +11703,49 @@ document.addEventListener('change', (event) => {
 })();
 
 
-// Stroke guide tabs — Neurology
-function showStrokeTab(tab) {
-  const root = document.getElementById('stroke-guide');
-  if (!root) return;
-  root.querySelectorAll('.stroke-tabs .scenario-tab').forEach(btn => {
-    btn.classList.toggle('active', btn.getAttribute('onclick') === `showStrokeTab('${tab}')`);
+/* Stroke Clinical Pathways — configurable knowledge/RP data */
+window.uhsStrokeData = {
+  version: 'STROKE-1.0',
+  lastClinicalReview: '2026-09-27',
+  status: 'requires-local-review-before-real-world-use',
+  sources: [
+    {name:'NICE NG128', role:'stroke/TIA diagnosis and initial management'},
+    {name:'NICE TA990', role:'tenecteplase for acute ischaemic stroke'},
+    {name:'UK Metalyse SmPC', role:'current product information'},
+    {name:'UK Actilyse SmPC', role:'current product information'},
+    {name:'NHS stroke guidance', role:'recognition and treatment overview'},
+    {name:'Resuscitation Council UK', role:'ABCDE assessment'}
+  ],
+  authorityRoles: [
+    'Consultant Paramedic','Advanced Paramedic','Paramedic','Student Paramedic',
+    'HART Advanced Paramedic','HART Paramedic','HEMS Doctor','HEMS Paramedic',
+    'Consultant Doctor','Senior Doctor','Junior Doctor','Medical Student'
+  ],
+  contentTypes: [
+    'strokeTypes','strokeSymptoms','strokeObservations','strokePathways',
+    'strokeMedications','strokePermissions','strokeEquipment','strokeScenarios',
+    'strokeMeActions','strokeDoActions','strokeMDTRoles','strokeReferences'
+  ]
+};
+
+(function initialiseStrokeUI(){
+  function activateStrokeTab(tab){
+    var key = tab.getAttribute('data-stroke-tab');
+    document.querySelectorAll('[data-stroke-tab]').forEach(function(btn){
+      btn.classList.toggle('active', btn === tab);
+      btn.setAttribute('aria-selected', btn === tab ? 'true' : 'false');
+    });
+    document.querySelectorAll('[data-stroke-panel]').forEach(function(panel){
+      panel.classList.toggle('active', panel.getAttribute('data-stroke-panel') === key);
+    });
+  }
+  document.addEventListener('click', function(event){
+    var tab = event.target.closest && event.target.closest('[data-stroke-tab]');
+    if(tab){ activateStrokeTab(tab); return; }
+    var action = event.target.closest && event.target.closest('.stroke-rp-action');
+    if(action){
+      var text = action.getAttribute('data-rp') || '';
+      if(text && typeof copyTextInline === 'function') copyTextInline(text);
+    }
   });
-  root.querySelectorAll('.stroke-tabs + .scenario-tab-panel, .scenario-tab-panel[id^="stroke-tab-"]').forEach(panel => {
-    panel.classList.toggle('active', panel.id === `stroke-tab-${tab}`);
-  });
-}
-window.showStrokeTab = showStrokeTab;
+})();
