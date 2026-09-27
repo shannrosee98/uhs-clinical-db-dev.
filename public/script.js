@@ -227,6 +227,56 @@ function updateAuthUI() {
    NAVIGATION
 ========================================================= */
 
+
+/* =========================================================
+   LEARNING PLATFORM ROUTING / BREADCRUMBS
+========================================================= */
+var LEARNING_ROUTE_META = {
+  dashboard:{title:'Home',parent:null},
+  learn:{title:'Learn',parent:'Home'},
+  'clinical-topics':{title:'Clinical Topics',parent:'Home'},
+  assessments:{title:'Assessments',parent:'Home'},
+  procedures:{title:'Procedures',parent:'Clinical'},
+  meds:{title:'Medications',parent:'Clinical'},
+  equipment:{title:'Equipment',parent:'Clinical'},
+  pathways:{title:'Pathways',parent:'Home'},
+  scenarios:{title:'Scenarios',parent:'Practise'},
+  'study-tools':{title:'Study Tools',parent:'Practise'},
+  reference:{title:'Reference',parent:'Home'},
+  abcde:{title:'ABCDE',parent:'Assessments'},
+  observations:{title:'Observations',parent:'Assessments'},
+  cardiac:{title:'Cardiology',parent:'Clinical Topics'},
+  respiratory:{title:'Respiratory',parent:'Clinical Topics'},
+  neuro:{title:'Neurology',parent:'Clinical Topics'},
+  trauma:{title:'Trauma',parent:'Clinical Topics'},
+  stroke:{title:'Stroke',parent:'Clinical Topics'},
+  emergencies:{title:'Emergency Conditions',parent:'Clinical Topics'},
+  'emergency-mode':{title:'Emergency Mode',parent:'Pathways'},
+  pain:{title:'Pain Assessment',parent:'Assessments'},
+  fluids:{title:'Fluids & Resuscitation',parent:'Clinical Topics'},
+  blood:{title:'Blood & Transfusion',parent:'Clinical Topics'},
+  scenes:{title:'Incident Scenarios',parent:'Scenarios'},
+  documentation:{title:'Documentation & Handover',parent:'Study Tools'},
+  surgeries:{title:'Surgical Reference',parent:'Procedures'},
+  rp:{title:'FiveM RP Actions',parent:'Study Tools'},
+  documents:{title:'Reference Documents',parent:'Reference'}
+};
+function renderLearningBreadcrumb(id){
+  var section=document.getElementById(id); if(!section) return;
+  var old=section.querySelector(':scope > .learning-breadcrumb');
+  if(old) old.remove();
+  var meta=LEARNING_ROUTE_META[id]; if(!meta) return;
+  var wrap=document.createElement('div'); wrap.className='learning-breadcrumb'; wrap.setAttribute('aria-label','Breadcrumb');
+  var home=document.createElement('button'); home.type='button'; home.textContent='Home'; home.onclick=function(){showSection('dashboard')}; wrap.appendChild(home);
+  if(meta.parent){
+    var sep=document.createElement('span'); sep.textContent='›'; wrap.appendChild(sep);
+    var parent=document.createElement('span'); parent.textContent=meta.parent; wrap.appendChild(parent);
+  }
+  var sep2=document.createElement('span'); sep2.textContent='›'; wrap.appendChild(sep2);
+  var current=document.createElement('strong'); current.textContent=meta.title; wrap.appendChild(current);
+  section.insertBefore(wrap,section.firstChild);
+}
+function refreshLearningBreadcrumbs(){ Object.keys(LEARNING_ROUTE_META).forEach(renderLearningBreadcrumb); }
 function showSection(id) {
   if (!id) return;
 
@@ -11816,3 +11866,5 @@ window.uhsStrokeData = {
     }
   });
 })();
+
+window.addEventListener('load', function(){ try{ refreshLearningBreadcrumbs(); }catch(e){ console.warn('Learning breadcrumbs unavailable',e); } });

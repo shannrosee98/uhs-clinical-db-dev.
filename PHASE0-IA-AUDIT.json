@@ -1,0 +1,53 @@
+{
+  "base": "uhs-clinical-db-dev-emergency-mode-full-reference-library.zip",
+  "sections_before": [
+    "dashboard",
+    "emergency-mode",
+    "observations",
+    "pain",
+    "abcde",
+    "emergencies",
+    "trauma",
+    "respiratory",
+    "cardiac",
+    "neuro",
+    "stroke",
+    "meds",
+    "fluids",
+    "blood",
+    "scenes",
+    "documentation",
+    "procedures",
+    "surgeries",
+    "rp",
+    "documents",
+    "equipment",
+    "staff",
+    "admin",
+    "handbook-page"
+  ],
+  "cms_refs": {
+    "html": 30,
+    "script_js": 15,
+    "server": 111
+  },
+  "staff_refs": {
+    "html": 57,
+    "script_js": 63,
+    "server": 41
+  },
+  "changes": [
+    "replaced primary navigation with learning architecture",
+    "added Learn, Clinical Topics, Assessments, Pathways, Scenarios, Study Tools, Reference hubs",
+    "removed user-facing Staff/Admin/Handbook sections",
+    "removed cms.js/cms2.js script tags",
+    "added breadcrumbs",
+    "added learning cards/topic/pathway components"
+  ],
+  "preserved": [
+    "existing clinical sections and data",
+    "stroke full reference library",
+    "emergency mode reference library",
+    "backend APIs for later safe retirement"
+  ]
+}

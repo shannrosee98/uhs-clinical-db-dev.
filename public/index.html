@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>FiveM • EMS Clinical Reference</title>
+  <title>UHS Clinical Learning &amp; Knowledge Platform</title>
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -73,7 +73,6 @@
         <button id="topHandbookBtn" class="top-staff-btn" onclick="showSection('handbook-page')">📖 Handbook</button>
         <button id="editModeToggle" class="top-staff-btn edit-mode-btn" onclick="toggleEditMode()" style="display:none">🔧 Edit Mode</button>
         <div class="header-auth">
-          <button id="headerAdminBtn" class="header-btn admin-btn" onclick="openAdminOrLogin()">⚙ Admin</button>
           <button id="headerLogoutBtn" class="header-btn logout-btn" onclick="logout()" style="display:none">🚪 Logout</button>
         </div>
       </div>
@@ -84,43 +83,35 @@
   <div class="layout">
     <aside class="sidebar">
       <input id="search" type="search" placeholder="Search clinical topics…">
-      <nav>
-        <div class="nav-group">
-          <div class="nav-group-title">HOME</div>
-          <button class="nav active" role="button" tabindex="0" data-section="dashboard">⌂ Dashboard</button>
-        </div>
-        <div class="nav-group">
-          <div class="nav-group-title">CLINICAL</div>
-          <button class="nav" role="button" tabindex="0" data-section="abcde">✚ ABCDE</button>
-          <button class="nav" role="button" tabindex="0" data-section="observations">◉ Observations</button>
-          <button class="nav" role="button" tabindex="0" data-section="cardiac">♥ Cardiac</button>
-          <button class="nav" role="button" tabindex="0" data-section="respiratory">◌ Respiratory</button>
-          <button class="nav" role="button" tabindex="0" data-section="trauma">✚ Trauma</button>
-          <button class="nav" role="button" tabindex="0" data-section="neuro">◎ Neurological</button>
-          <button class="nav" role="button" tabindex="0" data-section="pain">🩹 Pain</button>
-          <button class="nav" role="button" tabindex="0" data-section="blood">🩸 Blood &amp; Transfusion</button>
-          <button class="nav" role="button" tabindex="0" data-section="fluids">💧 Fluids</button>
-        </div>
-        <div class="nav-group">
-          <div class="nav-group-title">EMERGENCY &amp; PROCEDURES</div>
-          <button class="nav" role="button" tabindex="0" data-section="emergencies">⚠ Emergencies</button>
-          <button class="nav" role="button" tabindex="0" data-section="emergency-mode">🚨 Emergency Mode</button>
-          <button class="nav" role="button" tabindex="0" data-section="scenes">🚨 Incident Scenes</button>
-          <button class="nav" role="button" tabindex="0" data-section="procedures">🩺 Procedures</button>
-          <button class="nav" role="button" tabindex="0" data-section="surgeries">🏥 Surgeries</button>
-        </div>
-        <div class="nav-group">
-          <div class="nav-group-title">MEDICATIONS &amp; EQUIPMENT</div>
-          <button class="nav" role="button" tabindex="0" data-section="meds">💊 Medications</button>
-          <button class="nav" role="button" tabindex="0" data-section="equipment">🧰 Equipment</button>
-        </div>
-        <div class="nav-group">
-          <div class="nav-group-title">RP &amp; DOCUMENTS</div>
-          <button class="nav" role="button" tabindex="0" data-section="rp">/me RP Actions</button>
-          <button class="nav" role="button" tabindex="0" data-section="documentation">▤ Documentation</button>
-          <button class="nav" role="button" tabindex="0" data-section="documents">📁 Documents</button>
-        </div>
-      </nav>
+      
+<nav class="learning-nav" aria-label="Primary navigation">
+  <div class="nav-group">
+    <div class="nav-group-title">HOME</div>
+    <button class="nav active" data-section="dashboard">⌂ Home</button>
+    <button class="nav" data-section="learn">▣ Learn</button>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-title">CLINICAL</div>
+    <button class="nav" data-section="clinical-topics">◈ Clinical Topics</button>
+    <button class="nav" data-section="assessments">✚ Assessments</button>
+    <button class="nav" data-section="procedures">🩺 Procedures</button>
+    <button class="nav" data-section="meds">💊 Medications</button>
+    <button class="nav" data-section="equipment">🧰 Equipment</button>
+    <button class="nav" data-section="pathways">⇢ Pathways</button>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-title">PRACTISE</div>
+    <button class="nav" data-section="scenarios">🎭 Scenarios</button>
+    <button class="nav" data-section="study-tools">✓ Study Tools</button>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-title">REFERENCE</div>
+    <button class="nav" data-section="reference">⌘ Reference</button>
+    <button class="nav" data-section="observations">◉ Observations</button>
+    <button class="nav" data-section="abcde">ABCDE</button>
+  </div>
+</nav>
+
       <div class="side-note">
         <strong>RP only</strong>
         <p>This is a FiveM roleplay reference, not real-world clinical advice.</p>
@@ -231,6 +222,88 @@
     <div id="pdfContent-dashboard" class="pdf-content"></div>
   </div>
 </section>
+<section id="learn" class="section learning-hub">
+  <div class="learning-page-header">
+    <div class="eyebrow">UHS CLINICAL LEARNING</div>
+    <h1>Learn</h1>
+    <p>Build clinical knowledge from foundations through emergency and advanced learning, with FiveM Serious RP practice attached to the skill.</p>
+  </div>
+  <div class="learning-grid">
+    <article class="learning-card"><span class="learning-icon">01</span><h2>Foundations</h2><p>ABCDE, observations, patient assessment, infection control, communication and documentation.</p><button class="primary-btn" onclick="showSection('abcde')">Start Foundations</button></article>
+    <article class="learning-card"><span class="learning-icon">02</span><h2>Core Clinical Knowledge</h2><p>Cardiology, respiratory, neurological, trauma, fluids, blood and related clinical references.</p><button class="primary-btn" onclick="showSection('clinical-topics')">Explore Core Topics</button></article>
+    <article class="learning-card"><span class="learning-icon">03</span><h2>Emergencies</h2><p>Rapid-access learning for stroke, cardiac emergencies, trauma, burns, sepsis and other acute presentations.</p><button class="primary-btn" onclick="showSection('emergency-mode')">Open Emergencies</button></article>
+    <article class="learning-card"><span class="learning-icon">04</span><h2>Advanced</h2><p>Advanced assessment, specialist pathways, HEMS/HART material, surgeries and complex scenarios.</p><button class="primary-btn" onclick="showSection('scenarios')">Practise Advanced Cases</button></article>
+  </div>
+</section>
+
+<section id="clinical-topics" class="section learning-hub">
+  <div class="learning-page-header"><div class="eyebrow">KNOWLEDGE LIBRARY</div><h1>Clinical Topics</h1><p>Browse clinical information by system and presentation. Detailed content remains in the existing clinical modules.</p></div>
+  <div class="topic-grid">
+    <button class="topic-card" onclick="showSection('cardiac')">🫀<strong>Cardiology</strong><span>Cardiac assessment and emergencies</span></button>
+    <button class="topic-card" onclick="showSection('respiratory')">🫁<strong>Respiratory</strong><span>Breathing assessment and respiratory presentations</span></button>
+    <button class="topic-card" onclick="showSection('neuro')">🧠<strong>Neurology</strong><span>Neurological assessment and stroke</span></button>
+    <button class="topic-card" onclick="showSection('trauma')">🩸<strong>Trauma</strong><span>Trauma assessment and injury management</span></button>
+    <button class="topic-card" onclick="showSection('blood')">🩸<strong>Blood & Transfusion</strong><span>Blood groups and transfusion reference</span></button>
+    <button class="topic-card" onclick="showSection('fluids')">💧<strong>Fluids</strong><span>Fluid and resuscitation reference</span></button>
+    <button class="topic-card" onclick="showSection('emergencies')">🚨<strong>Emergency Conditions</strong><span>Acute clinical presentations</span></button>
+    <button class="topic-card" onclick="showSection('stroke')">🧠<strong>Stroke</strong><span>Recognition, pathways and RP simulation</span></button>
+  </div>
+</section>
+
+<section id="assessments" class="section learning-hub">
+  <div class="learning-page-header"><div class="eyebrow">ASSESSMENT SKILLS</div><h1>Assessments</h1><p>Core assessment modules are kept together so learners can build a consistent approach before moving into individual conditions.</p></div>
+  <div class="learning-grid">
+    <article class="learning-card"><h2>ABCDE</h2><p>Primary survey, reassessment, escalation, equipment and RP actions.</p><button class="primary-btn" onclick="showSection('abcde')">Learn ABCDE</button></article>
+    <article class="learning-card"><h2>Observations</h2><p>Vital signs, consciousness, glucose, pupils, pain and monitoring references.</p><button class="primary-btn" onclick="showSection('observations')">Study Observations</button></article>
+    <article class="learning-card"><h2>Neurological Assessment</h2><p>Consciousness, pupils, glucose and stroke-screen material.</p><button class="primary-btn" onclick="showSection('neuro')">Open Neurology</button></article>
+    <article class="learning-card"><h2>Pain Assessment</h2><p>Pain assessment and the existing management reference.</p><button class="primary-btn" onclick="showSection('pain')">Study Pain</button></article>
+  </div>
+</section>
+
+<section id="pathways" class="section learning-hub">
+  <div class="learning-page-header"><div class="eyebrow">CLINICAL PATHWAYS</div><h1>Pathways</h1><p>Follow the sequence from recognition and assessment through escalation, transport and hospital care.</p></div>
+  <div class="pathway-list">
+    <button class="pathway-card" onclick="showSection('stroke')"><strong>Stroke</strong><span>Recognition → ABCDE → FAST / BE-FAST → glucose → last known well → pre-alert → imaging → specialist management</span></button>
+    <button class="pathway-card" onclick="showSection('emergency-mode')"><strong>Emergency Mode</strong><span>Rapid-access emergency references and existing situation-specific pathways.</span></button>
+    <button class="pathway-card" onclick="showSection('trauma')"><strong>Major Trauma</strong><span>Trauma assessment and practical RP reference.</span></button>
+    <button class="pathway-card" onclick="showSection('cardiac')"><strong>Cardiac Emergencies</strong><span>Cardiac assessment and treatment reference.</span></button>
+    <button class="pathway-card" onclick="showSection('respiratory')"><strong>Respiratory Emergencies</strong><span>Respiratory assessment and emergency reference.</span></button>
+  </div>
+</section>
+
+<section id="scenarios" class="section learning-hub">
+  <div class="learning-page-header"><div class="eyebrow">PRACTICAL LEARNING</div><h1>Scenarios</h1><p>Practise clinical decision-making using the existing FiveM Serious RP scenario material.</p></div>
+  <div class="learning-grid">
+    <article class="learning-card"><h2>Incident Scenarios</h2><p>Work through scene presentation, assessment, treatment, reassessment and handover.</p><button class="primary-btn" onclick="showSection('scenes')">Open Scenarios</button></article>
+    <article class="learning-card"><h2>Emergency Practice</h2><p>Use Emergency Mode for rapid-access situation-specific reference during RP.</p><button class="primary-btn" onclick="showSection('emergency-mode')">Practise Emergencies</button></article>
+    <article class="learning-card"><h2>Surgical Practice</h2><p>Review role-specific surgical workflows and detailed RP actions.</p><button class="primary-btn" onclick="showSection('surgeries')">Open Surgical Reference</button></article>
+  </div>
+</section>
+
+<section id="study-tools" class="section learning-hub">
+  <div class="learning-page-header"><div class="eyebrow">STUDY TOOLS</div><h1>Study Tools</h1><p>Use quick-reference material, RP actions, documentation templates and the knowledge search to revise and practise.</p></div>
+  <div class="learning-grid">
+    <article class="learning-card"><h2>Global Knowledge Search</h2><p>Search clinical desk content from anywhere in the platform.</p><button class="primary-btn" onclick="openGlobalKnowledgeSearch()">Search Knowledge</button></article>
+    <article class="learning-card"><h2>FiveM RP Actions</h2><p>Keep roleplay actions beside the clinical skills they support.</p><button class="primary-btn" onclick="showSection('rp')">Open RP Reference</button></article>
+    <article class="learning-card"><h2>Documentation & Handover</h2><p>Review clinical documentation, SBAR, HART, HEMS and call-matrix references.</p><button class="primary-btn" onclick="showSection('documentation')">Study Handover</button></article>
+    <article class="learning-card"><h2>Quick Reference</h2><p>Jump to ABCDE, observations, stroke and emergency references.</p><button class="primary-btn" onclick="showSection('reference')">Open Reference</button></article>
+  </div>
+</section>
+
+<section id="reference" class="section learning-hub">
+  <div class="learning-page-header"><div class="eyebrow">QUICK REFERENCE</div><h1>Reference</h1><p>Fast access to high-use clinical and FiveM RP reference material.</p></div>
+  <div class="topic-grid">
+    <button class="topic-card" onclick="showSection('abcde')">✚<strong>ABCDE</strong><span>Primary survey and reassessment</span></button>
+    <button class="topic-card" onclick="showSection('observations')">◉<strong>Vital Signs</strong><span>Observations and interpretation</span></button>
+    <button class="topic-card" onclick="showSection('neuro')">🧠<strong>FAST / Neurology</strong><span>Neurological assessment</span></button>
+    <button class="topic-card" onclick="showSection('meds')">💊<strong>Medication Reference</strong><span>Existing medication library</span></button>
+    <button class="topic-card" onclick="showSection('equipment')">🧰<strong>Equipment</strong><span>Clinical and RP equipment</span></button>
+    <button class="topic-card" onclick="showSection('documentation')">▤<strong>Handover</strong><span>Documentation and SBAR</span></button>
+    <button class="topic-card" onclick="showSection('rp')">/me<strong>RP Actions</strong><span>Roleplay reference</span></button>
+    <button class="topic-card" onclick="showSection('stroke')">🧠<strong>Stroke</strong><span>Full stroke learning library</span></button>
+  </div>
+</section>
+
 
       
 
@@ -6433,784 +6506,6 @@ Receiving consultant:
     <div id="pdfContent-equipment" class="pdf-content"></div>
   </div>
 </section>
-
-<section id="staff" class="section">
-  <div class="section-head">
-    <div class="tag">STAFF DIRECTORY</div>
-    <h2>EMS RP Staff</h2>
-    <p>View the current roster, search staff and see ranks, callsigns, specialties and training.</p>
-  </div>
-
-  <div class="staff-tabs">
-    <button class="staff-tab active" onclick="showStaffTab('roster')">📋 Roster</button>
-    <button class="staff-tab" onclick="showStaffTab('paramedic')">🚑 Paramedic Side</button>
-    <button class="staff-tab" onclick="showStaffTab('hospital')">🏥 Hospital Staff</button>
-    <button class="staff-tab" onclick="showStaffTab('search')">🔎 Staff Search</button>
-    <button class="staff-tab" onclick="showStaffTab('bodycam')">📤 Bodycam</button>
-    <button class="staff-tab" onclick="showStaffTab('ranks')">🏅 Rank List</button>
-    <button class="staff-tab" onclick="showStaffTab('studentportal')">🎓 Student Portal</button>
-    <button class="staff-tab" onclick="showStaffTab('handbook')">📕 Handbook</button>
-  </div>
-
-  <div id="staffRosterTab" class="staff-subtab">
-    <div class="fiveroster-shell">
-      <div class="fiveroster-hero">
-        <div class="fiveroster-crest">UHS</div>
-        <div class="fiveroster-title">
-          <div class="tag">UNMATCHED HEALTH SERVICE</div>
-          <h3>Emergency Services Roster</h3>
-          <p>Current operational staff, ranks and departments.</p>
-        </div>
-        <div class="fiveroster-stats">
-          <div><strong id="rosterTotalCount">0</strong><span>Members</span></div>
-          <div><strong id="rosterRankCount">0</strong><span>Ranks</span></div>
-        </div>
-      </div>
-      <div class="fiveroster-switcher">
-        <button class="fiveroster-switch active" onclick="showStaffTab('roster')">All Staff</button>
-        <button class="fiveroster-switch" onclick="showStaffTab('paramedic')">🚑 Paramedic</button>
-        <button class="fiveroster-switch" onclick="showStaffTab('hospital')">🏥 Hospital</button>
-      </div>
-    </div>
-    <div class="staff-toolbar">
-      <input id="rosterSearch" type="search" placeholder="Search roster...">
-      <select id="rosterRankFilter"><option value="">All ranks</option></select>
-      <select id="rosterSpecialtyFilter"><option value="">All specialties</option></select>
-    </div>
-    <div id="rosterGrid" class="roster-grid"></div>
-  </div>
-
-  <div id="staffParamedicTab" class="staff-subtab" style="display:none">
-    <div class="fiveroster-shell">
-      <div class="fiveroster-hero">
-        <div class="fiveroster-crest">UHS</div>
-        <div class="fiveroster-title"><div class="tag">PARAMEDIC SIDE</div><h3>Emergency Services Roster</h3><p>Ambulance, response and operational staff.</p></div>
-        <div class="fiveroster-stats"><div><strong id="paramedicRosterTotalCount">0</strong><span>Members</span></div><div><strong id="paramedicRosterRankCount">0</strong><span>Ranks</span></div></div>
-      </div>
-    </div>
-    <div class="side-hero paramedic-side">
-      <div class="side-icon">🚑</div>
-      <div><div class="tag">PARAMEDIC SIDE</div><h3>Paramedic Roster</h3><p>Ambulance, response, clinical and operational staff.</p></div>
-    </div>
-    <div class="staff-toolbar">
-      <input id="paramedicRosterSearch" type="search" placeholder="Search paramedic roster...">
-      <select id="paramedicRosterRankFilter"><option value="">All paramedic ranks</option></select>
-      <select id="paramedicRosterSpecialtyFilter"><option value="">All specialties</option></select>
-    </div>
-    <div id="paramedicRosterGrid" class="roster-grid"></div>
-  </div>
-
-  <div id="staffHospitalTab" class="staff-subtab" style="display:none">
-    <div class="fiveroster-shell">
-      <div class="fiveroster-hero">
-        <div class="fiveroster-crest">UHS</div>
-        <div class="fiveroster-title"><div class="tag">HOSPITAL STAFF</div><h3>Hospital Services Roster</h3><p>ED, theatre, ward and clinical support staff.</p></div>
-        <div class="fiveroster-stats"><div><strong id="hospitalRosterTotalCount">0</strong><span>Members</span></div><div><strong id="hospitalRosterRankCount">0</strong><span>Ranks</span></div></div>
-      </div>
-    </div>
-    <div class="side-hero hospital-side">
-      <div class="side-icon">🏥</div>
-      <div><div class="tag">HOSPITAL STAFF</div><h3>Hospital Staff Roster</h3><p>Hospital, ED, theatre, ward and clinical support staff.</p></div>
-    </div>
-    <div class="staff-toolbar">
-      <input id="hospitalRosterSearch" type="search" placeholder="Search hospital roster...">
-      <select id="hospitalRosterRankFilter"><option value="">All hospital ranks</option></select>
-      <select id="hospitalRosterSpecialtyFilter"><option value="">All specialties</option></select>
-    </div>
-    <div id="hospitalRosterGrid" class="roster-grid"></div>
-  </div>
-
-  <div id="staffSearchTab" class="staff-subtab" style="display:none">
-    <div class="staff-search-large">
-      <input id="staffSearchInput" type="search" placeholder="Search name, callsign, rank, specialty, city or training...">
-    </div>
-    <div id="staffSearchResults" class="roster-grid"></div>
-  </div>
-
-
-  <div id="staffBodycamTab" class="staff-subtab" style="display:none">
-    <div class="bodycam-layout">
-      <article class="bodycam-submit">
-        <div class="tag">BODYCAM SUBMISSION</div>
-        <h3>Send footage to higher management</h3>
-        <p class="muted">Submit a bodycam recording or a secure video link for an authorised admin/higher-up to review.</p>
-        <label>Send to
-          <select id="bodycamRecipient"><option value="">Choose an admin / higher-up...</option></select>
-        </label>
-        <label>Incident / report title
-          <input id="bodycamTitle" placeholder="e.g. RTC on Legion Square">
-        </label>
-        <label>Incident date & time
-          <input id="bodycamDate" type="datetime-local">
-        </label>
-        <label>Video link
-          <input id="bodycamUrl" type="url" placeholder="Direct MP4/WebM link, YouTube or Vimeo link">
-        </label>
-        <label>Summary of what happened
-          <textarea id="bodycamNotes" placeholder="What happened? What should the reviewer look for?"></textarea>
-        </label>
-        <button class="primary" onclick="submitBodycam()">📤 Submit Bodycam</button>
-        <div id="bodycamSubmitMessage" class="auth-message"></div>
-        <div class="bodycam-tip"><strong>Supported playback:</strong> direct MP4/WebM links play in the built-in player. YouTube/Vimeo links open in an embedded player where the provider permits embedding.</div>
-      </article>
-      <article class="bodycam-inbox">
-        <div class="tag">REVIEW INBOX</div>
-        <h3>Bodycam sent to you</h3>
-        <p class="muted">Admins and higher-ups can review submissions addressed to them.</p>
-        <div id="bodycamInbox"></div>
-      </article>
-    </div>
-  </div>
-
-  <div id="staffRanksTab" class="staff-subtab" style="display:none">
-    <div id="rankAdminNotice" class="warning" style="display:none">Only admins can add, edit or remove ranks.</div>
-    <div id="rankManager" style="display:none" class="rank-manager">
-      <h3>Manage Ranks</h3>
-      <p class="muted">Create the ranks that appear in the roster and staff profile editor. Lower order numbers appear higher in the rank list.</p>
-      <div class="rank-add">
-        <input id="newRankName" placeholder="Rank name" maxlength="100">
-        <input id="newRankOrder" type="number" min="0" placeholder="Order">
-        <select id="newRankSide"><option value="paramedic">🚑 Paramedic</option><option value="hospital">🏥 Hospital Staff</option></select>
-        <select id="newRankTier" title="Command tier">
-  <option value="default" selected>Default</option>
-  <option value="gold">🥇 Gold Command</option>
-  <option value="silver">🥈 Silver Command</option>
-  <option value="bronze">🥉 Bronze Command</option>
-</select>
-        <button class="primary" onclick="addRank()">Add Rank</button>
-      </div>
-    </div>
-    <div id="rankList" class="rank-list"></div>
-  </div>
-
-  <div id="staffStudentPortalTab" class="staff-subtab" style="display:none">
-        <div class="section-head">
-          <div class="tag">STUDENT PARAMEDIC</div>
-          <h2>Student Portal</h2>
-          <p>Scope of practice, step-by-step treatment and observations guides, and the student formulary — for RP realism. Not real clinical guidance.</p>
-        </div>
-
-        <div class="scenario-tabs">
-          <button class="sptab active" onclick="showStudentTab('rules')">📜 Rules</button>
-          <button class="sptab" onclick="showStudentTab('treatments')">🩹 Treatments</button>
-          <button class="sptab" onclick="showStudentTab('vitals')">❤ Vitals</button>
-          <button class="sptab" onclick="showStudentTab('medications')">💊 Medications</button>
-          <button class="sptab" onclick="showStudentTab('pathway')">🎯 Pathway to Paramedic</button>
-          <button class="sptab" onclick="showStudentTab('fto')">🎓 FTO</button>
-          <button class="sptab" onclick="showStudentTab('walkthroughs')">🗣️ Walkthroughs</button>
-        </div>
-
-        <div id="student-rules" class="student-panel active">
-          <div class="scenario-hero"><span>📜</span><div><h3>Scope of practice</h3><p>What a student paramedic can and can't do while under supervision.</p></div></div>
-          <div class="scene-grid">
-            <article><h4>Supervision required</h4><p>Work under the direct or indirect supervision of a qualified paramedic/mentor at all times. Don't perform advanced interventions independently.</p></article>
-            <article><h4>Student formulary only</h4><p>Only administer medications listed in the student formulary. Anything beyond this — IV drugs, controlled drugs, IM injections — must be given by a qualified paramedic.</p></article>
-            <article><h4>Skills within scope</h4><p>Basic observations, BLS/CPR, oxygen therapy, wound dressing, splinting, patient movement/handling, basic history taking, and the student formulary medications under supervision.</p></article>
-            <article><h4>Escalate immediately</h4><p>Any deteriorating patient, cardiac arrest, anaphylaxis, major trauma, or anything outside the student formulary must be escalated to a qualified paramedic straight away.</p></article>
-            <article><h4>No IV/IM drugs</h4><p>Don't cannulate, give IV/IM medications, or perform advanced airway procedures without direct qualified-paramedic supervision and sign-off.</p></article>
-            <article><h4>Documentation</h4><p>All care given must be countersigned by your supervising paramedic before the patient care record is completed.</p></article>
-          </div>
-        </div>
-
-        <div id="student-treatments" class="student-panel">
-          <div class="scenario-hero"><span>🩹</span><div><h3>Step-by-step basic treatment</h3><p>The general approach a student paramedic follows for any patient, from scene safety through to handover.</p></div></div>
-
-          <div class="scene-checklist">
-            <div class="tag">STEP-BY-STEP TREATMENT</div>
-            <h4>Basic treatment guide</h4>
-            <div class="checklist-items" id="studentTreatmentChecklist"></div>
-          </div>
-
-          <div class="scene-rp-panel">
-            <div class="tag">TREATMENT /me LIBRARY</div>
-            <h4>Treatment RP actions</h4>
-            <p>Use the two tabs to copy the exact command format you need.</p>
-            <div class="scene-rp-tabs">
-              <div class="context-tabs"><button class="student-context-btn active" data-context="bed" onclick="setStudentContext('bed')">🛏️ Bed</button><button class="student-context-btn" data-context="floor" onclick="setStudentContext('floor')"> Floor</button></div>
-              <div class="scene-rp-tabs">
-                <button class="sprpt-treat active" onclick="setStudentTreatmentRPMode('slash')">/me</button>
-                <button class="sprpt-treat" onclick="setStudentTreatmentRPMode('f8')">ME • F8</button>
-              </div>
-            </div>
-            <div id="studentTreatmentRPList"></div>
-          </div>
-        </div>
-
-        <div id="student-vitals" class="student-panel">
-          <div class="scenario-hero"><span>❤</span><div><h3>Step-by-step observations</h3><p>Taking a full set of vital signs in the correct order.</p></div></div>
-
-          <div class="scene-checklist">
-            <div class="tag">STEP-BY-STEP OBSERVATIONS</div>
-            <h4>Taking a full set of vitals</h4>
-            <div class="checklist-items" id="studentVitalsChecklist"></div>
-          </div>
-
-          <div class="scene-rp-panel">
-            <div class="tag">VITALS /me LIBRARY</div>
-            <h4>Observations RP actions</h4>
-            <p>Use the two tabs to copy the exact command format you need.</p>
-            <div class="scene-rp-tabs">
-              <div class="context-tabs"><button class="student-context-btn active" data-context="bed" onclick="setStudentContext('bed')">🛏️ Bed</button><button class="student-context-btn" data-context="floor" onclick="setStudentContext('floor')"> Floor</button></div>
-              <div class="scene-rp-tabs">
-                <button class="sprpt-vitals active" onclick="setStudentVitalsRPMode('slash')">/me</button>
-                <button class="sprpt-vitals" onclick="setStudentVitalsRPMode('f8')">ME • F8</button>
-              </div>
-            </div>
-            <div id="studentVitalsRPList"></div>
-          </div>
-        </div>
-
-        <div id="student-medications" class="student-panel">
-          <div class="scenario-hero"><span>💊</span><div><h3>Student formulary</h3><p>The only medications a student paramedic can administer, under supervision.</p></div></div>
-
-          <div class="med-grid">
-            <article class="med-card"><div class="med-top"><span>OXYGEN</span><b>Gas</b></div><h3>Cardiac arrest, trauma, sepsis, shock</h3><p><strong>Form/dose:</strong> Gas, via the appropriate delivery device, titrated to target saturation.</p><p><strong>Use in RP:</strong> hypoxia or a seriously unwell patient where supplemental oxygen is indicated.</p><p><strong>Check first:</strong> current SpO₂ — don't give routine high-flow oxygen to a normoxic patient.</p><button onclick="toggleMed(this)">Show RP /me</button><div class="med-rp">/me checks the patient's SpO2 and applies the correct oxygen delivery device, titrating to target — /e nurse</div></article>
-
-            <article class="med-card"><div class="med-top"><span>ASPIRIN</span><b>Antiplatelet</b></div><h3>Suspected MI / ACS</h3><p><strong>Form/dose:</strong> 300 mg oral loading dose.</p><p><strong>Use in RP:</strong> suspected cardiac chest pain after appropriate assessment, under supervision.</p><p><strong>Check first:</strong> aspirin allergy and active/significant bleeding.</p><button onclick="toggleMed(this)">Show RP /me</button><div class="med-rp">/me checks aspirin allergy and bleeding history before offering the 300 mg aspirin dose under supervision — /e check</div></article>
-
-            <article class="med-card"><div class="med-top"><span>PARACETAMOL</span><b>Analgesic / antipyretic</b></div><h3>Mild / moderate pain, fever</h3><p><strong>Form/dose:</strong> 1 g (1000 mg) oral.</p><p><strong>Use in RP:</strong> mild to moderate pain or fever within the student formulary.</p><p><strong>Check first:</strong> allergy, liver disease and other paracetamol-containing medicines already taken.</p><button onclick="toggleMed(this)">Show RP /me</button><div class="med-rp">/me checks the patient hasn't already taken paracetamol today before offering a 1g oral dose — /e examine</div></article>
-
-            <article class="med-card"><div class="med-top"><span>IBUPROFEN</span><b>NSAID</b></div><h3>Mild / moderate pain, inflammation</h3><p><strong>Form/dose:</strong> 400 mg oral.</p><p><strong>Use in RP:</strong> mild to moderate pain or inflammation where an NSAID is appropriate.</p><p><strong>Check first:</strong> NSAID allergy, asthma, ulcer history and kidney problems.</p><button onclick="toggleMed(this)">Show RP /me</button><div class="med-rp">/me checks for NSAID allergy, asthma and ulcer history before offering 400mg ibuprofen — /e check</div></article>
-
-            <article class="med-card"><div class="med-top"><span>GLUCOSE (ORAL)</span><b>Carbohydrate</b></div><h3>Hypoglycaemia (conscious patient)</h3><p><strong>Form/dose:</strong> Oral gel or tablet, per product instructions.</p><p><strong>Use in RP:</strong> a conscious, alert patient able to safely swallow with confirmed or suspected hypoglycaemia.</p><p><strong>Check first:</strong> the patient is conscious and able to protect their own airway — never give oral glucose to a patient with reduced consciousness.</p><button onclick="toggleMed(this)">Show RP /me</button><div class="med-rp">/me confirms the patient is conscious and able to swallow before giving oral glucose gel — /e examine</div></article>
-          </div>
-        </div>
-
-        <div id="student-pathway" class="student-panel">
-          <div class="scenario-hero"><span>🎯</span><div><h3>Pathway to Paramedic</h3><p>The full competency sign-off sheet a student paramedic works through, under supervision, on the way to becoming a qualified paramedic.</p></div></div>
-
-          <div class="notice">Each competency has three stages: <strong>TEACH</strong> (FTO verbally teaches it), <strong>SHOW</strong> (FTO physically demonstrates it), <strong>DO</strong> (student physically demonstrates it). A row is only complete once all three are ticked. Items marked <span class="pathway-star">★</span> have additional guidance below the table.</div>
-
-          <div class="table-wrap">
-            <table class="pathway-table">
-              <thead>
-                <tr><th>No.</th><th>Competency</th><th>TEACH</th><th>SHOW</th><th>DO</th><th>Status</th></tr>
-              </thead>
-              <tbody id="pathwayTableBody">
-                <tr data-row="1"><td>1</td><td>Blue Light Trained</td><td><input type="checkbox" data-stage="teach"></td><td><input type="checkbox" data-stage="show"></td><td><input type="checkbox" data-stage="do"></td><td class="pathway-status"></td></tr>
-                <tr data-row="2"><td>2</td><td>Professional Radio Communications</td><td><input type="checkbox" data-stage="teach"></td><td><input type="checkbox" data-stage="show"></td><td><input type="checkbox" data-stage="do"></td><td class="pathway-status"></td></tr>
-                <tr data-row="3"><td>3</td><td>MDT</td><td><input type="checkbox" data-stage="teach"></td><td><input type="checkbox" data-stage="show"></td><td><input type="checkbox" data-stage="do"></td><td class="pathway-status"></td></tr>
-                <tr data-row="4"><td>4</td><td>Assisting a Paramedic <span class="pathway-star">★</span></td><td><input type="checkbox" data-stage="teach"></td><td><input type="checkbox" data-stage="show"></td><td><input type="checkbox" data-stage="do"></td><td class="pathway-status"></td></tr>
-                <tr data-row="5"><td>5</td><td>Uniform Standards</td><td><input type="checkbox" data-stage="teach"></td><td><input type="checkbox" data-stage="show"></td><td><input type="checkbox" data-stage="do"></td><td class="pathway-status"></td></tr>
-                <tr data-row="6"><td>6</td><td>Command Structure &amp; Escalation Procedures</td><td><input type="checkbox" data-stage="teach"></td><td><input type="checkbox" data-stage="show"></td><td><input type="checkbox" data-stage="do"></td><td class="pathway-status"></td></tr>
-                <tr data-row="7"><td>7</td><td>Patient Assessment (ABCDE)</td><td><input type="checkbox" data-stage="teach"></td><td><input type="checkbox" data-stage="show"></td><td><input type="checkbox" data-stage="do"></td><td class="pathway-status"></td></tr>
-                <tr data-row="8"><td>8</td><td>X-Ray &amp; MRI</td><td><input type="checkbox" data-stage="teach"></td><td><input type="checkbox" data-stage="show"></td><td><input type="checkbox" data-stage="do"></td><td class="pathway-status"></td></tr>
-                <tr data-row="9"><td>9</td><td>Patient Observation — HR, BP, RR, SpO₂, BM, Temp: basic HIGH/LOW <span class="pathway-star">★</span></td><td><input type="checkbox" data-stage="teach"></td><td><input type="checkbox" data-stage="show"></td><td><input type="checkbox" data-stage="do"></td><td class="pathway-status"></td></tr>
-                <tr data-row="10"><td>10</td><td>ECG</td><td><input type="checkbox" data-stage="teach"></td><td><input type="checkbox" data-stage="show"></td><td><input type="checkbox" data-stage="do"></td><td class="pathway-status"></td></tr>
-                <tr data-row="11"><td>11</td><td>CPR</td><td><input type="checkbox" data-stage="teach"></td><td><input type="checkbox" data-stage="show"></td><td><input type="checkbox" data-stage="do"></td><td class="pathway-status"></td></tr>
-                <tr data-row="12"><td>12</td><td>Airway Management — Head Tilt, OPA &amp; NPA</td><td><input type="checkbox" data-stage="teach"></td><td><input type="checkbox" data-stage="show"></td><td><input type="checkbox" data-stage="do"></td><td class="pathway-status"></td></tr>
-                <tr data-row="13"><td>13</td><td>Medication Management — correct medications (dose not required) <span class="pathway-star">★</span></td><td><input type="checkbox" data-stage="teach"></td><td><input type="checkbox" data-stage="show"></td><td><input type="checkbox" data-stage="do"></td><td class="pathway-status"></td></tr>
-                <tr data-row="14"><td>14</td><td>Burn Assessment &amp; Burn Care</td><td><input type="checkbox" data-stage="teach"></td><td><input type="checkbox" data-stage="show"></td><td><input type="checkbox" data-stage="do"></td><td class="pathway-status"></td></tr>
-                <tr data-row="15"><td>15</td><td>Wound Assessment &amp; Wound Care</td><td><input type="checkbox" data-stage="teach"></td><td><input type="checkbox" data-stage="show"></td><td><input type="checkbox" data-stage="do"></td><td class="pathway-status"></td></tr>
-                <tr data-row="16"><td>16</td><td>Bleeding &amp; Haemorrhage Management</td><td><input type="checkbox" data-stage="teach"></td><td><input type="checkbox" data-stage="show"></td><td><input type="checkbox" data-stage="do"></td><td class="pathway-status"></td></tr>
-                <tr data-row="17"><td>17</td><td>Management of Unconscious Patients</td><td><input type="checkbox" data-stage="teach"></td><td><input type="checkbox" data-stage="show"></td><td><input type="checkbox" data-stage="do"></td><td class="pathway-status"></td></tr>
-                <tr data-row="18"><td>18</td><td>Scope of Clinical Practice <span class="pathway-star">★</span></td><td><input type="checkbox" data-stage="teach"></td><td><input type="checkbox" data-stage="show"></td><td><input type="checkbox" data-stage="do"></td><td class="pathway-status"></td></tr>
-                <tr data-row="19"><td>19</td><td>Clinical Handover (ATMIST/SBAR)</td><td><input type="checkbox" data-stage="teach"></td><td><input type="checkbox" data-stage="show"></td><td><input type="checkbox" data-stage="do"></td><td class="pathway-status"></td></tr>
-                <tr data-row="20"><td>20</td><td>Professional Standards &amp; Conduct</td><td><input type="checkbox" data-stage="teach"></td><td><input type="checkbox" data-stage="show"></td><td><input type="checkbox" data-stage="do"></td><td class="pathway-status"></td></tr>
-                <tr data-row="21"><td>21</td><td>Recognition of Life Extinct Procedures (ROLE/DOA)</td><td><input type="checkbox" data-stage="teach"></td><td><input type="checkbox" data-stage="show"></td><td><input type="checkbox" data-stage="do"></td><td class="pathway-status"></td></tr>
-                <tr data-row="22"><td>22</td><td>Major Incident Awareness</td><td><input type="checkbox" data-stage="teach"></td><td><input type="checkbox" data-stage="show"></td><td><input type="checkbox" data-stage="do"></td><td class="pathway-status"></td></tr>
-                <tr data-row="23"><td>23</td><td>Ten Second Triage</td><td><input type="checkbox" data-stage="teach"></td><td><input type="checkbox" data-stage="show"></td><td><input type="checkbox" data-stage="do"></td><td class="pathway-status"></td></tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div class="section-head" style="margin:22px 0 14px"><div class="tag pathway-star">★ ADDITIONAL INFORMATION FOR FTOs</div></div>
-          <div class="scene-grid">
-            <article><h4>4. Assisting a Paramedic</h4><p>Includes following instructions on scene, and — in the presence of a PM+ — carrying out paramedic-level skills themselves (e.g. pushing morphine, running the scene).</p></article>
-            <article><h4>9. Patient Observations</h4><p>Students and PMs must understand what each observation stands for (e.g. BP = Blood Pressure), how to take it (e.g. BP cuff), and how to hand it over — either the actual reading ("116/77") or as "Normal/Low/High BP" etc. Handing over as HIGH/LOW/NORMAL is acceptable.</p></article>
-            <article><h4>13. Medication Management</h4><p>Covers medication within the student's own scope <strong>and</strong> the scope of a PM, since students are training to become PMs. They need the basics of each medication, when to give it (e.g. paracetamol), and its route (tablet, IV, IM). Students and PMs are <strong>not</strong> expected to remember exact doses — "/me gives paracetamol" or "/me pushes morphine for pain" is sufficient.</p></article>
-            <article><h4>18. Scope of Clinical Practice</h4><p>Confirms the student knows what they can do now as a student versus once qualified as a paramedic. Provide the handbook, get confirmation they've read and understood it, then follow up with a planned 1:1 to quiz them on it.</p></article>
-          </div>
-
-          <div class="scenario-note"><strong>Sign-off:</strong> this check sheet should be updated regularly. A row's completion date is recorded once TEACH, SHOW and DO are all ticked. <strong>Assessments are carried out by the command team only.</strong> If you have concerns about a student's performance, raise it with Ambulance Bronze — an FTO does not hold the authority to reprimand.</div>
-        </div>
-
-        <div id="student-fto" class="student-panel">
-          <div class="scenario-hero"><span>🎓</span><div><h3>FTO Reference</h3><p>Field Training Officer reference — vital signs explained, the two-tier medication formulary, and what a student can do (and can't) at every incident and procedure on this site.</p></div></div>
-
-          <div class="section-head" style="margin-bottom:16px"><div class="tag">VITAL SIGNS — WHAT THEY MEAN</div><h2 style="font-size:22px">Understanding the numbers</h2></div>
-          <div class="scene-grid">
-            <article><h4>Heart Rate (HR)</h4><p>Beats per minute, normally 60–100 in an adult. Low (bradycardia) can mean the heart isn't pumping fast enough — heart problems, medication, or sometimes just fitness. High (tachycardia) is often the body compensating for pain, fear, fever or blood loss. Watch the <strong>trend</strong>, not just one number.</p></article>
-            <article><h4>Respiratory Rate (RR)</h4><p>Breaths per minute, normally 12–20. Often the <strong>earliest</strong> warning sign of deterioration — it can change before other vitals do. Low can mean opioid overdose or exhaustion; high can mean pain, anxiety, chest problems or sepsis.</p></article>
-            <article><h4>Oxygen Saturation (SpO₂)</h4><p>The percentage of blood carrying oxygen, normally 94–100%. Low SpO₂ means the patient isn't getting enough oxygen in — could be a breathing problem, a circulation problem, or both. It tells you <strong>that</strong> something's wrong, not <strong>why</strong>.</p></article>
-            <article><h4>Blood Pressure (BP)</h4><p>Written systolic/diastolic. Low BP can mean the heart isn't pumping enough, or there isn't enough blood/fluid in circulation (bleeding, dehydration, severe infection). High BP alone is rarely an emergency — it's the symptoms alongside it that matter.</p></article>
-            <article><h4>Temperature</h4><p>Normally around 36.5–37.5°C. High (fever) usually means infection or inflammation. Low (hypothermia) can be cold exposure — but can also signal serious infection in the very young or old.</p></article>
-            <article><h4>GCS (Glasgow Coma Scale)</h4><p>A score out of 15 (Eye + Verbal + Motor) describing how alert someone is. 15 is fully alert. <strong>8 or below is a major red flag</strong> — the patient may not be able to protect their own airway.</p></article>
-            <article><h4>Blood Glucose (BGL)</h4><p>Normally roughly 4–7.8 mmol/L. Low (hypoglycaemia) can cause confusion and unconsciousness fast — but is quickly reversible with treatment. High glucose is dangerous too, but usually develops more slowly.</p></article>
-          </div>
-          <div class="notice">Try the interactive sliders on the <strong>Observations</strong> page to see exactly where a reading sits and what it means in real time.</div>
-
-          <div class="section-head" style="margin:26px 0 16px"><div class="tag">MEDICATION FORMULARY</div><h2 style="font-size:22px">Two tiers — know which one you're in</h2></div>
-
-          <div class="two-col">
-            <article class="info"><h3>🟢 Tier 1 — Independent</h3><p>The 5 medications on the <strong>Medications</strong> tab (Oxygen, Aspirin, Paracetamol, Ibuprofen, Oral Glucose). A student can offer these within the formulary limits shown there, under general supervision.</p></article>
-            <article class="info"><h3>🔴 Tier 2 — Supervised only</h3><p>Paramedic-level medications below. A student may assist with or administer these <strong>only</strong> with a qualified paramedic directly present, observing, and taking clinical responsibility for the decision.</p></article>
-          </div>
-
-          <div class="warning"><strong>Never</strong> give a Tier 2 medication without your supervising paramedic physically present and actively observing — this isn't a formality, it's the line between supervised practice and acting outside your scope.</div>
-
-          <div class="med-grid">
-            <article class="med-card"><div class="med-top"><span>GTN</span><b>Vasodilator</b></div><h3>Suspected cardiac chest pain</h3><p><strong>Form/dose:</strong> 400–800 micrograms sublingual spray.</p><p><strong>Supervised because:</strong> can cause a significant BP drop; needs a paramedic assessing haemodynamics before and after.</p><button onclick="toggleMed(this)">Show RP /me</button><div class="med-rp">/me confirms their supervising paramedic is present before administering GTN spray as directed — /e nurse</div></article>
-
-            <article class="med-card"><div class="med-top"><span>SALBUTAMOL</span><b>Bronchodilator</b></div><h3>Wheeze / asthma / bronchospasm</h3><p><strong>Form/dose:</strong> 5mg nebulised.</p><p><strong>Supervised because:</strong> needs correct nebuliser setup and assessment of response, with escalation planned if it doesn't work.</p><button onclick="toggleMed(this)">Show RP /me</button><div class="med-rp">/me sets up the nebulised salbutamol under paramedic direction and monitors the patient's response — /e nurse</div></article>
-
-            <article class="med-card"><div class="med-top"><span>ADRENALINE (IM)</span><b>Emergency</b></div><h3>Anaphylaxis</h3><p><strong>Form/dose:</strong> 500 micrograms IM (adult), anterolateral thigh.</p><p><strong>Supervised because:</strong> a high-risk emergency drug — the paramedic makes and owns this call.</p><button onclick="toggleMed(this)">Show RP /me</button><div class="med-rp">/me prepares IM adrenaline as their supervising paramedic confirms the dose and direction — /e inject</div></article>
-
-            <article class="med-card"><div class="med-top"><span>ENTONOX</span><b>Analgesic gas</b></div><h3>Moderate–severe pain</h3><p><strong>Form/dose:</strong> Inhaled, patient self-administered.</p><p><strong>Supervised because:</strong> needs assessment for contraindications (e.g. pneumothorax) before it's offered.</p><button onclick="toggleMed(this)">Show RP /me</button><div class="med-rp">/me checks for contraindications with their supervising paramedic before offering Entonox — /e check</div></article>
-
-            <article class="med-card"><div class="med-top"><span>ONDANSETRON</span><b>Antiemetic</b></div><h3>Nausea and vomiting</h3><p><strong>Form/dose:</strong> 4mg IV or oral.</p><p><strong>Supervised because:</strong> IV administration and dose-appropriateness need paramedic sign-off.</p><button onclick="toggleMed(this)">Show RP /me</button><div class="med-rp">/me offers ondansetron for nausea once their supervising paramedic confirms the dose and route — /e nurse</div></article>
-
-            <article class="med-card"><div class="med-top"><span>NALOXONE</span><b>Opioid antagonist</b></div><h3>Suspected opioid overdose</h3><p><strong>Form/dose:</strong> 400 micrograms IV/IM, titrated.</p><p><strong>Supervised because:</strong> a critical emergency reversal drug with real risk of precipitating acute withdrawal.</p><button onclick="toggleMed(this)">Show RP /me</button><div class="med-rp">/me prepares naloxone as their supervising paramedic directs the dose and titration — /e inject</div></article>
-
-            <article class="med-card"><div class="med-top"><span>IV FLUIDS</span><b>Sodium chloride 0.9%</b></div><h3>Shock, hypotension</h3><p><strong>Form/dose:</strong> 250–500ml bolus, reassess.</p><p><strong>Supervised because:</strong> fluid strategy in shock is a paramedic-level clinical decision, reassessed continuously.</p><button onclick="toggleMed(this)">Show RP /me</button><div class="med-rp">/me runs the IV fluid bolus as prescribed and reassesses the patient after each one — /e nurse</div></article>
-          </div>
-
-          <div class="section-head" style="margin:26px 0 16px"><div class="tag">QUICK REFERENCE</div><h2 style="font-size:22px">Incident scenes — what a student can do</h2></div>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>Scene</th><th>Key vital to watch</th><th>Student (Tier 1)</th><th>Needs a paramedic (Tier 2)</th></tr></thead>
-              <tbody>
-                <tr><td>RTC</td><td>HR, BP, RR (shock)</td><td>Oxygen; Paracetamol/Ibuprofen once major injury excluded</td><td>IV fluids, Entonox, splinting decisions</td></tr>
-                <tr><td>Car explosion</td><td>RR, SpO₂ (blast lung), HR/BP</td><td>Oxygen</td><td>IV fluids, analgesia, chest decompression</td></tr>
-                <tr><td>Gunshot</td><td>HR, BP (bleeding/shock)</td><td>Oxygen</td><td>IV fluids, analgesia, blood products</td></tr>
-                <tr><td>Stab wound</td><td>HR, BP, RR (chest involvement)</td><td>Oxygen</td><td>IV fluids, analgesia, chest decompression</td></tr>
-                <tr><td>Burns</td><td>RR, SpO₂ (airway), HR/BP (fluid loss)</td><td>Oxygen; Paracetamol for pain</td><td>IV fluids (burns formula), stronger analgesia</td></tr>
-                <tr><td>Smoke inhalation</td><td>SpO₂, RR, GCS</td><td>Oxygen</td><td>Further airway management</td></tr>
-                <tr><td>Allergy / anaphylaxis</td><td>RR, SpO₂, BP, HR</td><td>Oxygen</td><td>IM Adrenaline — the key drug here</td></tr>
-                <tr><td>Water rescue</td><td>Temp, SpO₂, RR</td><td>Oxygen, rewarming</td><td>Resuscitation drugs if in arrest</td></tr>
-                <tr><td>Animal attack</td><td>HR, BP (bleeding)</td><td>Paracetamol/Ibuprofen; Oxygen if needed</td><td>Stronger analgesia, IV fluids if significant bleeding</td></tr>
-                <tr><td>Height fall</td><td>BP, HR, GCS</td><td>Oxygen</td><td>Analgesia, IV fluids</td></tr>
-                <tr><td>Melee / assault</td><td>GCS, HR, BP</td><td>Oxygen; mild analgesia if minor</td><td>Stronger analgesia, IV fluids</td></tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div class="section-head" style="margin:26px 0 16px"><h2 style="font-size:22px">Procedures — what a student can do</h2></div>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>Procedure</th><th>Student role</th><th>Notes</th></tr></thead>
-              <tbody>
-                <tr><td>IV Cannulation</td><td>Observe / assist</td><td>Insertion itself is paramedic-level in most services' student scope.</td></tr>
-                <tr><td>Intubation (both)</td><td>Observe only</td><td>RSI drugs (Fentanyl/Ketamine/Rocuronium) are strictly Tier 2.</td></tr>
-                <tr><td>Chest Tube (both)</td><td>Observe only</td><td>Watch SpO₂/RR throughout — flag any deterioration immediately.</td></tr>
-                <tr><td>Colonoscopy</td><td>Observe only</td><td>Sedation drugs are Tier 2.</td></tr>
-                <tr><td>Urinary Catheter</td><td>Observe / assist</td><td>Insertion is typically paramedic/nursing-level.</td></tr>
-                <tr><td>NG Tube</td><td>Observe / assist</td><td>pH confirmation before use is a key safety step to watch.</td></tr>
-                <tr><td>Cannula Removal</td><td><strong>Can perform</strong></td><td>A basic skill within independent student scope.</td></tr>
-                <tr><td>Central Line</td><td>Observe only</td><td>Full aseptic/maximal barrier procedure — paramedic-level.</td></tr>
-                <tr><td>Dialysis Catheter</td><td>Observe only</td><td>Wider-bore, higher-risk insertion — paramedic-level.</td></tr>
-                <tr><td>Cast Application</td><td><strong>Can assist</strong></td><td>Paracetamol/Ibuprofen for pain is within Tier 1.</td></tr>
-                <tr><td>Joint Reduction</td><td>Observe only</td><td>Needs paramedic-level analgesia/sedation decisions.</td></tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div class="scenario-note"><strong>RP realism note:</strong> Reflects a general student paramedic scope of practice for roleplay realism only — not real clinical guidance or training. Always follow your own service's actual protocols.</div>
-        </div>
-
-        <div id="student-walkthroughs" class="student-panel">
-          <div class="scenario-hero"><span>🗣️</span><div><h3>FTO Walkthroughs</h3><p>How an FTO actually talks a student through something — in your own words, not a checklist read aloud. Use these as a script or just a feel for the tone.</p></div></div>
-
-          <div class="walkthrough-card">
-            <h3>💉 "I'll talk you through how to do a cannula, step by step."</h3>
-            <p>Alright, I'm going to talk you through how to do a cannula, step by step. Don't worry if your hands shake a little the first few times — everyone's do.</p>
-            <p>First, we introduce ourselves to the patient, explain what we're doing and why, and get their consent. While we're talking to them, we're already having a look at their arms for a good vein — something straight, bouncy, and not near a joint if we can help it.</p>
-            <p>Once we've picked our spot, we clean the skin properly and let it dry — don't blow on it to speed it up, that just adds bacteria back. Apply the tourniquet, and <em>now</em> is when you actually feel for the vein again, because it'll be more prominent.</p>
-            <p>Open your cannula packet, check the size is right for what we're giving — bigger bore for blood or fluids, smaller is fine for most drugs. Warn the patient: "sharp scratch coming." Advance at a shallow angle, maybe 15 to 30 degrees, until you get flashback in the chamber — that's blood confirming you're in the vein.</p>
-            <p>Here's the bit that trips people up: once you see flashback, you're not done advancing straight in. You drop your angle right down, advance a couple more millimetres to make sure the plastic cannula itself is in the vein too, not just the needle tip, then you slide the cannula forward off the needle while keeping the needle still.</p>
-            <p>Release the tourniquet, apply pressure just above the tip with your finger, withdraw the needle fully, connect your line or bung, and secure it with a dressing. Last thing — always flush it and check it runs freely with no swelling before you trust it. If it swells, it's tissued — take it out and start again somewhere else.</p>
-            <p>That's it. Practice makes this smooth — the first ten will feel awkward, and then one day it just clicks.</p>
-          </div>
-
-          <div class="walkthrough-card">
-            <h3>❤️ "I'll talk you through vitals — what they mean, and the right device to use."</h3>
-            <p>Let's talk through vitals — what they actually mean, and which device you reach for.</p>
-            <p><strong>Heart rate</strong> — you'll usually get this straight off the pulse oximeter or the ECG monitor, but always cross-check with a manual pulse if something looks off, because machines lie sometimes, especially with a poor waveform or a shivering patient.</p>
-            <p><strong>Respiratory rate</strong> is the one people skip, and it's often the most important. There's no fancy device for this — you literally watch the chest and count for a full 30 seconds, then double it, or a full 60 if you want to be precise. Don't tell the patient you're counting their breathing, they'll change it without meaning to.</p>
-            <p><strong>SpO₂</strong> — pulse oximeter, clipped onto a finger, or an earlobe if their hands are cold or they're wearing nail polish that's blocking the sensor. If the trace looks unreliable, don't trust the number — warm the hand up or try a different finger.</p>
-            <p><strong>Blood pressure</strong> — manual cuff and stethoscope if you want to actually learn the skill properly, or the automated NIBP machine on scene for speed. If the automated one gives you a weird reading, always confirm manually before you act on it.</p>
-            <p><strong>Temperature</strong> — tympanic thermometer in the ear is quick and what you'll use most, but it's affected by earwax and technique, so if it seems off, try the other ear.</p>
-            <p><strong>Blood glucose</strong> — a simple fingerstick with a glucometer, a tiny drop of capillary blood is all you need.</p>
-            <p><strong>GCS</strong> doesn't need a device at all — it's you, talking to the patient, watching how they respond to your voice and to pain if needed, and scoring what you see.</p>
-            <p>The golden rule with all of these: one number on its own doesn't tell you much. It's the trend, and how it fits everything else you're seeing, that tells the real story.</p>
-          </div>
-
-          <div class="walkthrough-card">
-            <h3>🩹 "I'll talk you through taking a cannula back out."</h3>
-            <p>This one's simple, but people still rush it and cause more bleeding than they need to. I'll talk you through it.</p>
-            <p>First, check <em>why</em> we're taking it out — finished treatment, or a problem with the site. Explain to the patient what you're doing.</p>
-            <p>Loosen the dressing gently — don't yank it, and definitely don't pull on the cannula itself while you're peeling tape off. Once the dressing's free, get your gauze ready in one hand.</p>
-            <p>Withdraw the cannula in one smooth motion, following the same line it went in, and the moment it's out, press down with the gauze — not before, or you'll get blood everywhere.</p>
-            <p>Hold pressure for a good 30 seconds. If they're on blood thinners, hold it longer — don't just assume 30 seconds is enough. Check the tip of the cannula came out in one piece — if it looks like it's snapped, tell your supervisor immediately, that's not something to just brush off.</p>
-            <p>Dressing on once it's stopped bleeding, cannula in the sharps bin, and you're done. Small skill, but do it properly every time.</p>
-          </div>
-
-          <div class="walkthrough-card">
-            <h3>🩼 "I'll talk you through applying a cast."</h3>
-            <p>Casting is honestly one of the more satisfying skills once you get the hang of it. I'll talk you through it.</p>
-            <p>Before we even touch the plaster, we check the fracture's actually suitable for a cast — stable, not displaced, or already reduced. We check the circulation and feeling in the fingers or toes <em>before</em> we start, and I mean actually document it, because you need that baseline to compare to afterwards.</p>
-            <p>Stockinette goes on first, smooth, no wrinkles, a bit longer than where the cast will end so we can fold it back later. Then padding — even layers, but extra over the bony bits, the wrist, elbow, ankle, wherever's going to rub.</p>
-            <p>When you wet the plaster, don't wring it out too hard, you want it damp not dripping. Wrap it in a smooth spiral, overlapping about half of each turn as you go.</p>
-            <p>Here's the bit I really want you to listen to: mould with the <strong>flat of your hand, never your fingertips</strong>. Fingertip pressure while it's setting leaves little dents, and those dents become pressure sores once it's hard — that's a mistake that hurts the patient days later, not something you'll see straight away.</p>
-            <p>Hold the joint still in the right position while it sets. Fold your stockinette back over the edge before it fully hardens for a neater finish with no rough edges digging in.</p>
-            <p>Once it's set, check it's not too tight — you want to fit two fingers comfortably at the top. Recheck circulation and feeling again, compare it to what we documented at the start. Elevate the limb, and give them the aftercare talk — keep it dry, don't stick anything down there to scratch an itch, and come back straight away if it gets more painful, numb, or the fingers or toes go pale or blue.</p>
-          </div>
-
-          <div class="walkthrough-card">
-            <h3>🚻 "I'll talk you through catheterisation."</h3>
-            <p>I'll talk you through catheterisation — take your time with this one, dignity and technique both matter here.</p>
-            <p>Explain the procedure clearly, get consent, and make sure we've got proper privacy sorted before we start — this is not a rushed procedure.</p>
-            <p>Aseptic technique from the start — hand hygiene, sterile gloves, sterile field set up properly. Clean the area thoroughly, working in the right direction to avoid dragging bacteria toward the urethra.</p>
-            <p>Lubricate the catheter tip, insert gently, and if you feel resistance, don't force it — pause, ask the patient to take a breath, try again gently. Forcing it is how you cause trauma.</p>
-            <p>Once you see urine flow, that's your sign you're in the bladder — advance the catheter a little further before you inflate the balloon, you don't want to inflate it while it's still partway down the urethra.</p>
-            <p>Inflate the balloon with the amount the catheter's labelled for, then gently pull back until you feel it seat against the bladder neck. Connect the drainage bag, secure the tubing so it's not pulling, and make sure that bag stays below bladder level at all times.</p>
-            <p>Document the catheter size, how much fluid you used to inflate the balloon, and what the initial urine looked like. And always give the aftercare talk — keep the bag low, empty it regularly, and if there's fever, worsening pain, or the drainage just stops, that needs checking urgently.</p>
-          </div>
-
-          <div class="walkthrough-card">
-            <h3>👃 "I'll talk you through passing an NG tube."</h3>
-            <p>NG tubes make people nervous the first time, but I'll talk you through it and it'll make sense.</p>
-            <p>We measure before we do anything — nose to earlobe, then earlobe to the bottom of the sternum, and mark that length on the tube so we know roughly how far it needs to go.</p>
-            <p>Sit the patient upright if you can, chin tucked slightly toward the chest — that position helps the tube go down the oesophagus instead of into the airway. Lubricate the tip, and pass it gently along the floor of the nostril, not up and back like you're clearing a stuffy nose.</p>
-            <p>If the patient can swallow, get them sipping water and swallowing as you advance — that swallow reflex helps guide the tube down the right way. Watch them closely the whole time. Coughing, choking, a change in voice, real distress — any of that, you stop and pull back, because that suggests it's gone into the airway, not the stomach.</p>
-            <p>Once you're at your marked length, this is the step you never skip: confirm placement before you use it for anything. pH testing on aspirate is the usual first check — you want it acidic. If that's not conclusive, it needs an X-ray before you use it for feed or medication. Never just assume it's in the right place because it went in smoothly.</p>
-            <p>Secure it well so it can't get pulled or migrate, and check position again before every single feed or medication — not just once at the start.</p>
-          </div>
-
-          <div class="scenario-note"><strong>RP realism note:</strong> Written in a natural teaching voice for RP immersion — not real clinical training. Always follow your own service's actual protocols and your supervisor's direction.</div>
-        </div>
-
-        <div class="scenario-note"><strong>RP realism note:</strong> Reflects a general student paramedic scope of practice for roleplay realism only — not real clinical guidance or training.</div>
-      </div>
-
-  <div id="staffHandbookTab" class="staff-subtab" style="display:none">
-    <div class="section-head">
-      <div class="tag">STAFF HANDBOOK</div>
-      <h2>Team Handbook</h2>
-      <p>Shared policies, protocols and reference documents for the whole team. Add a PDF and its text is extracted and shown here for everyone to read.</p>
-    </div>
-
-    <div class="pdf-doc-section">
-      <div class="pdf-doc-head">
-        <div class="tag">PDF DOCUMENT</div>
-        <label class="pdf-upload-btn" for="pdfInput-staff-handbook">📄 Add Document</label>
-        <input type="file" id="pdfInput-staff-handbook" accept="application/pdf,.pdf,application/vnd.openxmlformats-officedocument.presentationml.presentation,.pptx" onchange="handleDocPdf('staff-handbook', this)" hidden>
-      </div>
-      <p class="pdf-doc-note">Upload a PDF or PPTX file and it will be displayed here as a reference document.</p>
-      <div id="pdfContent-staff-handbook" class="pdf-content"></div>
-    </div>
-  </div>
-</section>
-
-
-<section id="admin" class="section">
-  <div class="section-head">
-    <div class="tag">ADMIN PORTAL</div><h2>🛡 Admin Portal</h2>
-    <p>Manage site content and settings from one place.</p>
-  </div>
-  <div id="adminGate" class="warning">Admin access required. Sign in with an admin account.</div>
-  <div id="adminPanel" style="display:none">
-    
-    <div class="scenario-tabs" style="margin-bottom:16px">
-      <button class="admintab active" onclick="showAdminTab('dashboard')">📊 Dashboard</button>
-      <button class="admintab" onclick="showAdminTab('content')">📝 Content</button>
-      <button class="admintab" onclick="showAdminTab('rp')">🎭 RP Actions</button>
-      <button class="admintab" onclick="showAdminTab('medications')">💊 Medications</button>
-      <button class="admintab" onclick="showAdminTab('equipment')">💰 Equipment</button>
-      <button class="admintab" onclick="showAdminTab('documents')">📄 Documents</button>
-      <button class="admintab" onclick="showAdminTab('backup')">📥 Backup</button>
-      <button class="admintab" onclick="showAdminTab('foundation')">🧩 CMS Manager</button>
-      <button class="admintab" onclick="showAdminTab('cms')">🗃 Legacy / Read-only</button>
-    </div>
-
-    <!-- Dashboard -->
-    <div id="adminDashTab" class="admin-panel active">
-      <div class="dash-grid" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr))">
-<div class="dash-card" onclick="showAdminTab('content')"><span class="dash-icon">📝</span><h3>Content</h3><p>Edit site content and guides</p></div>
-        <div class="dash-card" onclick="showAdminTab('rp')"><span class="dash-icon">🎭</span><h3>RP Actions</h3><p>Manage default RP library</p></div>
-        <div class="dash-card" onclick="showAdminTab('medications')"><span class="dash-icon">💊</span><h3>Medications</h3><p>Update medication information</p></div>
-        <div class="dash-card" onclick="showAdminTab('equipment')"><span class="dash-icon">💰</span><h3>Equipment</h3><p>Manage equipment library</p></div>
-        <div class="dash-card" onclick="showAdminTab('documents')"><span class="dash-icon">📄</span><h3>Documents</h3><p>Uploaded PDFs and files</p></div>
-        <div class="dash-card" onclick="showAdminTab('foundation')"><span class="dash-icon">🧩</span><h3>CMS Manager</h3><p>Pages, sections, blocks, navigation &amp; categories</p></div>
-        <div class="dash-card" onclick="showAdminTab('backup')"><span class="dash-icon">📥</span><h3>Backup</h3><p>Export/import site data</p></div>
-      </div>
-    </div>
-    <!-- Content Editor -->
-    <div id="adminContentTab" class="admin-panel" style="display:none">
-      <div class="section-head"><h2>Content Editor</h2><p>Click any section below to open the rich text editor and edit its content.</p></div>
-      <div class="scene-grid" id="adminContentSections">
-        <article class="info" onclick="openContentEditor('handbook')"><h4>📖 Handbook</h4><p>Staff handbook and policies</p></article>
-        <article class="info" onclick="openContentEditor('docs')"><h4>📝 Docs</h4><p>Documentation guides</p></article>
-        <article class="info" onclick="openContentEditor('slides')"><h4>📽 Slides</h4><p>Slide presentations</p></article>
-        <article class="info" onclick="openContentEditor('procedures-intro')"><h4>🩺 Procedures</h4><p>Procedure introduction content</p></article>
-      </div>
-      <div id="adminContentEditorWrap" style="display:none;margin-top:16px">
-        <div class="section-head"><h3 id="adminContentEditorTitle">Editing: </h3></div>
-        <div class="editor-toolbar">
-          <button type="button" data-cmd="bold" title="Bold"><strong>B</strong></button>
-          <button type="button" data-cmd="italic" title="Italic"><em>I</em></button>
-          <button type="button" data-cmd="underline" title="Underline"><u>U</u></button>
-          <span class="sep"></span>
-          <button type="button" data-block="h2" title="Heading 1">H1</button>
-          <button type="button" data-block="h3" title="Heading 2">H2</button>
-          <button type="button" data-block="p" title="Paragraph">¶</button>
-          <span class="sep"></span>
-          <button type="button" data-cmd="insertUnorderedList" title="Bullet list">☰</button>
-          <span class="sep"></span>
-          <button type="button" onclick="saveAdminContent()">💾 Save</button>
-          <button type="button" class="secondary" onclick="closeContentEditor()">🔙 Back</button>
-        </div>
-        <div id="adminContentEditor" class="editor-content" contenteditable="true" style="min-height:300px"></div>
-        <div class="editor-save-status" id="adminEditorStatus">Edit content above and click Save.</div>
-      </div>
-    </div>
-
-    <!-- RP Actions -->
-    <div id="adminRpTab" class="admin-panel" style="display:none">
-      <div class="section-head"><h2>RP Actions Manager</h2><p>Add, edit or remove default RP actions. These sync to all users.</p></div>
-      <div class="admin-toolbar">
-        <input id="adminRpSearch" type="search" placeholder="Search RP actions...">
-        <button class="primary" onclick="openAddRpAction()">+ Add RP Action</button>
-      </div>
-      <div id="adminRpList"></div>
-    </div>
-
-    <!-- Medications -->
-    <div id="adminMedsTab" class="admin-panel" style="display:none">
-      <div class="section-head"><h2>Medication Reference</h2><p>Medication information is stored in the site HTML. Edit using the Handbook editor for custom additions.</p></div>
-      <article class="info">
-        <h4>📖 Medication Information</h4>
-        <p>Medication data is part of the core site build. To add or edit medications, use the Handbook editor or contact the developer for a site update.</p>
-        <button class="secondary" onclick="showAdminTab('content')">Go to Content Editor</button>
-      </article>
-    </div>
-
-    <!-- Equipment -->
-    <div id="adminEquipTab" class="admin-panel" style="display:none">
-      <div class="section-head"><h2>Equipment Manager</h2><p>Equipment categories and items stored in the site. Custom equipment can be added via document upload.</p></div>
-      <article class="info">
-        <h4>💰 Equipment Library</h4>
-        <p>Equipment data is part of the core site build. Browse the equipment library from the sidebar.</p>
-        <button class="secondary" onclick="showSection('equipment')">Go to Equipment Library</button>
-      </article>
-    </div>
-
-    <!-- Documents -->
-    <div id="adminDocsTab" class="admin-panel" style="display:none">
-      <div class="section-head"><h2>📄 Uploaded Documents</h2><p>All PDF documents uploaded to the site. Manage them here.</p></div>
-      <div id="adminDocList"><p class="muted">Loading documents...</p></div>
-    </div>
-
-    <!-- Backup -->
-    <div id="adminFoundationTab" class="admin-panel" style="display:none">
-      <div class="section-head">
-        <h2>🧩 CMS Manager</h2>
-        <p>Manage pages, sections, content blocks, navigation and categories without editing code. This is the primary structured CMS.</p>
-      </div>
-      <div class="admin-toolbar" style="margin-bottom:14px">
-        <select id="cms2TypeSelect" onchange="cms2List()" style="background:#0f2029;border:1px solid #29434f;border-radius:8px;color:#eaf2f4;padding:10px 14px;font-size:14px;flex:1;min-width:220px"></select>
-        <button class="primary" onclick="cms2OpenEditor(null)">+ Add</button>
-        <button class="secondary" onclick="cms2List()">Refresh</button><button class="secondary" type="button" onclick="cms4ToggleStructure()">Structure</button>
-      </div>
-
-      <article class="info" style="margin-bottom:14px">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
-          <div>
-            <h3 style="margin:0 0 4px">🔎 Legacy CMS Retirement Check</h3>
-            <p class="muted" style="margin:0">Read-only production check. It verifies that legacy content has structured equivalents and that the public site no longer depends on the old CMS.</p>
-          </div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">
-            <button class="secondary" onclick="runCmsRetirementCheck()">Run Check</button>
-            <button class="primary" onclick="runCmsLegacyMigration()">Migrate Legacy Content</button>
-            <button class="secondary" onclick="promoteCmsMigrated()">Publish Migrated Content</button>
-          </div>
-        </div>
-        <div id="cmsRetirementCheckResult" style="display:none;margin-top:12px"></div>
-      </article>
-
-      <div class="cms4-core-dashboard" id="cms4CoreDashboard">
-        <div class="cms4-core-head">
-          <div>
-            <span class="knowledge-kicker">UHS CMS CORE</span>
-            <h3>Structured CMS control centre</h3>
-            <p class="muted">Manage pages, sections, content blocks, navigation and categories. Published structured content is the authoritative source; legacy content remains available only as compatibility fallback.</p>
-          </div>
-          <button class="secondary" type="button" onclick="cms4LoadOverview()">↻ Refresh overview</button>
-        </div>
-        <div id="cms4CoreStats" class="cms4-core-stats">
-          <div class="cms4-stat"><span>Pages</span><strong>—</strong><small>Loading</small></div>
-          <div class="cms4-stat"><span>Sections</span><strong>—</strong><small>Loading</small></div>
-          <div class="cms4-stat"><span>Blocks</span><strong>—</strong><small>Loading</small></div>
-          <div class="cms4-stat"><span>Navigation</span><strong>—</strong><small>Loading</small></div>
-          <div class="cms4-stat"><span>Categories</span><strong>—</strong><small>Loading</small></div>
-          <div class="cms4-stat"><span>Revisions</span><strong>—</strong><small>Loading</small></div>
-        </div>
-        <div class="cms4-core-guidance">
-          <span>1. Build</span><span>2. Save as draft</span><span>3. Review</span><span>4. Publish</span><span>5. Verify navigation</span>
-        </div>
-      </div>
-
-      <div id="cms4Structure" class="cms4-structure" style="display:none"></div>
-      <div id="cms2List" class="staff-list">
-        <p class="muted">Select a type to manage items.</p>
-      </div>
-      <div id="cms2Editor" style="display:none;background:#0c1922;border:1px solid #203542;border-radius:12px;padding:18px;margin-top:16px">
-        <div class="section-head" style="border:0;margin:0 0 12px">
-          <h3 id="cms2EditorTitle" style="margin:0;font-size:17px">Edit Item</h3>
-        </div>
-        <div id="cms2Form"></div>
-        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
-          <button class="primary" onclick="cms2Save()">Save Item</button>
-          <button class="secondary" type="button" onclick="cms2PreviewCurrent()">Preview</button>
-          <button class="secondary" onclick="cms2CloseEditor()">Cancel</button>
-        </div>
-      </div>
-    </div>
-
-        <div id="cms2VersionsModal" class="cms2-preview-modal" style="display:none" role="dialog" aria-modal="true" aria-labelledby="cms2VersionsTitle">
-  <div class="cms2-preview-card">
-    <div class="cms2-preview-head"><div><span class="knowledge-kicker">UHS KNOWLEDGE HUB</span><h3 id="cms2VersionsTitle">Revision History</h3></div><button type="button" class="secondary" onclick="cms2CloseVersions()">Close</button></div>
-    <div id="cms2VersionsBody" class="cms2-preview-body"></div>
-  </div>
-</div>
-
-        <div id="cms2PreviewModal" class="cms2-preview-modal" style="display:none" role="dialog" aria-modal="true" aria-labelledby="cms2PreviewTitle">
-          <div class="cms2-preview-card">
-            <div class="cms2-preview-head"><div><span class="knowledge-kicker">UHS KNOWLEDGE HUB</span><h3 id="cms2PreviewTitle">Content Preview</h3></div><button type="button" class="secondary" onclick="cms2ClosePreview()">Close</button></div>
-            <div id="cms2PreviewBody" class="cms2-preview-body"></div>
-          </div>
-        </div>
-
-        <div id="adminBackupTab" class="admin-panel" style="display:none">
-      <div class="section-head"><h2>📥 Backup & Restore</h2><p>Export or import site data for backup purposes.</p></div>
-      <div class="two-col">
-        <article class="info">
-          <h4>📤 Export Data</h4>
-          <p>Download a complete backup of all RP actions, TTS questions, and saved scenes.</p>
-          <button class="primary" onclick="exportRpProfile()">Export RP Profile</button>
-        </article>
-        <article class="info">
-          <h4>📥 Import Data</h4>
-          <p>Restore a previously exported profile.</p>
-          <button class="secondary" onclick="document.getElementById('adminImportFile').click()">Import Profile</button>
-          <input type="file" id="adminImportFile" accept=".json" style="display:none" onchange="importRpProfile(this)">
-        </article>
-      </div>
-      <article class="info" style="margin-top:12px">
-        <h4>🔄 Reset RP Library</h4>
-        <p>Clear all custom RP actions, TTS questions, and saved scenes for all users.</p>
-        <button class="danger" onclick="resetRpLibrary()">Reset Library</button>
-      </article>
-    </div>
-
-  </div>
-
-
-    <!-- CMS Manager -->
-    <div id="adminCmsTab" class="admin-panel" style="display:none">
-      <div class="section-head">
-        <h2>🗃 Legacy / Compatibility</h2>
-        <p>This is the old key-value CMS retained for rollback and compatibility. <strong>Use the primary CMS Manager above for all new edits.</strong></p>
-        <div class="info" style="margin-top:10px"><strong>Migration mode:</strong> published content is now read from the structured CMS first. Keep this area unchanged unless you are deliberately maintaining legacy fallback content.</div>
-      </div>
-
-      <div class="admin-toolbar" style="margin-bottom:14px">
-        <select id="cmsTypeSelect" onchange="cmsRenderList()" style="background:#0f2029;border:1px solid #29434f;border-radius:8px;color:#eaf2f4;padding:10px 14px;font-size:14px;flex:1;min-width:220px"></select>
-        <button class="secondary" onclick="cmsRenderList()">Refresh</button>
-        <span class="muted" style="align-self:center">Read-only compatibility view</span>
-      </div>
-
-      <div id="cmsList" class="staff-list">
-        <p class="muted">Select a content type to manage items.</p>
-      </div>
-
-      <!-- Item editor (inline expandable) -->
-      <div id="cmsEditor" style="display:none;background:#0c1922;border:1px solid #203542;border-radius:12px;padding:18px;margin-top:16px">
-        <div class="section-head" style="border:0;margin:0 0 12px">
-          <h3 id="cmsEditorTitle" style="margin:0;font-size:17px">Edit Item</h3>
-        </div>
-        <div class="form-grid">
-          <label>Key (stable id, lowercase-no-spaces)
-            <input id="cmsKey" placeholder="e.g. paracetamol">
-          </label>
-          <label>Display name
-            <input id="cmsName" placeholder="e.g. Paracetamol">
-          </label>
-        </div>
-        <div id="cmsSlideUrlRow" style="margin:6px 0 12px;display:none">
-          <label style="display:flex;align-items:center;gap:10px;background:#0f2029;border:1px solid #29434f;border-radius:8px;padding:10px 14px">
-            <span style="font-size:16px">📽</span>
-            <span style="flex:1;color:#9bb0bb;font-weight:600">Google Slides URL</span>
-            <input id="cmsSlideUrl" type="url" placeholder="https://docs.google.com/presentation/d/..." style="flex:3;background:transparent;border:0;color:#eaf2f4;font-size:13px;outline:none">
-          </label>
-        </div>
-        <label>Content (JSON payload — fields shown in the viewer)
-          <textarea id="cmsContent" rows="10" style="font-family:monospace;font-size:12px"></textarea>
-        </label>
-        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
-          <button class="primary" onclick="cmsSaveItem()">💾 Save Item</button>
-          <button class="danger-small" onclick="cmsDeleteCurrent()">🗑️ Delete</button>
-          <button class="secondary" onclick="cmsCloseEditor()">Cancel</button>
-          <span class="muted" id="cmsEditorHint" style="align-self:center"></span>
-        </div>
-      </div>
-
-      <!-- Theme settings -->
-      <div id="cmsThemeCard" style="margin-top:20px;background:#0c1922;border:1px solid #203542;border-radius:12px;padding:18px">
-        <div class="section-head" style="border:0;margin:0 0 12px"><h3 style="margin:0;font-size:17px">🎨 Branding / Theme</h3></div>
-        <div class="form-grid">
-          <label>Site title (browser tab)
-            <input id="themeTitle" placeholder="FiveM UK EMS Clinical Reference">
-          </label>
-          <label>Badge text (top-left logo)
-            <input id="themeBadge" placeholder="FIVEM">
-          </label>
-        </div>
-        <div class="form-grid">
-          <label>Tagline
-            <input id="themeTagline" placeholder="Serious FiveM roleplay reference">
-          </label>
-          <label>Accent colour (hex)
-            <input id="themeAccent" type="color" value="#41b6e6" style="height:44px;padding:4px">
-          </label>
-        </div>
-        <div class="form-grid">
-          <label>Heading colour (hex)
-            <input id="themeHeading" type="color" value="#eaf2f4" style="height:44px;padding:4px">
-          </label>
-          <label>Card background tint (hex)
-            <input id="themeCardTint" type="color" value="#0c1922" style="height:44px;padding:4px">
-          </label>
-        </div>
-        <div style="display:flex;gap:8px;margin-top:12px">
-          <button class="primary" onclick="cmsSaveTheme()">💾 Save Branding</button>
-          <button class="secondary" onclick="cmsResetTheme()">Reset to Defaults</button>
-        </div>
-      </div>
-
-      <!-- Backup/restore for CMS -->
-      <div id="cmsBackupCard" style="margin-top:20px;background:#0c1922;border:1px solid #203542;border-radius:12px;padding:18px">
-        <div class="section-head" style="border:0;margin:0 0 12px"><h3 style="margin:0;font-size:17px">💾 Backup &amp; Restore</h3></div>
-        <p class="muted">Export all CMS changes to a JSON file, or restore from a backup.</p>
-        <div class="rp-card-actions" style="border:0;padding:0;background:transparent">
-          <button class="primary" onclick="cmsExportAll()">📤 Export All CMS</button>
-          <button class="secondary" onclick="document.getElementById('cmsImportFile').click()">📥 Import CMS</button>
-          <input type="file" id="cmsImportFile" accept=".json" style="display:none" onchange="cmsImportAll(this)">
-        </div>
-      </div>
-    </div>
-
-  <div class="pdf-doc-section">
-    <div class="pdf-doc-head">
-      <div class="tag">PDF DOCUMENT</div>
-      <label class="pdf-upload-btn" for="pdfInput-admin">📄 Add Document</label>
-      <input type="file" id="pdfInput-admin" accept="application/pdf,.pdf,application/vnd.openxmlformats-officedocument.presentationml.presentation,.pptx" onchange="handleDocPdf('admin', this)" hidden>
-    </div>
-    <p class="pdf-doc-note">Upload a PDF or PPTX reference document.</p>
-    <div id="pdfContent-admin" class="pdf-content"></div>
-  </div>
-</section>
-
 <div id="authModal" class="modal" aria-hidden="true">
   <div class="modal-card">
     <button class="modal-close" onclick="closeAuth()">×</button>
@@ -7225,46 +6520,10 @@ Receiving consultant:
 <div id="authMessage" class="auth-message"></div>
   </div>
 </div>
-
-
-
-      
-<section id="handbook-page" class="section">
-  <div class="section-head">
-    <div class="tag">HANDBOOK</div>
-    <h2>Staff Handbook</h2>
-    <p>Team policies, protocols and standard operating procedures. Admins can edit this document.</p>
-  </div>
-  <div class="editor-wrap">
-    <div class="editor-toolbar">
-      <button type="button" data-cmd="bold" title="Bold"><strong>B</strong></button>
-      <button type="button" data-cmd="italic" title="Italic"><em>I</em></button>
-      <button type="button" data-cmd="underline" title="Underline"><u>U</u></button>
-      <span class="sep"></span>
-      <button type="button" data-block="h1" title="Heading 1">H1</button>
-      <button type="button" data-block="h2" title="Heading 2">H2</button>
-      <button type="button" data-block="h3" title="Heading 3">H3</button>
-      <button type="button" data-block="p" title="Paragraph">¶</button>
-      <span class="sep"></span>
-      <button type="button" data-cmd="insertUnorderedList" title="Bullet list">☰</button>
-      <button type="button" data-cmd="insertOrderedList" title="Numbered list">1.</button>
-      <span class="sep"></span>
-      <button type="button" onclick="insertTableToEditor('handbook-editor')" title="Insert table">▦</button>
-      <button type="button" onclick="saveEditorContent('handbook-editor')" title="Save">💾 Save</button>
-      <button type="button" class="danger-small" onclick="clearHandbook()" title="Clear">🗑 Clear</button>
-    </div>
-    <div id="handbook-editor" class="editor-content" contenteditable="true" spellcheck="true"></div>
-    <div class="editor-save-status">Auto-saved locally. Only admins can publish changes.</div>
-  </div>
-</section>
-
-
-  <footer>Private FiveM RP reference • Not real clinical guidance • For roleplay use only.</footer>
+<footer>Private FiveM RP reference • Not real clinical guidance • For roleplay use only.</footer>
     </main>
   </div>
   <script src="script.js"></script>
-  <script src="cms.js"></script>
-  <script src="cms2.js"></script>
 <div id="rpActionModal" class="modal" aria-hidden="true">
   <div class="modal-card">
     <button type="button" class="modal-close" onclick="closeModal('rpActionModal')">&times;</button>
