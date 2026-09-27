@@ -11724,8 +11724,26 @@ window.uhsStrokeData = {
   contentTypes: [
     'strokeTypes','strokeSymptoms','strokeObservations','strokePathways',
     'strokeMedications','strokePermissions','strokeEquipment','strokeScenarios',
-    'strokeMeActions','strokeDoActions','strokeMDTRoles','strokeReferences'
-  ]
+    'strokeMeActions','strokeDoActions','strokeMDTRoles','strokeReferences',
+    'strokeMedicationPrepActions'
+  ],
+  medicationPrepActions: {
+    packageOpening: [
+      'Confirm authorisation, indication, medication name, strength, expiry and packaging integrity.',
+      'Open sealed packaging using the appropriate technique and keep medication identity visible.',
+      'Inspect ampoule/vial contents and packaging for damage, contamination or unexpected appearance.'
+    ],
+    doseDrawing: [
+      'Confirm the authorised dose, concentration and route from the current medication record/protocol.',
+      'Select suitable drawing-up equipment and maintain aseptic technique.',
+      'Draw the verified volume, check syringe markings, remove visible air as appropriate and perform the final safety check.'
+    ],
+    administration: [
+      'Confirm patient identity, allergies, indication, authorised dose and route.',
+      'Administer using the configured route and appropriate technique while monitoring the patient.',
+      'Reassess response/adverse effects and document medication, dose, route, time, clinician and outcome.'
+    ]
+  }
 };
 
 (function initialiseStrokeUI(){

@@ -1645,3 +1645,17 @@ main > section[id] textarea:focus-visible{
 .stroke-status{color:#ffcc72!important}.stroke-status--review{font-weight:700}
 @media(max-width:1100px){.stroke-grid--cards,.stroke-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.stroke-grid--fast,.stroke-source-grid,.stroke-scenario-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.stroke-permission-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:760px){.stroke-hero{display:block}.stroke-hero-status{margin-top:15px}.stroke-grid,.stroke-grid--cards,.stroke-grid--fast,.stroke-med-grid,.stroke-action-grid,.stroke-source-grid,.stroke-scenario-grid,.stroke-permission-grid,.stroke-prealert{grid-template-columns:1fr}.stroke-review-card{grid-template-columns:1fr}.stroke-review-card p{grid-column:auto}.stroke-tabs{position:static}.stroke-table{min-width:640px}.stroke-med-card dl{grid-template-columns:1fr}.stroke-flow i{display:none}}
+
+.stroke-action-card--medication{
+  border-top:2px solid #2b7db8;
+}
+.stroke-action-note{
+  margin:0 0 10px;
+  padding:9px 11px;
+  border-radius:8px;
+  background:rgba(32,104,151,.12);
+  border:1px solid rgba(64,148,205,.22);
+  color:#a9cbe0;
+  font-size:12px;
+  line-height:1.5;
+}
