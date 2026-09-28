@@ -4497,6 +4497,35 @@ function showScenario(name) {
    SCENE CHECKLIST
 ========================================================= */
 
+function renderSceneQuestions() {
+  const container =
+    document.getElementById('sceneQuestions');
+
+  if (!container) return;
+
+  const scene =
+    sceneData[currentScene];
+
+  if (!scene || !Array.isArray(scene.questions)) {
+    container.innerHTML = '';
+    return;
+  }
+
+  const questions = getEditableItems(
+    'scene-questions-' + currentScene,
+    scene.questions
+  );
+
+  container.innerHTML = questions
+    .map((question, index) => `
+      <div class="scene-question-item">
+        <span class="scene-question-number">${index + 1}</span>
+        <p>${escapeHtml(question)}</p>
+      </div>
+    `)
+    .join('');
+}
+
 function renderSceneChecklist() {
   const container =
     document.getElementById(
@@ -7498,8 +7527,6 @@ window.loadBodycam =
 window.reviewBodycam =
   reviewBodycam;
 
-window.addRank =
-  addRank;
 
 /* =========================================================
    ESCAPE HTML
