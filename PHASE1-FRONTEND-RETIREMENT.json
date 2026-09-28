@@ -1,0 +1,307 @@
+{
+  "phase": "Phase 1 \u2014 Frontend CMS/Staff Retirement",
+  "status": "PARTIAL_COMPLETE",
+  "changes": [
+    "Removed user-facing Staff, Handbook and Edit Mode controls.",
+    "Removed the frontend auth modal from the page.",
+    "Removed frontend CMS runtime bridge and CMS surgery override loading.",
+    "Surgery data is now application-owned at runtime.",
+    "Removed obsolete frontend cms.js and cms2.js files.",
+    "Removed obsolete root server.js entrypoint.",
+    "Removed user-facing Admin Portal and Staff/Roster management JavaScript blocks.",
+    "Removed frontend staff/admin startup listeners and stale global exports.",
+    "Reworded selected non-source CMS labels to UHS local protocol terminology."
+  ],
+  "preserved": [
+    "clinical information",
+    "stroke reference library",
+    "emergency reference library",
+    "backend systems pending dependency-safe retirement"
+  ],
+  "checks": {
+    "server/index.js": {
+      "exit": 0,
+      "stderr": ""
+    },
+    "public/script.js": {
+      "exit": 0,
+      "stderr": ""
+    },
+    "duplicate_ids": {},
+    "missing_nav_targets": [],
+    "frontend_cms_endpoints": 0,
+    "frontend_staff_controls": 0,
+    "frontend_admin_portal_refs": 0
+  },
+  "backend_routes_remaining_for_next_phase": [
+    {
+      "method": "GET",
+      "path": "/api/admin/cms-overview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/cms-publish-check"
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/cms-bulk-status"
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/cms-retirement-check"
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/cms-migrate-legacy"
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/cms-promote-migrated"
+    },
+    {
+      "method": "GET",
+      "path": "/api/admins"
+    },
+    {
+      "method": "GET",
+      "path": "/api/staff"
+    },
+    {
+      "method": "GET",
+      "path": "/api/roster/ranks"
+    },
+    {
+      "method": "POST",
+      "path": "/api/roster/ranks"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/roster/ranks/:id"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/roster/ranks/:id"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/staff/:id"
+    },
+    {
+      "method": "GET",
+      "path": "/api/cms/:contentType"
+    },
+    {
+      "method": "GET",
+      "path": "/api/cms/item/:key"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/cms/:contentType/:key"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/cms/:contentType/:key/rename"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/cms/item/:key"
+    },
+    {
+      "method": "POST",
+      "path": "/api/cms/seed"
+    },
+    {
+      "method": "POST",
+      "path": "/api/cms/reset"
+    },
+    {
+      "method": "GET",
+      "path": "/api/public/cms/blocks/:contentType"
+    },
+    {
+      "method": "GET",
+      "path": "/api/public/cms/pages/:slug"
+    },
+    {
+      "method": "GET",
+      "path": "/api/public/cms/navigation"
+    },
+    {
+      "method": "GET",
+      "path": "/api/public/cms/categories/:contentType"
+    },
+    {
+      "method": "GET",
+      "path": "/api/cms-pages"
+    },
+    {
+      "method": "GET",
+      "path": "/api/cms-pages/:id"
+    },
+    {
+      "method": "POST",
+      "path": "/api/cms-pages"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/cms-pages/:id"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/cms-pages/:id"
+    },
+    {
+      "method": "POST",
+      "path": "/api/cms-pages/:id/restore"
+    },
+    {
+      "method": "POST",
+      "path": "/api/cms-pages/:id/duplicate"
+    },
+    {
+      "method": "POST",
+      "path": "/api/cms-pages/reorder"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/cms/:contentType/:key/publish"
+    },
+    {
+      "method": "POST",
+      "path": "/api/cms/:contentType/:key/duplicate"
+    },
+    {
+      "method": "POST",
+      "path": "/api/cms/:contentType/reorder"
+    },
+    {
+      "method": "POST",
+      "path": "/api/cms/:contentType/:key/restore"
+    },
+    {
+      "method": "GET",
+      "path": "/api/cms/versions/:contentKey"
+    },
+    {
+      "method": "POST",
+      "path": "/api/cms/versions/:contentKey"
+    },
+    {
+      "method": "POST",
+      "path": "/api/cms/versions/:contentKey/restore/:version"
+    },
+    {
+      "method": "GET",
+      "path": "/api/cms-sections"
+    },
+    {
+      "method": "GET",
+      "path": "/api/cms-sections/:pageId"
+    },
+    {
+      "method": "POST",
+      "path": "/api/cms-sections/:pageId"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/cms-sections/:id"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/cms-sections/:id"
+    },
+    {
+      "method": "POST",
+      "path": "/api/cms-sections/:id/restore"
+    },
+    {
+      "method": "POST",
+      "path": "/api/cms-sections/reorder"
+    },
+    {
+      "method": "GET",
+      "path": "/api/cms-blocks"
+    },
+    {
+      "method": "POST",
+      "path": "/api/cms-blocks"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/cms-blocks/:id"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/cms-blocks/:id"
+    },
+    {
+      "method": "POST",
+      "path": "/api/cms-blocks/:id/restore"
+    },
+    {
+      "method": "POST",
+      "path": "/api/cms-blocks/reorder"
+    },
+    {
+      "method": "GET",
+      "path": "/api/cms-blocks/:id/versions"
+    },
+    {
+      "method": "POST",
+      "path": "/api/cms-blocks/:id/versions"
+    },
+    {
+      "method": "POST",
+      "path": "/api/cms-blocks/:id/versions/restore/:version"
+    },
+    {
+      "method": "GET",
+      "path": "/api/cms-navigation"
+    },
+    {
+      "method": "POST",
+      "path": "/api/cms-navigation"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/cms-navigation/:id"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/cms-navigation/:id"
+    },
+    {
+      "method": "POST",
+      "path": "/api/cms-navigation/:id/restore"
+    },
+    {
+      "method": "POST",
+      "path": "/api/cms-navigation/reorder"
+    },
+    {
+      "method": "POST",
+      "path": "/api/cms-categories/reorder"
+    },
+    {
+      "method": "GET",
+      "path": "/api/cms-categories"
+    },
+    {
+      "method": "POST",
+      "path": "/api/cms-categories"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/cms-categories/:id"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/cms-categories/:id"
+    },
+    {
+      "method": "POST",
+      "path": "/api/cms-categories/:id/restore"
+    }
+  ],
+  "next": "Audit and retire backend CMS/staff/admin routes and database structures only after reference tracing and migration verification."
+}

@@ -1,0 +1,96 @@
+{
+  "platform": "UHS Clinical Learning & Knowledge Platform",
+  "navigation": [
+    "Home",
+    "Learn",
+    "Clinical Topics",
+    "Assessments",
+    "Procedures",
+    "Medications",
+    "Equipment",
+    "Pathways",
+    "Scenarios",
+    "Study Tools",
+    "Reference"
+  ],
+  "learningLevels": {
+    "Foundations": [
+      "Clinical Assessment",
+      "ABCDE",
+      "Vital Signs",
+      "Patient Assessment",
+      "Infection Control",
+      "PPE",
+      "Communication",
+      "Documentation",
+      "Basic Anatomy",
+      "Medical Terminology"
+    ],
+    "Core Clinical Knowledge": [
+      "Cardiovascular",
+      "Respiratory",
+      "Neurological",
+      "Gastrointestinal",
+      "Endocrine",
+      "Musculoskeletal",
+      "Infection",
+      "Mental Health",
+      "Paediatrics",
+      "Obstetrics"
+    ],
+    "Emergencies": [
+      "Cardiac Arrest",
+      "Stroke",
+      "Sepsis",
+      "Anaphylaxis",
+      "Major Trauma",
+      "Burns",
+      "Chest Pain",
+      "Respiratory Emergencies",
+      "Seizures",
+      "Altered Consciousness"
+    ],
+    "Advanced": [
+      "Advanced Assessment",
+      "Advanced Airway",
+      "ECG",
+      "Advanced Trauma",
+      "Critical Care",
+      "HEMS",
+      "Complex Scenarios"
+    ]
+  },
+  "contentTypes": [
+    "conditions",
+    "assessments",
+    "procedures",
+    "medications",
+    "equipment",
+    "pathways",
+    "scenarios",
+    "study",
+    "glossary",
+    "quick-reference"
+  ],
+  "conditionTemplate": [
+    "Overview",
+    "Common Types",
+    "Causes",
+    "Risk Factors",
+    "Signs & Symptoms",
+    "Red Flags",
+    "Observations",
+    "Assessment",
+    "Investigations",
+    "Pre-Hospital Management",
+    "Hospital Pathway",
+    "Medications",
+    "Complications",
+    "Escalation",
+    "Handover",
+    "Scenario",
+    "Key Points",
+    "Quick Reference"
+  ],
+  "status": "application-owned learning architecture; source content preserved during migration"
+}
