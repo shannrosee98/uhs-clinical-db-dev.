@@ -1,0 +1,294 @@
+{
+  "id": "fractures-open-fractures",
+  "title": "Fractures and Open Fractures",
+  "short_title": "Fractures / Open fractures",
+  "category": "Trauma",
+  "age_group": "16+",
+  "rp_only": true,
+  "disclaimer": "FiveM role-play educational guide. This content is not a substitute for clinical training or local trauma protocols. In a real emergency, call 999 or 112.",
+  "last_reviewed": "2026-09-28",
+  "severity": [
+    "moderate",
+    "serious",
+    "critical"
+  ],
+  "incident_description": "Educational overview of suspected fractures and open fractures, including assessment, neurovascular checks, immobilisation, escalation and documentation.",
+  "scene_safety": [
+    "Follow <C>ABCDE if there is significant trauma.",
+    "Control life-threatening bleeding before detailed limb assessment.",
+    "Avoid unnecessary manipulation of a suspected fracture.",
+    "Do not repeatedly probe or explore an open wound."
+  ],
+  "mechanism_questions": [
+    "Mechanism and energy of injury",
+    "Time of injury",
+    "Direct blow, twisting, crush or axial loading",
+    "Fall height or road-traffic mechanism",
+    "Contamination with soil, water, sewage or animal material",
+    "Bleeding and treatment already given",
+    "Anticoagulant or antiplatelet use",
+    "Comorbidities, allergies and tetanus status",
+    "Ability to move or weight-bear before immobilisation",
+    "Numbness, weakness or altered sensation"
+  ],
+  "initial_impression": [
+    "Consider a fracture with pain, point tenderness, swelling, bruising, loss of function, inability to weight-bear, reduced movement or deformity.",
+    "An open fracture should be presumed when there is a wound near a fracture until proven otherwise.",
+    "Do not repeatedly manipulate a suspected fracture to confirm it.",
+    "Imaging must not delay treatment of life-threatening haemorrhage, vascular compromise or a threatened limb."
+  ],
+  "primary_survey": {
+    "catastrophic_haemorrhage": [
+      "Control major bleeding.",
+      "Escalate uncontrolled bleeding or threatened limb.",
+      "Record bleeding-control intervention and time."
+    ],
+    "airway": [
+      "Follow <C>ABCDE where significant trauma is present."
+    ],
+    "breathing": [
+      "Assess for associated chest injury in major trauma."
+    ],
+    "circulation": [
+      "Assess pulse, colour, temperature, capillary refill and bleeding.",
+      "Look for expanding haematoma or limb ischaemia.",
+      "Hard vascular signs include absent palpable pulse, continued significant blood loss and expanding haematoma."
+    ],
+    "disability": [
+      "Assess sensation and motor function in relevant nerve territories.",
+      "Record altered sensation, weakness or paralysis."
+    ],
+    "exposure_and_environment": [
+      "Inspect skin integrity and wounds while maintaining dignity and warmth.",
+      "Look for open fracture, deformity and contamination."
+    ]
+  },
+  "observations": {
+    "required": [
+      "Heart rate",
+      "Respiratory rate",
+      "Blood pressure",
+      "Oxygen saturation",
+      "Temperature",
+      "Glasgow Coma Scale where relevant",
+      "Pain score",
+      "Skin colour",
+      "Skin temperature",
+      "Capillary refill",
+      "Distal pulse where a limb injury is present"
+    ],
+    "trend_rules": [
+      "Document neurovascular assessment before and after realignment, reduction or splinting.",
+      "Record observations and pain score.",
+      "For RP use, require a second neurovascular assessment after any splint, reduction or movement."
+    ]
+  },
+  "focused_examination": {
+    "fracture_findings": [
+      "Pain and point tenderness",
+      "Swelling or bruising",
+      "Loss of function",
+      "Inability to weight-bear",
+      "Reduced range of movement",
+      "Deformity, angulation, shortening or abnormal rotation",
+      "Bony tenderness",
+      "Abnormal movement at the injury site",
+      "Wound or exposed bone"
+    ],
+    "circulation": [
+      "Skin colour",
+      "Skin temperature",
+      "Capillary refill",
+      "Distal pulses",
+      "Presence of bleeding",
+      "Expanding haematoma",
+      "Evidence of limb ischaemia"
+    ],
+    "sensory": [
+      "Sensation in relevant nerve territories compared with the uninjured limb"
+    ],
+    "motor": [
+      "Active movement and weakness where safe and appropriate"
+    ],
+    "compartment_syndrome": [
+      "Pain out of proportion",
+      "Increasing pain despite analgesia",
+      "Pain on passive stretch",
+      "Tense or swollen compartment",
+      "Paresthesia or altered sensation",
+      "Progressive weakness",
+      "Increasing analgesic requirement",
+      "Deep, tight or bursting pain"
+    ]
+  },
+  "differential_diagnoses": [
+    "Closed fracture",
+    "Open fracture",
+    "Dislocation",
+    "Soft-tissue injury",
+    "Vascular injury",
+    "Compartment syndrome",
+    "Pelvic fracture with internal bleeding",
+    "Associated major trauma"
+  ],
+  "likely_rp_diagnoses": {
+    "moderate": [
+      "Suspected closed distal radius fracture",
+      "Suspected closed limb fracture"
+    ],
+    "serious": [
+      "Suspected open tibial fracture",
+      "Fracture with distal neurovascular compromise"
+    ],
+    "critical": [
+      "Suspected compartment syndrome",
+      "Suspected femoral shaft fracture with possible haemorrhagic shock",
+      "Suspected pelvic fracture with internal bleeding"
+    ]
+  },
+  "immediate_management": {
+    "closed_fracture": [
+      "Follow <C>ABCDE if significant trauma.",
+      "Control major bleeding.",
+      "Remove rings, watches and restrictive clothing early if swelling is expected.",
+      "Support and immobilise the limb in the position found.",
+      "Avoid unnecessary movement.",
+      "Assess and document neurovascular status before and after splinting.",
+      "Provide appropriate analgesia according to the authorised protocol.",
+      "Keep the patient warm.",
+      "Arrange imaging and definitive orthopaedic assessment.",
+      "Escalate immediately for deformity, neurovascular compromise, severe pain or high-energy mechanism."
+    ],
+    "open_fracture": [
+      "Control life-threatening bleeding.",
+      "Do not push exposed bone back into the wound.",
+      "Do not repeatedly inspect, probe or manipulate the wound.",
+      "Remove only obvious gross contamination if necessary.",
+      "Cover with sterile saline-soaked gauze and an occlusive dressing.",
+      "Do not perform a pre-hospital or emergency-department mini-washout of long-bone, hindfoot or midfoot open fractures before formal wound excision.",
+      "Give IV prophylactic antibiotics as soon as possible, preferably within 1 hour of injury, without delaying transport; exact regimen follows local trauma-network protocol.",
+      "Realign and splint if necessary, particularly with vascular compromise or gross deformity.",
+      "Repeat and record neurovascular findings after realignment or splinting.",
+      "Arrange urgent orthopaedic and plastic-surgery/orthoplastic review where appropriate."
+    ],
+    "investigations": [
+      "Plain radiographs are usually the initial test for an isolated suspected fracture.",
+      "Image the joint above and below where clinically relevant.",
+      "CT is particularly important for complex, intra-articular, pelvic or multiple injuries.",
+      "In adults with blunt major trauma and suspected multiple injuries, whole-body CT may be appropriate according to the major-trauma pathway.",
+      "Do not delay life-saving treatment for imaging."
+    ]
+  },
+  "reassessment": {
+    "required": [
+      "Repeat neurovascular assessment after splinting, reduction, realignment or movement.",
+      "Repeat pain and observations.",
+      "Monitor for worsening pain, sensory change, weakness or vascular compromise."
+    ],
+    "compartment_syndrome": [
+      "Maintain particular awareness for at least 48 hours after tibial fracture or fixation, with regular documented assessments.",
+      "Pulselessness, paralysis and marked pallor are late findings; a palpable pulse does not exclude compartment syndrome."
+    ]
+  },
+  "escalation_criteria": [
+    "Absent or worsening distal pulse",
+    "Expanding haematoma",
+    "Uncontrolled bleeding",
+    "Pale, cold or mottled limb",
+    "New numbness, weakness or paralysis",
+    "Severe pain disproportionate to findings",
+    "Pain on passive stretch",
+    "Tense compartments",
+    "Open fracture",
+    "Exposed bone",
+    "Gross deformity or dislocation",
+    "Suspected pelvic fracture with shock",
+    "High-energy mechanism",
+    "Crush injury",
+    "Amputation or threatened amputation",
+    "Complicated fracture with chest, abdominal, head or spinal injury",
+    "Deteriorating observations or altered consciousness"
+  ],
+  "disposition": {
+    "open_fracture": [
+      "Suspected open fractures of long bones, hindfoot or midfoot require direct transfer to a major trauma or specialist centre able to provide orthoplastic care according to the supplied NICE reference.",
+      "Hand, wrist, forefoot and digit injuries may follow a different local pathway."
+    ],
+    "closed_fracture": [
+      "Arrange imaging and definitive orthopaedic assessment.",
+      "Escalate immediately for deformity, neurovascular compromise, severe pain or high-energy mechanism."
+    ]
+  },
+  "handover": {
+    "format": "ATMIST",
+    "template": "This is a [age]-year-old [sex] with a suspected [fracture type/site]. Mechanism was [mechanism] at [time]. Skin integrity is [finding]. Neurovascular assessment before splinting was [finding]. Treatment given was [treatment]. Post-splint neurovascular findings are [finding]. Destination is [destination]."
+  },
+  "documentation": [
+    "Mechanism and time of injury",
+    "Site and suspected fracture type",
+    "Skin integrity and wound description",
+    "Contamination",
+    "Bleeding and treatment",
+    "Pulse, colour, temperature and capillary refill",
+    "Sensory and motor findings",
+    "Observations and pain score",
+    "Pre- and post-splint neurovascular status",
+    "Analgesia and antibiotics administered",
+    "Senior clinician or trauma-centre contact",
+    "Destination and handover"
+  ],
+  "complications": [
+    "Compartment syndrome",
+    "Vascular compromise",
+    "Infection",
+    "Tissue loss",
+    "Internal bleeding",
+    "Neurovascular injury",
+    "Missed associated trauma"
+  ],
+  "example_cases": [
+    {
+      "id": "closed-distal-radius",
+      "description": "Suspected closed distal radius fracture with pain, swelling and reduced wrist function.",
+      "likely_diagnosis": "Suspected closed distal radius fracture",
+      "red_flags": [
+        "Neurovascular compromise",
+        "Open wound",
+        "Gross deformity",
+        "High-energy mechanism"
+      ]
+    },
+    {
+      "id": "open-tibial",
+      "description": "Suspected open tibial fracture with an adjacent wound and contamination.",
+      "likely_diagnosis": "Suspected open tibial fracture",
+      "red_flags": [
+        "Exposed bone",
+        "Uncontrolled bleeding",
+        "Absent distal pulse",
+        "Compartment-syndrome features"
+      ]
+    },
+    {
+      "id": "compartment-syndrome",
+      "description": "Suspected compartment syndrome with escalating pain and pain on passive stretch.",
+      "likely_diagnosis": "Suspected compartment syndrome",
+      "red_flags": [
+        "Progressive sensory change",
+        "Weakness",
+        "Tense compartment",
+        "Vascular deterioration"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "title": "NICE: Major trauma: assessment and initial management",
+      "url": "https://www.nice.org.uk/guidance/ng39/chapter/recommendations"
+    },
+    {
+      "title": "NICE: Fractures (complex): assessment and management",
+      "url": "https://www.nice.org.uk/guidance/ng37/chapter/recommendations"
+    }
+  ]
+}

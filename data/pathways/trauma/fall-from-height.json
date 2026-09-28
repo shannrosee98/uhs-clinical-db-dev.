@@ -1,0 +1,524 @@
+{
+  "id": "fall-from-height",
+  "title": "Fall from Height",
+  "short_title": "Fall from height",
+  "category": "Trauma",
+  "age_group": "16+",
+  "rp_only": true,
+  "disclaimer": "REAL MEDICATION INFORMATION — FIVEM ROLE-PLAY ONLY. This content is fictionalised for FiveM gameplay and must not be used to diagnose or treat a real person. In a real emergency, call 999 or 112.",
+  "last_reviewed": "2025-02-01",
+  "severity": [
+    "moderate",
+    "serious",
+    "critical"
+  ],
+  "incident_description": "A patient who has fallen from a height such as a roof, balcony, ladder, scaffolding, building, staircase, tree or cliff. Injury severity depends on height, landing surface, body position, body region impacted and whether the patient struck another object during the fall.",
+  "scene_safety": [
+    "Confirm the scene is safe before approaching.",
+    "Check for unstable structures, falling objects, electricity, fire, water, traffic, broken glass and unsafe ground.",
+    "Do not enter an unstable building or structure.",
+    "Request police, fire and additional medical resources where appropriate.",
+    "Identify the height of the fall and the landing surface.",
+    "Determine whether the patient landed on their head, neck, back, chest, abdomen, pelvis or limbs.",
+    "Establish whether the patient was trapped, impaled or crushed.",
+    "Identify the number of patients.",
+    "Consider whether the fall may have been related to assault, intoxication, medical collapse or self-harm.",
+    "Preserve evidence and follow safeguarding or police procedures where relevant."
+  ],
+  "mechanism_questions": [
+    "Approximately how high was the fall?",
+    "What was the landing surface?",
+    "Did the patient land head-first, feet-first, on their side or on their back?",
+    "Did the patient strike another object before landing?",
+    "Was there a loss of consciousness?",
+    "Was the patient able to walk after the fall?",
+    "Was there a seizure or medical event before the fall?",
+    "Was alcohol or drug use suspected?",
+    "Was the fall witnessed?",
+    "Was the patient trapped or difficult to access?",
+    "Was there obvious bleeding?",
+    "Was the patient taking anticoagulants or antiplatelet medicines?",
+    "Could pregnancy be relevant?",
+    "What time did the fall occur?",
+    "What treatment has already been given?"
+  ],
+  "initial_impression": [
+    "Treat a fall from significant height as potentially serious even if the patient is awake and talking.",
+    "Observe the patient's position, movement, speech, breathing effort, skin colour and distress.",
+    "Look for catastrophic haemorrhage before performing a detailed examination.",
+    "Assume spinal injury is possible when the mechanism is high energy, the patient has neck or back pain, neurological symptoms, reduced consciousness or distracting injuries.",
+    "Consider head, chest, abdominal, pelvic and limb injuries simultaneously.",
+    "Do not allow the patient to stand or walk if spinal, pelvic or lower-limb injury is suspected."
+  ],
+  "primary_survey": {
+    "catastrophic_haemorrhage": {
+      "look_for": [
+        "Heavy external bleeding",
+        "Scalp wounds",
+        "Open fractures",
+        "Amputation or partial amputation",
+        "Penetrating injury",
+        "Blood pooling beneath the patient",
+        "Bleeding from the chest, abdomen, pelvis or limbs"
+      ],
+      "actions": [
+        "Apply firm direct pressure to external bleeding.",
+        "Use a tourniquet in the RP system for life-threatening limb bleeding not controlled by direct pressure.",
+        "Record the time of tourniquet application.",
+        "Do not remove soaked dressings to inspect an actively bleeding wound.",
+        "Escalate immediately for uncontrolled bleeding or signs of shock."
+      ]
+    },
+    "airway": {
+      "look_for": [
+        "Ability to speak",
+        "Gurgling, snoring or stridor",
+        "Blood or vomit in the mouth",
+        "Facial injury",
+        "Dental trauma",
+        "Reduced consciousness",
+        "Swelling around the mouth or neck"
+      ],
+      "actions": [
+        "Ask an alert patient to speak.",
+        "Maintain manual in-line spinal protection if spinal injury is suspected.",
+        "Use basic airway manoeuvres and suction according to the server's authorised procedures.",
+        "Escalate immediately for a threatened or obstructed airway.",
+        "Do not give oral medication or fluids to a patient with reduced consciousness or a threatened airway."
+      ]
+    },
+    "breathing": {
+      "look_for": [
+        "Respiratory rate and effort",
+        "Chest asymmetry",
+        "Chest pain",
+        "Reduced air entry",
+        "Open chest wound",
+        "Cyanosis",
+        "Paradoxical chest movement",
+        "Worsening oxygen saturation",
+        "Severe distress"
+      ],
+      "actions": [
+        "Expose the chest enough to assess movement and wounds while preventing heat loss.",
+        "Apply an occlusive dressing to an open chest wound according to the server's equipment system.",
+        "Escalate urgently for severe respiratory distress, worsening oxygen saturation or suspected tension-pneumothorax-type presentation.",
+        "Do not delay transport for a prolonged examination."
+      ]
+    },
+    "circulation": {
+      "look_for": [
+        "Heart rate",
+        "Blood pressure",
+        "Capillary refill",
+        "Skin colour and temperature",
+        "Weak or absent pulses",
+        "Abdominal pain or distension",
+        "Pelvic pain",
+        "Thigh deformity",
+        "Ongoing blood loss",
+        "Confusion, agitation or collapse"
+      ],
+      "actions": [
+        "Control external haemorrhage.",
+        "Establish intravenous access in the RP system if authorised.",
+        "Keep the patient warm.",
+        "Do not repeatedly rock, compress or test the pelvis.",
+        "Apply a pelvic binder in the RP system only when high-energy trauma and suspected pelvic bleeding are present.",
+        "Escalate for shock, ongoing bleeding or deteriorating observations."
+      ]
+    },
+    "disability": {
+      "look_for": [
+        "Glasgow Coma Scale",
+        "Pupil size and reactivity",
+        "Loss of consciousness",
+        "Confusion or agitation",
+        "Seizure",
+        "Severe headache",
+        "Vomiting",
+        "Weakness",
+        "Numbness",
+        "Loss of movement",
+        "Blood glucose where clinically relevant"
+      ],
+      "actions": [
+        "Record GCS using eye, verbal and motor components.",
+        "Repeat neurological observations if there is head injury or abnormal consciousness.",
+        "Treat a falling GCS as a time-critical deterioration.",
+        "Do not assume intoxication explains abnormal consciousness until serious injury has been considered.",
+        "Escalate for GCS below 15, seizure, new neurological deficit or deterioration."
+      ]
+    },
+    "exposure_and_environment": {
+      "look_for": [
+        "Scalp and facial wounds",
+        "Spinal tenderness",
+        "Chest injury",
+        "Abdominal bruising or distension",
+        "Pelvic pain",
+        "Open fractures",
+        "Limb deformity",
+        "Hidden bleeding",
+        "Cold or wet clothing"
+      ],
+      "actions": [
+        "Expose only as much as required to assess injury.",
+        "Preserve dignity.",
+        "Prevent hypothermia.",
+        "Inspect the back only when safe and with sufficient assistance.",
+        "Record all visible injuries before covering the patient."
+      ]
+    }
+  },
+  "observations": {
+    "stable_pattern": {
+      "heart_rate": "80-100 bpm",
+      "respiratory_rate": "12-20/min",
+      "blood_pressure": "Normal for the patient",
+      "oxygen_saturation": "96-100% on air",
+      "gcs": "15",
+      "pain_score": "2-6/10",
+      "skin": "Warm, normal colour, capillary refill less than 2 seconds"
+    },
+    "concerning_pattern": {
+      "heart_rate": "100-120 bpm",
+      "respiratory_rate": "20-28/min",
+      "blood_pressure": "Normal or borderline low",
+      "oxygen_saturation": "92-95% on air or falling",
+      "gcs": "13-15 or confused",
+      "pain_score": "6-9/10",
+      "skin": "Pale, cool or sweaty; capillary refill may be delayed"
+    },
+    "critical_pattern": {
+      "heart_rate": "120 bpm or higher, or abnormally slow in a deteriorating patient",
+      "respiratory_rate": "Below 8, above 30 or visibly inadequate",
+      "blood_pressure": "Falling or markedly low",
+      "oxygen_saturation": "Below 92% or rapidly falling",
+      "gcs": "8 or less, or a clear downward trend",
+      "pain_score": "Severe or rapidly worsening",
+      "skin": "Mottled, grey, blue, cold or clammy"
+    },
+    "observation_rules": [
+      "Normal initial observations do not exclude serious injury.",
+      "Repeat observations after every major intervention and whenever symptoms change.",
+      "Record the trend rather than only the latest values.",
+      "Interpret observations alongside the mechanism and examination findings."
+    ]
+  },
+  "focused_examination": {
+    "head_and_face": [
+      "Scalp wound or swelling",
+      "Facial deformity",
+      "Blood from the nose or ears",
+      "Loose or missing teeth",
+      "Pupil abnormality",
+      "Loss of consciousness",
+      "Vomiting",
+      "Seizure",
+      "Severe or worsening headache"
+    ],
+    "neck_and_spine": [
+      "Neck pain",
+      "Midline tenderness",
+      "Back pain",
+      "Spinal deformity",
+      "Weakness",
+      "Numbness",
+      "Tingling",
+      "Loss of movement",
+      "New bladder or bowel symptoms where relevant"
+    ],
+    "chest": [
+      "Chest pain",
+      "Chest-wall tenderness",
+      "Unequal chest movement",
+      "Open wound",
+      "Reduced air entry",
+      "Crepitus-type finding",
+      "Increasing respiratory effort"
+    ],
+    "abdomen_and_pelvis": [
+      "Abdominal pain",
+      "Abdominal distension",
+      "Bruising",
+      "Guarding or rigidity-type presentation",
+      "Pelvic pain",
+      "Pain on movement",
+      "Genital injury",
+      "Signs of shock"
+    ],
+    "limbs": [
+      "Deformity",
+      "Shortening or abnormal rotation",
+      "Swelling",
+      "Open wound",
+      "Bleeding",
+      "Reduced movement",
+      "Altered sensation",
+      "Weak or absent distal pulse",
+      "Pale or cold limb"
+    ]
+  },
+  "differential_diagnoses": [
+    "Minor soft-tissue injury",
+    "Closed fracture",
+    "Open fracture",
+    "Dislocation",
+    "Head injury or concussion",
+    "Intracranial bleeding",
+    "Cervical spine injury",
+    "Thoracic spine injury",
+    "Lumbar spine injury",
+    "Pneumothorax-type presentation",
+    "Haemothorax-type presentation",
+    "Abdominal organ injury",
+    "Pelvic fracture",
+    "Internal haemorrhage",
+    "Traumatic shock",
+    "Spinal cord injury",
+    "Crush injury",
+    "Medical collapse preceding the fall",
+    "Drug or alcohol intoxication complicating trauma",
+    "Self-harm or safeguarding concern"
+  ],
+  "likely_rp_diagnoses": {
+    "minor": [
+      "Superficial soft-tissue injury",
+      "Bruising",
+      "Minor sprain",
+      "Small laceration"
+    ],
+    "moderate": [
+      "Closed limb fracture",
+      "Dislocation",
+      "Concussion with GCS 15",
+      "Chest-wall injury",
+      "Back strain without neurological deficit"
+    ],
+    "serious": [
+      "Open fracture",
+      "Multiple fractures",
+      "Significant head injury",
+      "Spinal injury",
+      "Chest injury with respiratory compromise",
+      "Suspected internal bleeding",
+      "Pelvic injury"
+    ],
+    "critical": [
+      "Uncontrolled catastrophic haemorrhage",
+      "Severe traumatic shock",
+      "Airway obstruction",
+      "Severe respiratory failure",
+      "Cardiac arrest",
+      "GCS 8 or less",
+      "Suspected intracranial bleeding",
+      "Suspected major internal haemorrhage",
+      "Spinal cord injury with neurological deficit"
+    ]
+  },
+  "immediate_management": [
+    "Use the &lt;C&gt;ABCDE sequence.",
+    "Control catastrophic haemorrhage first.",
+    "Maintain spinal protection when clinically indicated.",
+    "Establish monitoring and repeat observations.",
+    "Treat life-threatening problems before minor injuries.",
+    "Immobilise suspected fractures in the position found unless an authorised server protocol permits otherwise.",
+    "Do not repeatedly manipulate suspected spinal, pelvic or limb injuries.",
+    "Keep the patient warm.",
+    "Minimise time at scene after immediate life-saving interventions.",
+    "Pre-alert the receiving hospital for serious or critical trauma.",
+    "Transport major trauma to the server's designated major trauma centre."
+  ],
+  "medications": [
+    {
+      "medication_id": "morphine-sulfate-iv-adult",
+      "when_to_consider": "Severe traumatic pain after the primary survey, if there is no contraindication.",
+      "requires_senior_authorisation": true
+    },
+    {
+      "medication_id": "tranexamic-acid-iv-trauma-adult",
+      "when_to_consider": "Major trauma with active or suspected significant haemorrhage within the appropriate time window.",
+      "requires_senior_authorisation": true
+    }
+  ],
+  "reassessment": {
+    "after_initial_assessment": [
+      "Repeat the complete primary survey.",
+      "Repeat heart rate, respiratory rate, blood pressure, oxygen saturation and GCS.",
+      "Repeat pain score.",
+      "Repeat pupil assessment if head injury is suspected.",
+      "Repeat distal circulation, sensation and movement for limb injuries."
+    ],
+    "after_medication": [
+      "Repeat observations within the server's configured interval.",
+      "Document response and adverse effects.",
+      "Do not administer further opioid if respiratory rate falls, consciousness deteriorates or oxygen saturation falls."
+    ],
+    "during_transport": [
+      "Repeat observations at regular intervals.",
+      "Repeat immediately if the patient deteriorates.",
+      "Record all trends.",
+      "Update the receiving hospital if the condition changes."
+    ]
+  },
+  "escalation_criteria": [
+    "Fall from significant height with suspected major trauma",
+    "Head-first landing",
+    "Loss of consciousness",
+    "GCS below 15 or falling GCS",
+    "Seizure",
+    "Repeated vomiting",
+    "Severe or worsening headache",
+    "New weakness, numbness or paralysis",
+    "Neck or spinal midline tenderness",
+    "Severe chest pain or respiratory distress",
+    "Falling oxygen saturation",
+    "Abdominal pain, distension or guarding",
+    "Pelvic pain with shock features",
+    "Open fracture",
+    "Gross deformity",
+    "Absent distal pulse",
+    "Uncontrolled bleeding",
+    "Suspected internal haemorrhage",
+    "Abnormal or deteriorating observations",
+    "Anticoagulant or antiplatelet use with head injury",
+    "Suspected intoxication masking neurological deterioration",
+    "Possible self-harm or safeguarding concern"
+  ],
+  "disposition": {
+    "minor": [
+      "Only consider minor disposition if the mechanism is low risk, the patient has a reassuring examination, observations are normal and there are no red flags.",
+      "Provide RP safety-netting and document the decision."
+    ],
+    "moderate": [
+      "Transport to the designated emergency department for clinical assessment and imaging.",
+      "Repeat observations during transport."
+    ],
+    "serious_or_critical": [
+      "Pre-alert the designated major trauma centre.",
+      "Use the shortest safe route.",
+      "Provide immediate life-saving treatment at scene.",
+      "Request senior clinician or specialist backup.",
+      "Do not delay transport for a prolonged secondary survey."
+    ]
+  },
+  "handover": {
+    "format": "ATMIST",
+    "template": "This is a [age]-year-old [sex] who fell approximately [height] from [object/location] onto [surface] at [time]. The patient landed [body position]. Suspected injuries are [injuries]. Initial observations were HR [value], RR [value], BP [value], SpO2 [value], GCS [value] and pain [value]/10. Key positive findings are [findings]. Key negative findings are [findings]. Treatment given was [treatment and medication]. The response was [response]. Estimated arrival is [time]. Additional requirements are [requirements].",
+    "example": "This is a 41-year-old following a fall of approximately 5 metres from scaffolding onto concrete at 15:10. The patient landed on their left side and did not lose consciousness. Suspected injuries are left chest trauma, pelvic injury and a left femur fracture. Initial observations are pulse 124, respiratory rate 28, blood pressure 94/60, oxygen saturation 94% on air, GCS 15 and pain 9/10. The patient is pale and clammy with left thigh deformity and abdominal tenderness. External bleeding is controlled. Morphine was administered under the RP medication protocol. The patient remains borderline and is being transferred to the major trauma centre."
+  },
+  "documentation": [
+    "Time of incident",
+    "Time of first patient contact",
+    "Height and type of fall",
+    "Landing surface",
+    "Landing position",
+    "Scene hazards",
+    "Whether the patient was trapped",
+    "Possible medical event before the fall",
+    "Primary survey findings",
+    "Initial and repeat observations",
+    "GCS and pupils",
+    "All injuries identified",
+    "Bleeding-control methods and times",
+    "Spinal or pelvic precautions",
+    "Medication name, dose, route, time and response",
+    "Allergies and relevant medical history",
+    "Anticoagulant or antiplatelet use",
+    "Pre-alert time and recipient",
+    "Destination",
+    "Final handover"
+  ],
+  "complications": [
+    "Intracranial bleeding",
+    "Spinal cord injury",
+    "Traumatic shock",
+    "Internal abdominal or pelvic haemorrhage",
+    "Pneumothorax-type presentation",
+    "Open fracture",
+    "Compartment-syndrome-type deterioration",
+    "Hypothermia",
+    "Medication-induced respiratory depression",
+    "Missed injury caused by intoxication or altered mental state"
+  ],
+  "example_cases": [
+    {
+      "id": "fall-low-height-minor",
+      "description": "A patient falls from the bottom two steps of a staircase and lands on their hand. They remain alert and have isolated wrist pain.",
+      "observations": {
+        "heart_rate": 88,
+        "respiratory_rate": 16,
+        "blood_pressure": "132/80",
+        "oxygen_saturation": 99,
+        "gcs": 15,
+        "pain_score": 5
+      },
+      "likely_diagnosis": "Suspected wrist injury",
+      "red_flags": [
+        "Head impact",
+        "Loss of consciousness",
+        "Neck pain",
+        "Neurological symptoms",
+        "Deformity or absent distal pulse"
+      ]
+    },
+    {
+      "id": "fall-height-moderate",
+      "description": "A patient falls approximately 3 metres from a ladder onto their feet and develops severe ankle pain with deformity. They remain alert and haemodynamically stable.",
+      "observations": {
+        "heart_rate": 104,
+        "respiratory_rate": 20,
+        "blood_pressure": "120/76",
+        "oxygen_saturation": 98,
+        "gcs": 15,
+        "pain_score": 8
+      },
+      "likely_diagnosis": "Suspected ankle fracture or dislocation",
+      "red_flags": [
+        "Open wound",
+        "Absent distal pulse",
+        "Altered sensation",
+        "Severe back pain",
+        "Pelvic pain",
+        "Deteriorating observations"
+      ]
+    },
+    {
+      "id": "fall-height-critical",
+      "description": "A patient falls approximately 6 metres from a roof onto concrete. They are confused, pale and tachycardic, with chest pain and abdominal tenderness.",
+      "observations": {
+        "heart_rate": 132,
+        "respiratory_rate": 30,
+        "blood_pressure": "86/54",
+        "oxygen_saturation": 91,
+        "gcs": 12,
+        "pain_score": 10
+      },
+      "likely_diagnosis": "Major trauma with suspected internal haemorrhage, chest injury and head injury",
+      "red_flags": [
+        "High-energy mechanism",
+        "Abnormal mental state",
+        "Hypotension",
+        "Tachycardia",
+        "Hypoxia",
+        "Abdominal tenderness",
+        "Chest pain"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "title": "NICE: Major trauma: assessment and initial management",
+      "url": "https://www.nice.org.uk/guidance/ng39/chapter/recommendations"
+    },
+    {
+      "title": "NICE: Head injury: assessment and early management",
+      "url": "https://www.nice.org.uk/guidance/ng232/chapter/recommendations"
+    },
+    {
+      "title": "NICE: Major trauma: service delivery",
+      "url": "https://www.nice.org.uk/guidance/ng40/chapter/recommendations"
+    }
+  ]
+}

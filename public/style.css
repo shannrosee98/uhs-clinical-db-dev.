@@ -1724,3 +1724,19 @@ main > section[id] textarea:focus-visible{
 .diagnosis-med-admin{margin-top:10px}
 .diagnosis-med-admin:disabled{opacity:.5;cursor:not-allowed}
 @media(max-width:700px){.diagnosis-med-card{padding:12px}.diagnosis-global-warning{font-size:.9rem}}
+
+/* Unified pathway library */
+.pathway-library-toolbar{display:grid;grid-template-columns:minmax(0,2fr) minmax(160px,1fr) minmax(160px,1fr);gap:.75rem;margin:1rem 0 1.25rem}
+.pathway-library-toolbar input,.pathway-library-toolbar select{width:100%;padding:.75rem;border:1px solid var(--border,#d9dee7);border-radius:10px;background:var(--surface,#fff);color:inherit}
+.diagnosis-pathway-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem}
+.diagnosis-pathway-card{border:1px solid var(--border,#d9dee7);border-radius:14px;padding:1rem;background:var(--surface,#fff);box-shadow:0 2px 10px rgba(0,0,0,.04)}
+.diagnosis-pathway-top{display:flex;justify-content:space-between;gap:.75rem;align-items:center;margin-bottom:.5rem}
+.diagnosis-pathway-category,.diagnosis-severity{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.diagnosis-pathway-actions{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem}
+.diagnosis-pathway-detail{margin-top:1rem;border-top:1px solid var(--border,#d9dee7);padding-top:1rem}
+.diagnosis-pathway-section{padding:.75rem 0;border-bottom:1px solid var(--border,#d9dee7)}
+.diagnosis-pathway-section h4{margin:.1rem 0 .75rem}
+.pathway-sub{padding:.6rem .75rem;margin:.5rem 0;border-left:3px solid var(--accent,#64748b);background:rgba(100,116,139,.05);border-radius:6px}
+.pathway-example-observations{display:flex;flex-wrap:wrap;gap:.5rem;margin:.75rem 0}
+.pathway-example-observations span{padding:.35rem .5rem;border:1px solid var(--border,#d9dee7);border-radius:8px;font-size:.85rem}
+@media(max-width:700px){.pathway-library-toolbar{grid-template-columns:1fr}.diagnosis-pathway-grid{grid-template-columns:1fr}}

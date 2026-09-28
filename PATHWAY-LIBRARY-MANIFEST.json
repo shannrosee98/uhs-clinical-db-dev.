@@ -1,5 +1,5 @@
 {
-  "phase": "Clinical Pathway Batch 1 \u2014 RTC + Adult Medication Reference",
+  "phase": "Clinical Pathway Library — Unified Pathways Tab",
   "status": "completed",
   "features": [
     "search/filter pathway library",
@@ -15,7 +15,13 @@
     "medication prerequisite consent and logging",
     "automatic reassessment flag after medication",
     "RP-only medication warning",
-    "source material preserved under data/source-material"
+    "source material preserved under data/source-material",
+    "Unified Pathway Guide Library in Pathways tab",
+    "Search/category/severity filtering across embedded pathway guides",
+    "Fall from Height source pathway",
+    "Fractures and Open Fractures educational pathway",
+    "Object-shaped pathway section rendering for observations, reassessment, handover and primary survey",
+    "Shared medication references retained"
   ],
   "counts": {
     "pathways": 41,
@@ -25,5 +31,10 @@
   "database_changed": false,
   "validation": {
     "node_check_script": true
-  }
+  },
+  "pathway_files": [
+    "data/pathways/trauma/road-traffic-collision.json",
+    "data/pathways/trauma/fall-from-height.json",
+    "data/pathways/trauma/fractures-open-fractures.json"
+  ]
 }

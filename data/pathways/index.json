@@ -1,0 +1,11 @@
+{
+  "version": "1.0.0",
+  "categories": {
+    "trauma": [
+      "road-traffic-collision",
+      "fall-from-height",
+      "fractures-open-fractures"
+    ]
+  },
+  "embedded_library": true
+}
