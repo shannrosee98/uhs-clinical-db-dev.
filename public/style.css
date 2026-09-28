@@ -1714,3 +1714,13 @@ main > section[id] textarea:focus-visible{
 .learning-breadcrumb{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:.78rem;color:var(--muted,#64748b);margin:0 0 18px}
 .learning-breadcrumb button{border:0;background:transparent;padding:0;color:var(--primary,#2563eb);font:inherit;cursor:pointer}
 .learning-breadcrumb strong{color:inherit}
+
+/* Diagnosis pathway batch-1 clinical medication presentation */
+.diagnosis-global-warning,.diagnosis-med-warning{border:1px solid #d97706;background:#fff7ed;color:#7c2d12;border-radius:10px;padding:12px 14px;font-weight:700;margin:12px 0}
+.diagnosis-med-card{border:1px solid #dbe3ee;border-radius:12px;padding:16px;margin:12px 0;background:#fff}
+.diagnosis-med-card h3{margin:0 0 8px}
+.diagnosis-med-card details{margin-top:8px}
+.diagnosis-med-confirm{display:flex;gap:8px;align-items:flex-start;margin-top:12px;font-size:.9rem}
+.diagnosis-med-admin{margin-top:10px}
+.diagnosis-med-admin:disabled{opacity:.5;cursor:not-allowed}
+@media(max-width:700px){.diagnosis-med-card{padding:12px}.diagnosis-global-warning{font-size:.9rem}}

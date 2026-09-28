@@ -1,5 +1,5 @@
 {
-  "phase": "Clinical Pathway Library Extension",
+  "phase": "Clinical Pathway Batch 1 \u2014 RTC + Adult Medication Reference",
   "status": "completed",
   "features": [
     "search/filter pathway library",
@@ -9,10 +9,17 @@
     "incident-specific structured pathway data",
     "use pathway in assessment",
     "example case severity variants",
-    "no unverified medication doses"
+    "no unverified medication doses",
+    "source-grounded RTC pathway imported from supplied JSON",
+    "modular adult medication registry",
+    "medication prerequisite consent and logging",
+    "automatic reassessment flag after medication",
+    "RP-only medication warning",
+    "source material preserved under data/source-material"
   ],
   "counts": {
-    "pathways": 41
+    "pathways": 41,
+    "medications": 3
   },
   "production_changed": false,
   "database_changed": false,
