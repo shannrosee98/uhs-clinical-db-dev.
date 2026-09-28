@@ -35,6 +35,34 @@
   .emergency-reference-action{flex-direction:column}
 }
 </style>
+
+<style>
+.emergency-tabbar{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 16px;padding:6px;background:#0c171e;border:1px solid #203842;border-radius:10px}
+.emergency-tab{border:1px solid #294550;background:#10232c;color:#b9cbd1;border-radius:8px;padding:9px 13px;font-weight:700;cursor:pointer}
+.emergency-tab:hover,.emergency-tab:focus-visible{border-color:#41b6e6;color:#e7f7fb;outline:none}
+.emergency-tab.active{background:#183d4d;border-color:#41b6e6;color:#fff}
+.emergency-tab-panel{display:none}
+.emergency-tab-panel.active{display:block}
+.diagnosis-banner{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;background:#102631;border:1px solid #285366;border-left:4px solid #41b6e6;border-radius:10px;margin-bottom:14px}
+.diagnosis-banner strong{display:block;color:#e8f8fb;min-width:230px}.diagnosis-banner span{color:#a9c1c9;font-size:13px;line-height:1.5}
+.diagnosis-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.diagnosis-card{background:#0d1a21;border:1px solid #203842;border-radius:10px;padding:12px}
+.diagnosis-card-head{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:9px}
+.diagnosis-card-head h3{margin:0;font-size:15px;color:#e7f7fb}.diagnosis-card-head span{font-size:11px;color:#7fa8b5}
+.diagnosis-checks{display:grid;gap:7px}
+.diagnosis-check{display:flex;gap:9px;align-items:flex-start;padding:8px;border-radius:7px;background:#101f27;color:#c6d5da;font-size:12px;cursor:pointer}
+.diagnosis-check:hover{background:#142a34}.diagnosis-check input{margin-top:2px;accent-color:#41b6e6}
+.diagnosis-actions{display:flex;gap:9px;flex-wrap:wrap;margin:14px 0}
+.diagnosis-result{background:#0d1a21;border:1px solid #31515d;border-radius:10px;padding:15px}
+.diagnosis-result h3{margin:0 0 7px;color:#e8f8fb}.diagnosis-working{font-size:20px;font-weight:800;color:#7ed8f5;margin:4px 0 8px}
+.diagnosis-note{font-size:12px;color:#9db4bc;margin:0 0 12px}
+.diagnosis-result-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.diagnosis-result-grid h4{margin:0 0 7px;color:#b9d9e3}.diagnosis-result-grid ul,.diagnosis-result-grid ol{margin:0;padding-left:20px;color:#c7d5da;font-size:12px;line-height:1.7}
+.diagnosis-score{float:right;font-size:10px;color:#6dc9e7;background:#14313c;border-radius:10px;padding:1px 6px}
+.diagnosis-next{margin-top:12px;padding:10px 12px;border-left:3px solid #41b6e6;background:#10242d;color:#b9ccd2;font-size:12px;line-height:1.5}
+.diagnosis-disclaimer{margin-top:12px;padding:10px 12px;background:#261f10;border:1px solid #574b27;border-radius:8px;color:#cfc5a0;font-size:11px;line-height:1.5}
+@media(max-width:760px){.diagnosis-grid,.diagnosis-result-grid{grid-template-columns:1fr}.diagnosis-banner{display:block}.diagnosis-banner strong{margin-bottom:5px}.emergency-tab{flex:1 1 auto}}
+</style>
 </head>
 <body class="uhs-branding-v2">
 <header class="topbar">
@@ -317,7 +345,13 @@
 </div>
 <div id="emergency-active" style="display:none">
 <div class="section-head" style="border-bottom:none"><h2 id="emergency-title" style="font-size:26px">Active Emergency</h2></div>
-<div class="emergency-layout" style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+<div class="emergency-tabbar" role="tablist" aria-label="Emergency reference tabs">
+<button type="button" class="emergency-tab active" data-emergency-tab="overview" onclick="setEmergencyTab('overview')">Overview</button>
+<button type="button" class="emergency-tab" data-emergency-tab="diagnosis" onclick="setEmergencyTab('diagnosis')">🩺 Diagnosis / MDT</button>
+<button type="button" class="emergency-tab" data-emergency-tab="reference" onclick="setEmergencyTab('reference')">📚 Full Reference</button>
+</div>
+<div class="emergency-tab-panel active" data-emergency-panel="overview">
+<div class="emergency-layout style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
 <article class="info"><h3>🚑 Immediate Priorities</h3><div class="emergency-list" id="emergency-priorities"></div></article>
 <article class="info"><h3>🔍 Assessment</h3><div class="emergency-list" id="emergency-assessment"></div></article>
 </div>
@@ -332,7 +366,13 @@
 <div style="display:grid;grid-template-columns:1fr;gap:14px;margin-top:4px">
 <article class="info" style="border-left:3px solid #41b6e6"><h3>📋 Handover Summary</h3><div id="emergency-handover" style="color:#c3d0d5;font-family:monospace;font-size:13px;line-height:1.7;white-space:pre-wrap"></div></article>
 </div>
-<div class="emergency-full-reference" id="emergency-full-reference" style="display:none"></div>
+</div>
+<div class="emergency-tab-panel" data-emergency-panel="diagnosis">
+<div id="emergency-diagnosis-panel"></div>
+</div>
+<div class="emergency-tab-panel" data-emergency-panel="reference">
+<div class="emergency-full-reference" id="emergency-full-reference"></div>
+</div>
 <div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap">
 <button class="primary" onclick="copyEmergencyHandover()">📋 Copy Handover</button>
 <button class="secondary" onclick="deactivateEmergency()">🔙 Back to Emergency List</button>

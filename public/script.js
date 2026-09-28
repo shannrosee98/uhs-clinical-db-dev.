@@ -6153,10 +6153,171 @@ function renderEmergencyFullReference(key, data) {
   box.style.display = 'block';
 }
 
+
+/* =========================================================
+   DIAGNOSIS / MDT-STYLE CLINICAL REASONING
+   FiveM learning/RP aid only — not a real-world diagnostic tool.
+========================================================= */
+var emergencyDiagnosisProfiles = {
+  'cardiac-arrest': {
+    symptoms:['Collapse / unresponsiveness','No normal breathing or agonal breathing','No signs of life'],
+    observations:['GCS / AVPU severely reduced','No normal respiratory effort','No central pulse / signs of circulation','ECG rhythm abnormal or absent'],
+    findings:['VF / pVT','PEA / asystole','Reversible cause suggested by 4 Hs / 4 Ts'],
+    history:['Witnessed or unwitnessed collapse','Bystander CPR / AED use','Known cardiac disease or significant medical history'],
+    differentials:['Cardiac arrest','Respiratory arrest with progression to cardiac arrest','Toxicological arrest','Traumatic arrest']
+  },
+  'major-trauma': {
+    symptoms:['Severe pain after significant mechanism','Bleeding','Breathlessness or chest pain','Weakness, numbness or reduced movement'],
+    observations:['Hypotension / falling BP','Tachycardia','Reduced GCS','Abnormal respiratory rate or SpO₂','Delayed capillary refill / shock features'],
+    findings:['Catastrophic haemorrhage','Chest injury signs','Pelvic or long-bone injury','Spinal neurological deficit','Penetrating injury'],
+    history:['RTC / fall / assault / penetrating injury','Time and mechanism of injury','Anticoagulant use','Known medical conditions'],
+    differentials:['Major trauma with haemorrhagic shock','Thoracic trauma','Pelvic / long-bone trauma','Head or spinal trauma']
+  },
+  'chest-pain': {
+    symptoms:['Central or chest discomfort','Pressure / tightness','Pain radiating to arm, jaw or back','Sweating, nausea or vomiting','Breathlessness'],
+    observations:['Abnormal heart rate or rhythm','Abnormal BP','Low SpO₂ where present','ECG changes'],
+    findings:['ST elevation / depression','T-wave changes','Unequal pulses or marked BP difference','Signs of heart failure'],
+    history:['Onset and timing','SOCRATES pain history','Previous cardiac disease','Risk factors / medications'],
+    differentials:['Acute coronary syndrome','Aortic dissection','Pulmonary embolism','Pericarditis','Pneumothorax']
+  },
+  'stroke': {
+    symptoms:['Facial weakness','Arm or leg weakness','Speech or language disturbance','Sudden visual disturbance','Sudden balance / coordination problem'],
+    observations:['Blood glucose abnormal','GCS / AVPU altered','BP abnormal','Pupil or neurological findings'],
+    findings:['FAST / BE-FAST positive','Focal neurological deficit','Possible cortical signs','Possible posterior circulation signs'],
+    history:['Last known well / symptom onset','Anticoagulant or antiplatelet medication','Previous stroke / TIA','Baseline function'],
+    differentials:['Acute ischaemic stroke','Intracerebral haemorrhage','Subarachnoid haemorrhage','TIA','Stroke mimic such as hypoglycaemia']
+  },
+  'anaphylaxis': {
+    symptoms:['Sudden breathing difficulty','Swelling of lips, tongue or throat','Wheeze / stridor','Dizziness or collapse','Rash / flushing where present'],
+    observations:['Low SpO₂','Tachycardia','Hypotension','Increased respiratory rate'],
+    findings:['Airway swelling','Wheeze / bronchospasm','Circulatory compromise','Skin or mucosal changes'],
+    history:['Recent food / drug / sting exposure','Known allergy','Previous anaphylaxis','Time from exposure to symptoms'],
+    differentials:['Anaphylaxis','Severe asthma','Angioedema','Vasovagal episode','Other shock state']
+  },
+  'seizure': {
+    symptoms:['Witnessed convulsive activity','Loss of consciousness','Post-event confusion','Tongue injury or incontinence where present'],
+    observations:['GCS / AVPU reduced post-event','Abnormal SpO₂ or respiratory rate','Blood glucose abnormal','Temperature elevated where relevant'],
+    findings:['Ongoing convulsion','Focal neurological deficit','Persistent reduced consciousness','Signs of injury'],
+    history:['Known epilepsy','Duration of seizure','Medication adherence','Possible toxicological / metabolic trigger'],
+    differentials:['Generalised seizure','Focal seizure','Status epilepticus','Syncope / seizure mimic','Hypoglycaemia-related event']
+  },
+  'respiratory': {
+    symptoms:['Shortness of breath','Wheeze','Cough','Chest tightness','Difficulty speaking full sentences'],
+    observations:['Low SpO₂','Raised respiratory rate','Tachycardia','Abnormal work of breathing'],
+    findings:['Wheeze','Crackles','Reduced / absent air entry','Cyanosis','Accessory muscle use'],
+    history:['Asthma / COPD history','Onset and trigger','Infection symptoms','Cardiac history / previous episodes'],
+    differentials:['Asthma exacerbation','COPD exacerbation','Pneumonia','Pulmonary oedema','Pneumothorax','Pulmonary embolism']
+  },
+  'haemorrhage': {
+    symptoms:['Visible heavy bleeding','Weakness','Dizziness / collapse','Pain at bleeding site'],
+    observations:['Falling BP','Tachycardia','Reduced GCS','Delayed capillary refill','Pale / cool skin'],
+    findings:['Active external haemorrhage','Expanding wound / concealed bleeding concern','Shock features'],
+    history:['Mechanism','Estimated blood loss where known','Anticoagulants','Bleeding disorders'],
+    differentials:['Major external haemorrhage','Internal haemorrhage','Traumatic haemorrhagic shock','GI or other non-traumatic bleeding']
+  },
+  'sepsis': {
+    symptoms:['Fever or feeling very unwell','Confusion','Breathlessness','Reduced urine output','Pain or suspected infection source'],
+    observations:['Temperature abnormal','Tachycardia','Tachypnoea','Hypotension','Low SpO₂ where present','Altered mental status'],
+    findings:['Suspected infection source','Poor perfusion','New confusion','Clinical deterioration'],
+    history:['Recent infection / procedure','Immunosuppression or significant comorbidity','Recent antibiotics','Onset and progression'],
+    differentials:['Sepsis / infection-related deterioration','Septic shock','Pneumonia','Urinary infection','Other shock / metabolic cause']
+  },
+  'overdose': {
+    symptoms:['Reduced consciousness','Vomiting','Confusion','Abnormal behaviour','Breathing difficulty'],
+    observations:['GCS / AVPU reduced','Respiratory rate abnormal','SpO₂ abnormal','Pupils abnormal','Blood glucose abnormal'],
+    findings:['Needle marks / medication packets where present','Abnormal pupil size','Respiratory depression','Seizure or arrhythmia'],
+    history:['Substance / medication taken','Approximate amount and time','Co-ingestants','Intent / circumstances','Usual medications'],
+    differentials:['Toxicological poisoning / overdose','Hypoglycaemia','Stroke','Seizure','Head injury','Other metabolic cause']
+  },
+  'hypothermia': {
+    symptoms:['Cold exposure','Shivering or cessation of shivering','Confusion','Drowsiness','Poor coordination'],
+    observations:['Low core temperature','Bradycardia','Reduced respiratory rate','Reduced GCS'],
+    findings:['Cold skin','Altered mental state','Poor perfusion','Arrhythmia concern'],
+    history:['Duration of exposure','Wet clothing / immersion','Environmental conditions','Alcohol or drug exposure'],
+    differentials:['Accidental hypothermia','Cold-water immersion','Hypoglycaemia','Intoxication','Other altered-consciousness cause']
+  },
+  'burns': {
+    symptoms:['Burn pain','Skin injury','Breathing difficulty after smoke exposure','Blistering or tissue damage'],
+    observations:['HR / BP changes','SpO₂ where relevant','Respiratory rate','Temperature','GCS if altered'],
+    findings:['Burn depth / appearance','Burn extent','Facial / airway involvement','Circumferential burns','Associated trauma'],
+    history:['Mechanism: thermal / chemical / electrical','Time of injury','Enclosed-space exposure','First aid already given'],
+    differentials:['Thermal burn','Chemical burn','Electrical injury','Inhalation injury','Associated traumatic injury']
+  }
+};
+
+var activeEmergencyDiagnosis = { key:null, selections:{} };
+
+function setEmergencyTab(tab) {
+  document.querySelectorAll('[data-emergency-tab]').forEach(function(btn) {
+    btn.classList.toggle('active', btn.getAttribute('data-emergency-tab') === tab);
+    btn.setAttribute('aria-selected', btn.getAttribute('data-emergency-tab') === tab ? 'true' : 'false');
+  });
+  document.querySelectorAll('[data-emergency-panel]').forEach(function(panel) {
+    panel.classList.toggle('active', panel.getAttribute('data-emergency-panel') === tab);
+  });
+}
+
+function renderEmergencyDiagnosis(key) {
+  var profile = emergencyDiagnosisProfiles[key];
+  var root = document.getElementById('emergency-diagnosis-panel');
+  if (!profile || !root) return;
+  activeEmergencyDiagnosis.key = key;
+  activeEmergencyDiagnosis.selections = {};
+  var groups = [
+    ['Symptoms', 'symptoms', 'symptom'],
+    ['Observations', 'observations', 'observation'],
+    ['Examination / Findings', 'findings', 'finding'],
+    ['History / Context', 'history', 'history']
+  ];
+  root.innerHTML =
+    '<div class="diagnosis-banner"><strong>🩺 MDT-style diagnostic reasoning</strong><span>Record the findings first, then compare the pattern with possible working diagnoses and differentials.</span></div>' +
+    '<div class="diagnosis-grid">' +
+    groups.map(function(group) {
+      var title=group[0], arr=profile[group[1]]||[], type=group[2];
+      return '<article class="diagnosis-card"><div class="diagnosis-card-head"><h3>'+escapeHtml(title)+'</h3><span>'+arr.length+' prompts</span></div><div class="diagnosis-checks">' +
+        arr.map(function(item,i){
+          var id='dx-'+type+'-'+i;
+          return '<label class="diagnosis-check" for="'+id+'"><input id="'+id+'" type="checkbox" data-dx-group="'+type+'" value="'+escapeHtml(item)+'"><span>'+escapeHtml(item)+'</span></label>';
+        }).join('')+'</div></article>';
+    }).join('') +
+    '</div>' +
+    '<div class="diagnosis-actions"><button type="button" class="primary" onclick="calculateEmergencyDiagnosis()">🧠 Generate Working Diagnosis</button><button type="button" class="secondary" onclick="clearEmergencyDiagnosis()">Clear Findings</button></div>' +
+    '<div id="emergency-diagnosis-result" class="diagnosis-result"><h3>Working diagnosis</h3><p>Select the relevant symptoms, observations, findings and history, then generate the diagnostic reasoning summary.</p></div>' +
+    '<div class="diagnosis-disclaimer"><strong>FiveM learning / RP:</strong> This is a structured diagnostic-reasoning aid for roleplay and study. It does not establish a real-world diagnosis and should not replace clinical assessment, senior review or local guidance.</div>';
+}
+
+function calculateEmergencyDiagnosis() {
+  var key=activeEmergencyDiagnosis.key, profile=emergencyDiagnosisProfiles[key];
+  var root=document.getElementById('emergency-diagnosis-result');
+  if (!profile || !root) return;
+  var selected=[];
+  document.querySelectorAll('#emergency-diagnosis-panel input[data-dx-group]:checked').forEach(function(input){ selected.push({group:input.getAttribute('data-dx-group'),value:input.value}); });
+  var selectedText=selected.map(function(x){return x.value.toLowerCase();}).join(' ');
+  var scores=(profile.differentials||[]).map(function(dx){
+    var score=0, words=dx.toLowerCase().split(/[^a-z0-9]+/).filter(function(w){return w.length>3;});
+    words.forEach(function(w){ if(selectedText.indexOf(w)>=0) score++; });
+    return {name:dx,score:score};
+  }).sort(function(a,b){return b.score-a.score;});
+  var top=scores[0] || {name:'Undetermined',score:0};
+  var working=top.score>0 ? top.name : 'No single working diagnosis selected';
+  var findings=selected.length ? selected.map(function(x){return '<li><strong>'+escapeHtml(x.group)+'</strong>: '+escapeHtml(x.value)+'</li>';}).join('') : '<li>No findings selected.</li>';
+  root.innerHTML='<h3>Working diagnosis</h3><div class="diagnosis-working">'+escapeHtml(working)+'</div>' +
+    '<p class="diagnosis-note">This is a pattern-matching RP aid. Consider the full assessment and competing differentials rather than treating one finding as diagnostic.</p>' +
+    '<div class="diagnosis-result-grid"><div><h4>Recorded findings</h4><ul>'+findings+'</ul></div><div><h4>Possible differentials</h4><ol>'+scores.map(function(x){return '<li>'+escapeHtml(x.name)+(x.score?' <span class="diagnosis-score">'+x.score+' match'+(x.score===1?'':'es')+'</span>':'')+'</li>';}).join('')+'</ol></div></div>' +
+    '<div class="diagnosis-next"><strong>MDT / escalation:</strong> confirm the history, observations, examination and investigations, document the working diagnosis, and escalate to the appropriate senior clinician/team when required.</div>';
+}
+
+function clearEmergencyDiagnosis() {
+  document.querySelectorAll('#emergency-diagnosis-panel input[type="checkbox"]').forEach(function(input){input.checked=false;});
+  var result=document.getElementById('emergency-diagnosis-result');
+  if(result) result.innerHTML='<h3>Working diagnosis</h3><p>Select the relevant symptoms, observations, findings and history, then generate the diagnostic reasoning summary.</p>';
+}
 function activateEmergency(key) {
   var data = emergencyData[key];
   if (!data) return;
   document.getElementById('emergency-title').textContent = data.title;
+  setEmergencyTab('overview');
+  renderEmergencyDiagnosis(key);
   renderEmergencyFullReference(key, data);
   document.getElementById('emergency-priorities').innerHTML = '<ul style="list-style:none;padding:0;margin:0;display:grid;gap:6px">' + (data.priorities || []).map(function(p, i) { return '<li style="padding:6px 10px;background:#0f2029;border-radius:6px;font-size:13px;border-left:3px solid #41b6e6">' + (i+1) + '. ' + escapeHtml(p) + '</li>'; }).join('') + '</ul>' || '<p class="muted">No priorities listed.</p>';
   document.getElementById('emergency-assessment').innerHTML = '<ul style="list-style:none;padding:0;margin:0;display:grid;gap:6px">' + (data.assessment || []).map(function(p) { return '<li style="padding:6px 10px;background:#0f2029;border-radius:6px;font-size:13px">' + escapeHtml(p) + '</li>'; }).join('') + '</ul>' || '<p class="muted">No assessment steps listed.</p>';
