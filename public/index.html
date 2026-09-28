@@ -62,6 +62,26 @@
 .diagnosis-next{margin-top:12px;padding:10px 12px;border-left:3px solid #41b6e6;background:#10242d;color:#b9ccd2;font-size:12px;line-height:1.5}
 .diagnosis-disclaimer{margin-top:12px;padding:10px 12px;background:#261f10;border:1px solid #574b27;border-radius:8px;color:#cfc5a0;font-size:11px;line-height:1.5}
 @media(max-width:760px){.diagnosis-grid,.diagnosis-result-grid{grid-template-columns:1fr}.diagnosis-banner{display:block}.diagnosis-banner strong{margin-bottom:5px}.emergency-tab{flex:1 1 auto}}
+
+/* Clinical Assessment & Diagnosis */
+.diagnosis-engine{background:#f4f8fb;color:#152536;padding:28px;min-height:calc(100vh - 70px)}
+.diagnosis-hero{background:#fff;border:1px solid #d8e3ec;border-radius:16px;padding:30px;box-shadow:0 8px 24px rgba(20,45,70,.06)}
+.diagnosis-kicker{font-size:12px;letter-spacing:.12em;font-weight:800;color:#005eb8}
+.diagnosis-hero h1{font-size:34px;margin:8px 0;color:#102a43}.diagnosis-hero p{font-size:17px;max-width:800px;color:#506273}
+.diagnosis-disclaimer{margin-top:18px;padding:12px 14px;border-left:4px solid #005eb8;background:#edf6fc;color:#334e68}
+.diagnosis-toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:16px 0}.diagnosis-save-state{margin-left:auto;color:#627d98;font-size:13px}
+.diagnosis-progress{display:flex;gap:4px;overflow:auto;margin-bottom:14px}.diagnosis-progress span{background:#dfe8ef;padding:8px 10px;border-radius:8px;font-size:12px;white-space:nowrap}.diagnosis-progress .done{background:#d7ebf8;color:#005eb8;font-weight:700}
+.diagnosis-workspace{display:grid;grid-template-columns:210px minmax(0,1fr);gap:16px}.diagnosis-stepper{background:#fff;border:1px solid #d8e3ec;border-radius:14px;padding:10px;height:max-content;position:sticky;top:12px}.diagnosis-stepper button{width:100%;display:flex;gap:10px;align-items:center;border:0;background:transparent;padding:10px;border-radius:9px;text-align:left;color:#486581}.diagnosis-stepper button.active{background:#eaf4fb;color:#005eb8;font-weight:700}.diagnosis-stepper button.locked{opacity:.45;cursor:not-allowed}.diagnosis-stepper b{width:25px;height:25px;border-radius:50%;display:grid;place-items:center;background:#e3edf3}
+.diagnosis-main{background:#fff;border:1px solid #d8e3ec;border-radius:14px;padding:24px;min-width:0}.diagnosis-section-title{display:flex;gap:14px;align-items:flex-start;margin-bottom:22px}.diagnosis-section-title>span{width:36px;height:36px;border-radius:50%;background:#005eb8;color:#fff;display:grid;place-items:center;font-weight:800}.diagnosis-section-title h2{margin:0;color:#102a43}.diagnosis-section-title p{margin:4px 0;color:#627d98}
+.diagnosis-incident-groups section{margin-bottom:24px}.diagnosis-incident-groups h3{color:#243b53}.diagnosis-incident-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}.diagnosis-incident-card{border:1px solid #d8e3ec;background:#fff;border-radius:11px;padding:15px;text-align:left;min-height:100px;cursor:pointer;transition:.15s}.diagnosis-incident-card:hover{border-color:#005eb8;box-shadow:0 5px 15px rgba(0,94,184,.08)}.diagnosis-incident-card span{display:block;font-size:10px;text-transform:uppercase;color:#829ab1;font-weight:800}.diagnosis-incident-card strong{display:block;font-size:16px;margin:5px 0;color:#102a43}.diagnosis-incident-card small{color:#627d98}
+.diagnosis-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.diagnosis-field{display:block}.diagnosis-field span{display:block;font-size:12px;font-weight:700;color:#334e68;margin-bottom:6px}.diagnosis-field input,.diagnosis-field textarea,.diagnosis-field select{width:100%;box-sizing:border-box;border:1px solid #bcccdc;border-radius:8px;padding:11px;background:#fff;color:#102a43}.diagnosis-context{margin-top:20px;padding:18px;background:#f7fafc;border-radius:12px}.diagnosis-fieldset{border:1px solid #d8e3ec;border-radius:10px;margin:0 0 18px;padding:15px}.diagnosis-fieldset legend{font-weight:800;color:#243b53;padding:0 6px}.diagnosis-checkgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:9px}.diagnosis-checkgrid label{display:flex;gap:8px;align-items:flex-start;padding:8px;background:#f7fafc;border-radius:7px}.diagnosis-bodymap{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:18px}.diagnosis-bodymap button{border:1px solid #bcccdc;background:#fff;border-radius:9px;padding:12px;cursor:pointer;color:#334e68}.diagnosis-bodymap button.selected{background:#e6f3fb;border-color:#005eb8;color:#005eb8;font-weight:700}
+.diagnosis-actions{display:flex;justify-content:space-between;gap:10px;margin-top:24px}.diagnosis-abcde-card{display:grid;grid-template-columns:55px 1fr;gap:14px;border:1px solid #d8e3ec;border-radius:12px;padding:16px;margin-bottom:14px}.diagnosis-abcde-letter{font-size:26px;font-weight:900;color:#005eb8}.diagnosis-rp{display:flex;align-items:center;gap:10px;margin-top:8px}.diagnosis-rp button,.diagnosis-action-list button{border:1px solid #bcccdc;background:#fff;border-radius:7px;padding:6px 9px;cursor:pointer}
+.diagnosis-assessment-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.diagnosis-assessment-grid article,.diagnosis-management-grid article,.diagnosis-differentials article{border:1px solid #d8e3ec;border-radius:11px;padding:15px}.diagnosis-assessment-grid h3{margin-top:0}.diagnosis-role-tabs{display:flex;gap:6px;margin:20px 0}.diagnosis-role-tabs button{padding:9px 13px;border:1px solid #bcccdc;background:#fff;border-radius:8px}.diagnosis-role-tabs button.active{background:#005eb8;color:#fff;border-color:#005eb8}
+.diagnosis-result-primary{border-left:5px solid #005eb8;background:#edf6fc;padding:20px;border-radius:8px}.diagnosis-result-primary>span,.diagnosis-differentials span{font-size:11px;font-weight:800;letter-spacing:.08em;color:#486581}.diagnosis-result-primary h2{color:#102a43}.diagnosis-differentials{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:18px}.diagnosis-differentials>h2{grid-column:1/-1}.diagnosis-redflags,.diagnosis-warning{margin-top:16px;padding:14px;border-left:4px solid #d97706;background:#fff7e6;color:#7c4a03}.diagnosis-redflags small,.diagnosis-warning small{display:block;margin-top:6px}
+.diagnosis-pathway{display:flex;gap:6px;overflow:auto;margin:18px 0}.diagnosis-pathway div{min-width:115px;padding:12px;background:#edf6fc;border-radius:9px;text-align:center}.diagnosis-pathway b{display:block;color:#005eb8}.diagnosis-management-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.diagnosis-management-grid h3{margin-top:0;color:#102a43}.diagnosis-equipment,.diagnosis-med-reference,.diagnosis-rp-generator{margin-top:16px;border:1px solid #d8e3ec;border-radius:11px;padding:17px}.diagnosis-tag-list{display:flex;flex-wrap:wrap;gap:7px}.diagnosis-tag-list span{padding:7px 10px;background:#eef3f7;border-radius:999px;font-size:13px}.diagnosis-action-list{margin-top:14px}.diagnosis-action-list div{display:flex;gap:8px;align-items:flex-start;margin:8px 0}.diagnosis-action-list code{flex:1;background:#102a43;color:#fff;padding:10px;border-radius:7px;white-space:pre-wrap}.diagnosis-action-note{font-size:12px;color:#627d98}
+.diagnosis-compare{margin-top:18px;border:1px solid #d8e3ec;border-radius:10px;overflow:hidden}.diagnosis-compare h3{padding:12px;margin:0;background:#f7fafc}.diagnosis-compare div{display:grid;grid-template-columns:1fr 1fr 30px 1fr;padding:10px 12px;border-top:1px solid #e5edf2}.diagnosis-compare i{font-style:normal;text-align:center}.diagnosis-handover{background:#102a43;color:#fff;padding:18px;border-radius:10px;white-space:pre-wrap;line-height:1.6;overflow:auto}.diagnosis-final-note{margin-top:16px;padding:14px;background:#eef7f0;border-left:4px solid #2f855a}
+@media(max-width:900px){.diagnosis-workspace{grid-template-columns:1fr}.diagnosis-stepper{position:static;display:flex;overflow:auto}.diagnosis-stepper button{min-width:125px}.diagnosis-management-grid,.diagnosis-assessment-grid,.diagnosis-differentials{grid-template-columns:1fr}.diagnosis-bodymap{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:600px){.diagnosis-engine{padding:12px}.diagnosis-main,.diagnosis-hero{padding:16px}.diagnosis-form-grid{grid-template-columns:1fr}.diagnosis-bodymap{grid-template-columns:repeat(2,1fr)}.diagnosis-save-state{width:100%;margin:0}.diagnosis-hero h1{font-size:27px}}
 </style>
 </head>
 <body class="uhs-branding-v2">
@@ -103,7 +123,7 @@
 <div class="nav-group-title">PRACTISE</div>
 <button class="nav" data-section="scenarios">🎭 Scenarios</button>
 <button class="nav" data-section="study-tools">✓ Study Tools</button>
-<button class="nav" data-section="emergency-mode" data-practice-tool="diagnosis" onclick="showSection('emergency-mode');setTimeout(function(){if(document.getElementById('emergency-active').style.display==='none'){activateEmergency('cardiac')}setEmergencyTab('diagnosis')},80)">🩺 Diagnosis / MDT</button>
+<button class="nav" data-section="diagnosis">🩺 Diagnosis / MDT</button>
 </div>
 <div class="nav-group">
 <div class="nav-group-title">REFERENCE</div>
@@ -379,6 +399,26 @@
 <button class="secondary" onclick="deactivateEmergency()">🔙 Back to Emergency List</button>
 </div>
 </div>
+</section>
+
+<section class="section diagnosis-engine" id="diagnosis">
+  <div class="diagnosis-hero">
+    <div class="diagnosis-kicker">PRACTISE · CLINICAL REASONING</div>
+    <h1>Clinical Assessment &amp; Diagnosis</h1>
+    <p>Work through a patient presentation, identify important findings and explore appropriate assessment and treatment pathways.</p>
+    <div class="diagnosis-disclaimer">Educational clinical reasoning and FiveM Serious RP simulation only. This tool does not provide a definitive real-world diagnosis, prescribing decision or scope-of-practice determination.</div>
+  </div>
+  <div class="diagnosis-toolbar">
+    <button class="primary" onclick="diagnosisNewCase()">＋ Start New Assessment</button>
+    <button class="secondary" onclick="diagnosisLoadExample()">▶ Load Example Case</button>
+    <button class="secondary" onclick="diagnosisHowItWorks()">? How It Works</button>
+    <span class="diagnosis-save-state" id="diagnosis-save-state">No case loaded</span>
+  </div>
+  <div class="diagnosis-progress" id="diagnosis-progress"></div>
+  <div class="diagnosis-workspace">
+    <aside class="diagnosis-stepper" id="diagnosis-stepper"></aside>
+    <main class="diagnosis-main" id="diagnosis-main"></main>
+  </div>
 </section>
 <section class="section" id="observations">
 <div class="knowledge-page-header" data-knowledge-header="observations">
