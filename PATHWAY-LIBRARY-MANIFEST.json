@@ -1,0 +1,22 @@
+{
+  "phase": "Clinical Pathway Library Extension",
+  "status": "completed",
+  "features": [
+    "search/filter pathway library",
+    "severity filters",
+    "expandable pathway sections",
+    "RP-only disclaimer",
+    "incident-specific structured pathway data",
+    "use pathway in assessment",
+    "example case severity variants",
+    "no unverified medication doses"
+  ],
+  "counts": {
+    "pathways": 41
+  },
+  "production_changed": false,
+  "database_changed": false,
+  "validation": {
+    "node_check_script": true
+  }
+}
