@@ -1,6 +1,6 @@
 {
   "id": "adult-convulsive-status-epilepticus",
-  "title": "Adult Convulsive Status Epilepticus",
+  "title": "Adult Convulsive Status Epilepticus — Complete Simulation",
   "short_title": "Convulsive Status Epilepticus",
   "category": "Neurology",
   "age_group": "Adult 16+",
@@ -8,126 +8,141 @@
     "Critical"
   ],
   "rp_only": true,
-  "disclaimer": "SIMULATION / ROLE-PLAY ONLY. This pathway is educational and is not a substitute for supervised clinical practice, an individual emergency care plan, prescribing instructions, or local clinical protocol. The medication quantities below are the supplied simulation scenario and must not be generalised to real patients.",
-  "incident_description": "Adult patient with an ongoing generalised tonic–clonic seizure lasting 5 minutes or longer. Simulation uses buccal midazolam supplied as 10 mg in 2 mL (5 mg/mL).",
+  "last_reviewed": "2026-09-29",
+  "disclaimer": "SIMULATION / ROLE-PLAY ONLY. This pathway is educational and is not a substitute for supervised clinical practice, an individual emergency care plan, prescribing instructions, or local clinical protocol. The observations are fictional and the medication quantities are the supplied simulation scenario; do not generalise them to real patients.",
+  "incident_description": "Adult with known epilepsy and a generalised tonic–clonic seizure. Simulation assumption: no immediately available individualised emergency plan. Buccal midazolam preparation is 5 mg/mL, supplied as 10 mg in 2 mL. Observations are fictional but realistic for an OSCE/simulation.",
   "scene_safety": [
-    "Check the scene for hazards and activate the emergency response.",
-    "Move nearby objects away and protect the patient's head with a folded blanket if safe.",
+    "Check the environment for hazards and activate the emergency response.",
+    "Move nearby hazards away, protect the patient's head with a folded blanket if safe and remove glasses if safe.",
     "Do not restrain the patient.",
     "Do not put anything in the patient's mouth."
   ],
   "initial_impression": [
-    "Treat an ongoing convulsive seizure at 5 minutes as a time-critical emergency.",
+    "A seizure lasting 5 minutes or more is treated in this simulation as convulsive status epilepticus and requires immediate treatment.",
     "Start timing the seizure and continuously reassess airway, breathing and circulation."
   ],
   "primary_survey": {
     "airway": [
-      "Check for airway obstruction without putting fingers into the mouth.",
+      "During active convulsions, assess airway as safely as possible without putting fingers into the mouth.",
       "Prepare suction and airway equipment."
     ],
     "breathing": [
       "Assess chest movement, respiratory effort, skin colour and oxygen saturation.",
-      "Apply oxygen according to oxygen saturation and local protocol."
+      "Apply high-concentration oxygen in the supplied scenario and continue respiratory monitoring."
     ],
     "circulation": [
       "Apply ECG and blood-pressure monitoring.",
-      "Establish IV access when safe, without delaying seizure treatment."
+      "Establish IV access when safe without delaying seizure treatment."
     ],
     "disability": [
       "Check capillary blood glucose.",
-      "Assess seizure activity and consciousness/postictal state."
+      "Assess seizure activity, consciousness and postictal state."
     ],
     "exposure": [
-      "Look for head injury, aspiration, tongue injury and other trauma when safe."
+      "After convulsions stop, assess for head injury, tongue trauma, aspiration, shoulder injury, urinary incontinence and other trauma."
     ]
   },
   "observations": {
-    "continuous": [
-      "Oxygen saturation",
-      "ECG",
-      "Respiratory effort",
-      "Airway patency",
-      "Seizure activity"
+    "initial_simulation": [
+      "Airway: not fully assessable during convulsions; no obvious visible obstruction.",
+      "Breathing: irregular, approximately 8–30 breaths/min.",
+      "SpO₂: 86% on air, intermittently recorded because of movement.",
+      "Pulse: 132 bpm.",
+      "Blood pressure: 168/96 mmHg.",
+      "Respiratory rate: irregular, approximately 24/min.",
+      "Temperature: 36.8°C.",
+      "Capillary glucose: 6.4 mmol/L.",
+      "GCS: 3/15 during active convulsions.",
+      "Pupils: equal and reactive when assessable.",
+      "Skin: pale, mildly cyanosed around the lips."
     ],
-    "repeat": [
-      "Blood pressure",
-      "Pulse",
-      "Respiratory rate",
-      "Consciousness/GCS",
-      "Capillary glucose"
+    "after_first_dose": [
+      "Airway: patent but secretions present.",
+      "Breathing: irregular, 10–18/min.",
+      "SpO₂: 94% on high-concentration oxygen.",
+      "Pulse: 124 bpm.",
+      "Blood pressure: 158/90 mmHg.",
+      "Respiratory rate: 16/min, intermittently irregular.",
+      "Capillary glucose: 6.4 mmol/L.",
+      "GCS: 3/15 during ongoing convulsions.",
+      "ECG: sinus tachycardia.",
+      "Seizure activity: ongoing bilateral tonic–clonic movements."
+    ],
+    "at_14_11": [
+      "Airway: patent; suction available.",
+      "SpO₂: 96% on oxygen.",
+      "Pulse: 118 bpm.",
+      "Blood pressure: 150/86 mmHg.",
+      "Respiratory rate: 12/min, irregular.",
+      "Capillary glucose: 6.2 mmol/L.",
+      "GCS: 3/15.",
+      "ECG: sinus tachycardia.",
+      "Seizure activity: ongoing."
+    ],
+    "postictal": [
+      "Airway: patent; gurgling secretions cleared with suction.",
+      "Breathing: spontaneous, 18/min.",
+      "SpO₂: 98% on oxygen.",
+      "Pulse: 104 bpm.",
+      "Blood pressure: 138/82 mmHg.",
+      "Respiratory rate: 18/min.",
+      "Temperature: 36.9°C.",
+      "Capillary glucose: 6.1 mmol/L.",
+      "GCS: 8/15 — E2 V2 M4.",
+      "Pupils: equal and reactive.",
+      "ECG: sinus tachycardia.",
+      "Seizure activity: stopped."
     ]
   },
   "focused_examination": [
     "Confirm seizure onset time and duration.",
-    "Consider potential reversible causes including hypoglycaemia and other context-specific causes.",
-    "Check for evidence of trauma or aspiration after the convulsion stops."
+    "Check for head injury, tongue trauma, aspiration, shoulder injury and other trauma.",
+    "Assess airway protection, respiratory status and postictal neurological state after the convulsion stops."
   ],
   "management": [
-    "/me checks the scene for hazards, approaches the patient and activates the emergency buzzer",
-    "> “I’m staying with the patient. Please call the emergency team and bring the resuscitation trolley, oxygen, suction and buccal midazolam. Start timing the seizure.”",
-    "/me moves nearby objects away, protects the patient’s head with a folded blanket and removes the patient’s glasses if safe",
-    "/me does not restrain the patient and does not place anything in the patient’s mouth",
-    "/me checks for airway obstruction without putting fingers into the mouth",
-    "/me assesses chest movement, respiratory effort, skin colour and oxygen saturation",
-    "> “Airway currently patent. I’m checking breathing and applying monitoring.”",
-    "/me applies pulse oximetry, ECG monitoring and a blood-pressure cuff",
-    "/me administers oxygen according to the patient’s oxygen saturation and local protocol",
-    "/me asks a colleague to check capillary blood glucose",
-    "> “Please obtain capillary glucose and establish IV access when safe. Do not delay seizure treatment for IV access.”",
-    "/me checks the time on the clock and confirms that the seizure has lasted five minutes",
-    "At 5 minutes in this simulation: retrieve the prescribed buccal midazolam and perform the required medication and identity checks.",
-    "/me retrieves the prescribed buccal midazolam from the emergency medication pack",
-    "/me checks the patient’s identity, allergy status, medication plan, expiry date, packaging and solution",
-    "> “Buccal midazolam 10 mg in 2 mL. Concentration 5 mg/mL. Oral pre-filled syringe.”",
-    "/me asks a second clinician to perform an independent check",
-    "> “Please independently check midazolam 10 mg, equivalent to 2 mL of the 5 mg/mL preparation, by the buccal route.”",
-    "/me opens the outer packaging and removes the pre-filled oral syringe",
-    "/me checks the label again, removes the cap and keeps the syringe in hand",
-    "> “This is an oral syringe. I will not attach a needle or IV tubing.”",
-    "/me positions at the side of the patient and waits for a safe opportunity to access the cheek",
-    "/me places the syringe tip into the buccal space between the gum and cheek",
-    "> “Administering midazolam 10 mg buccally now.”",
-    "/me slowly administers the full 2 mL into the buccal space",
-    "/me removes the syringe, disposes of it safely and records the time",
-    "> “Midazolam 10 mg buccally administered at 14:05.”",
-    "/me immediately reassesses airway, breathing, oxygen saturation, pulse, blood pressure and seizure activity",
-    "/me prepares suction and a bag-valve-mask while continuing to observe the patient",
-    "If the seizure stops: document the exact stop time, maintain airway positioning, place the patient into the recovery position when safe, continue monitoring, reassess respiratory rate/GCS/glucose and withhold oral intake until fully alert and swallowing safely.",
-    "If the seizure continues 5–10 minutes after the first benzodiazepine dose: confirm the first dose/time, reassess ABCDE, escalate to the senior clinician and follow the individual emergency plan/local protocol for any second dose.",
-    "If still convulsing after two benzodiazepine doses: request urgent senior, anaesthetic and neurology support; prepare for IV/IO access, second-line antiseizure treatment and possible critical-care transfer according to local protocol.",
-    "If apnoeic: call for immediate airway assistance, suction visible secretions, support ventilation with bag-valve-mask and oxygen, and continue resuscitation according to the applicable ALS/local protocol."
+    "At 5 minutes in this simulation, retrieve buccal midazolam and perform patient, allergy, medication, expiry, packaging and solution checks.",
+    "Perform an independent second medication check.",
+    "Administer the supplied simulation dose by the buccal route when safe.",
+    "Immediately reassess airway, breathing, circulation and seizure activity after each dose.",
+    "If seizure continues after the first dose, reassess and escalate.",
+    "If seizure continues after two benzodiazepine doses, obtain urgent senior, anaesthetic and neurology support and prepare second-line treatment according to local status epilepticus protocol.",
+    "If the patient becomes apnoeic, provide airway and ventilation support and continue resuscitation according to the local ALS/status epilepticus protocol.",
+    "After seizure cessation, maintain airway positioning, use the recovery position when safe, continue monitoring and withhold oral intake until safe swallowing is established."
   ],
   "reassessment": [
-    "Reassess airway, breathing, circulation and seizure activity after every benzodiazepine administration.",
-    "Monitor for respiratory depression and reduced consciousness after midazolam.",
-    "Record exact seizure onset, medication administration and seizure cessation times.",
-    "After seizure cessation, continue close respiratory and neurological observation."
+    "Repeat airway, breathing, oxygen saturation, pulse, blood pressure, respiratory rate, consciousness/GCS and capillary glucose.",
+    "Continue ECG, pulse oximetry and respiratory monitoring.",
+    "Monitor closely for delayed respiratory depression after midazolam.",
+    "Document seizure cessation time and treatment response."
   ],
   "escalation_criteria": [
-    "Convulsive seizure continues despite the first benzodiazepine dose.",
-    "Seizure continues after two benzodiazepine doses.",
-    "Apnoea, inadequate ventilation or loss of airway protection.",
-    "Persistent hypoglycaemia or another suspected reversible cause.",
-    "Clinical deterioration, aspiration, significant trauma or haemodynamic instability."
+    "Ongoing convulsive seizure after the first benzodiazepine dose.",
+    "Ongoing convulsive seizure after two benzodiazepine doses.",
+    "Apnoea or inadequate breathing.",
+    "Airway compromise or aspiration.",
+    "Need for second-line antiseizure medication, anaesthetic support, intubation, ventilation or critical-care transfer."
   ],
-  "handover": {
-    "template": "This is an adult with known epilepsy who developed a generalised tonic–clonic seizure at 14:00. The seizure lasted over five minutes. ABCDE was performed, oxygen and monitoring applied, and capillary glucose was 6.2 mmol/L. Buccal midazolam 10 mg, 2 mL of the 5 mg/mL preparation, was administered at 14:05, followed by a second 10 mg dose at 14:15 because the seizure continued. The seizure is currently [ongoing/stopped]. The patient’s current airway, breathing, circulation and neurological observations are…"
-  },
+  "handover": "This is an adult with known epilepsy who developed a generalised tonic–clonic seizure at 14:00. The seizure lasted 18 minutes in total. Initial observations were pulse 132, blood pressure 168/96, respiratory rate irregular at approximately 24, SpO₂ 86% on air and capillary glucose 6.4 mmol/L. Buccal midazolam 10 mg, 2 mL of the 5 mg/mL preparation, was administered at 14:06. The seizure continued, so a second 10 mg buccal dose was administered at 14:16. The seizure stopped at 14:18. Current observations are pulse 104, blood pressure 138/82, respiratory rate 18, SpO₂ 98% on oxygen, glucose 6.1 mmol/L and GCS 8/15. The patient is postictal but breathing spontaneously.",
   "documentation": [
     "Seizure onset and end time.",
-    "Airway, breathing, circulation, neurological observations and glucose.",
-    "Medication name, quantity, concentration, route and exact administration time.",
-    "Response to treatment and any escalation.",
-    "Senior clinician, anaesthetic/neurology involvement and disposition."
+    "Observations and oxygen therapy.",
+    "Capillary glucose.",
+    "Medication name, concentration, dose, route and exact administration times.",
+    "Response to treatment and escalation.",
+    "Senior clinician, anaesthetic/neurology involvement and disposition.",
+    "Individualised emergency seizure plan and specialist follow-up arrangements where applicable."
   ],
   "example_cases": [
     {
-      "id": "ongoing-at-arrival",
+      "id": "adult-convulsive-status-simulation",
       "severity": "Critical",
-      "description": "Adult with ongoing generalised tonic–clonic seizure for 5 minutes on arrival. Buccal midazolam is available as 10 mg in 2 mL at 5 mg/mL.",
+      "description": "Adult with known epilepsy, generalised tonic–clonic seizure beginning at 14:00, continuing for 18 minutes in the supplied simulation. Buccal midazolam is available as 10 mg in 2 mL at 5 mg/mL.",
       "observations": {
-        "glucose": "6.2 mmol/L",
-        "initial_seizure_duration": "5 minutes"
+        "initial seizure duration": "5 minutes at first treatment point",
+        "initial SpO₂": "86% on air",
+        "initial pulse": "132 bpm",
+        "initial BP": "168/96 mmHg",
+        "initial glucose": "6.4 mmol/L"
       },
       "likely_diagnosis": "Convulsive status epilepticus / time-critical ongoing convulsive seizure",
       "red_flags": [
@@ -140,33 +155,32 @@
       ]
     }
   ],
-  "simulation_sequence": [
-    "00:00 — Arrival: activate emergency response, protect the patient from injury and start timing.",
-    "Primary assessment: ABCDE, oxygen as indicated, monitoring and capillary glucose.",
-    "05:00 — First simulation medication step: buccal midazolam 10 mg = 2 mL of 5 mg/mL, with independent check.",
-    "After administration — immediately reassess airway, breathing, circulation and seizure activity.",
-    "If seizure stops — recovery positioning, monitoring, postictal assessment and documentation.",
-    "If seizure continues 5–10 minutes after first dose — senior escalation and individual emergency plan/local protocol for a second benzodiazepine dose.",
-    "If still convulsing after two benzodiazepine doses — senior/anaesthetic/neurology escalation and second-line treatment under local protocol.",
-    "If apnoeic — airway and ventilation support with oxygen and ALS/local protocol."
-  ],
   "medication_reference": {
-    "scenario": "Buccal midazolam 10 mg in 2 mL (5 mg/mL), supplied as an oral pre-filled syringe.",
-    "simulation_instruction": "The 10 mg/2 mL quantity is specific to this supplied simulation scenario. Do not treat it as a generic prescribing instruction.",
+    "scenario": "Buccal midazolam 10 mg in 2 mL, concentration 5 mg/mL.",
+    "simulation_instruction": "For this supplied simulation only, the adult dose is midazolam 10 mg buccally, equivalent to 2 mL of the 5 mg/mL preparation. Confirm authorisation and local protocol in any real clinical setting.",
     "checks": [
       "Patient identity",
       "Allergy status",
-      "Individual medication/emergency plan",
-      "Expiry and packaging",
-      "Concentration and volume",
-      "Route",
+      "Medication plan/authorisation",
+      "Medication name and concentration",
+      "Expiry date and packaging",
+      "Dose and route",
       "Independent second check where required"
     ]
   },
+  "simulation_markdown": "# Adult convulsive status epilepticus — complete simulation\n\n**Simulation assumption:** adult with known epilepsy, generalised tonic–clonic seizure, no immediately available individualised emergency plan. Buccal midazolam preparation: **5 mg/mL**, supplied as **10 mg in 2 mL**. The observations below are fictional but realistic for an OSCE/simulation. A seizure lasting **5 minutes or more** is convulsive status epilepticus and requires immediate treatment. [1]          &#x20;\n\n---\n\n## 14:00 — seizure begins\n\n`/me checks the environment for hazards, approaches the patient and activates the emergency buzzer`\n\n\\> “I’m staying with the patient. Please call the emergency team, bring the resuscitation trolley, oxygen, suction and buccal midazolam. Start timing the seizure.”\n\n`/me removes nearby hazards, protects the patient’s head with a folded blanket and removes their glasses if safe`\n\n`/me does not restrain the patient and does not put anything in the patient’s mouth`\n\n### Initial observations during the seizure\n\n- **Airway:** not assessable fully during convulsions; no obvious visible obstruction\n- **Breathing:** irregular, approximately **8–30 breaths/min**\n- **SpO₂:** **86% on air**, reading intermittently because of movement\n- **Pulse:** **132 bpm**, palpable\n- **Blood pressure:** **168/96 mmHg**\n- **Respiratory rate:** irregular, approximately **24/min**\n- **Temperature:** **36.8°C**\n- **Capillary glucose:** **6.4 mmol/L**\n- **GCS:** **3/15 during active convulsions**\n- **Pupils:** equal and reactive when assessable\n- **Skin:** pale, mildly cyanosed around the lips\n\n`/me applies pulse oximetry, ECG monitoring and a blood-pressure cuff`\n\n`/me applies high-concentration oxygen via a non-rebreather mask and prepares suction`\n\n\\> “The patient is hypoxic during the seizure. Oxygen is being administered, and I’m preparing suction and airway equipment.”\n\n`/me asks a colleague to obtain capillary glucose and prepare IV access`\n\n\\> “Please obtain capillary glucose, establish IV access when safe and bring the patient’s medication list and emergency plan.”\n\n---\n\n## 14:05 — seizure reaches 5 minutes\n\n`/me checks the clock and confirms the seizure has lasted 5 minutes`\n\n\\> “This is convulsive status epilepticus. I’m going to administer first-line benzodiazepine treatment.”\n\n### Medication preparation\n\n`/me retrieves the buccal midazolam from the emergency medication pack`\n\n`/me checks the patient’s identity, allergies, medication history, expiry date, packaging and solution`\n\n`/me reads the label aloud`\n\n\\> “Buccal midazolam 10 mg in 2 mL. Concentration 5 mg/mL. Oral pre-filled syringe.”\n\n`/me asks a second clinician to perform an independent medication check`\n\n\\> “Please independently check midazolam 10 mg, equivalent to 2 mL of the 5 mg/mL preparation, by the buccal route.”\n\n`/me opens the outer packaging and removes the pre-filled oral syringe`\n\n`/me checks the label again and removes the cap`\n\n`/me does not attach a needle, IV tubing or any other device`\n\nThe adult dose in this simulation is **midazolam 10 mg buccally**, equivalent to **2 mL of a 5 mg/mL preparation**. [2]          &#x20;\n\n---\n\n## 14:06 — first dose administered\n\n`/me positions at the side of the patient and waits for a safe opportunity to access the cheek`\n\n`/me places the syringe tip into the buccal space between the gum and cheek`\n\n\\> “Administering midazolam 10 mg, 2 mL, by the buccal route now.”\n\n`/me slowly administers the full 2 mL into the buccal space`\n\n`/me removes the syringe and disposes of it safely`\n\n\\> “Midazolam 10 mg buccally administered at 14:06.”\n\n`/me immediately reassesses airway, breathing, circulation and seizure activity`\n\n### Observations after first dose\n\n- **Airway:** patent but secretions present\n- **Breathing:** irregular, **10–18/min**\n- **SpO₂:** **94% on high-concentration oxygen**\n- **Pulse:** **124 bpm**\n- **Blood pressure:** **158/90 mmHg**\n- **Respiratory rate:** **16/min**, intermittently irregular\n- **Capillary glucose:** **6.4 mmol/L**\n- **GCS:** **3/15 during ongoing convulsions**\n- **ECG:** sinus tachycardia\n- **Seizure activity:** ongoing bilateral tonic–clonic movements\n\n`/me suctions visible oral secretions without placing fingers into the mouth`\n\n`/me continues oxygen, ECG, pulse oximetry and blood-pressure monitoring`\n\n---\n\n## 14:11 — seizure continues\n\n`/me checks the exact time of the first dose and confirms that no other benzodiazepine has been administered`\n\n\\> “The seizure is ongoing five minutes after the first dose. I’m reassessing ABCDE and escalating to the senior clinician.”\n\n`/me reassesses the airway, breathing, pulse, blood pressure and oxygen saturation`\n\n### Observations\n\n- **Airway:** patent; suction available\n- **SpO₂:** **96% on oxygen**\n- **Pulse:** **118 bpm**\n- **Blood pressure:** **150/86 mmHg**\n- **Respiratory rate:** **12/min**, irregular\n- **Capillary glucose:** **6.2 mmol/L**\n- **GCS:** **3/15**\n- **ECG:** sinus tachycardia\n- **Seizure activity:** ongoing\n\n`/me confirms that emergency support has been called and IV access is being attempted`\n\n---\n\n## 14:16 — second dose\n\nThe patient remains convulsing 10 minutes after the first dose.\n\n`/me checks the local protocol and confirms that a second benzodiazepine dose is authorised`\n\n`/me retrieves a second buccal midazolam syringe`\n\n`/me checks the patient, drug, concentration, dose, route, expiry and administration history`\n\n\\> “Second check: midazolam 10 mg, 2 mL of the 5 mg/mL preparation, buccal route.”\n\n`/me opens the syringe, removes the cap and positions at the side of the patient`\n\n`/me administers the solution slowly into the buccal space`\n\n\\> “Second dose of midazolam 10 mg administered buccally at 14:16.”\n\n`/me documents a cumulative midazolam dose of 20 mg`\n\n`/me continues airway and respiratory monitoring and prepares for possible assisted ventilation`\n\n---\n\n## 14:18 — seizure stops\n\n`/me observes cessation of tonic–clonic movements and records the end time`\n\n\\> “The seizure has stopped at 14:18.”\n\n`/me maintains airway positioning and places the patient into the recovery position`\n\n`/me continues oxygen, ECG, pulse oximetry and blood-pressure monitoring`\n\n### Postictal observations\n\n- **Airway:** patent; gurgling secretions cleared with suction\n- **Breathing:** spontaneous, **18/min**\n- **SpO₂:** **98% on oxygen**\n- **Pulse:** **104 bpm**\n- **Blood pressure:** **138/82 mmHg**\n- **Respiratory rate:** **18/min**\n- **Temperature:** **36.9°C**\n- **Capillary glucose:** **6.1 mmol/L**\n- **GCS:** **8/15 — E2 V2 M4**\n- **Pupils:** equal and reactive\n- **ECG:** sinus tachycardia\n- **Seizure activity:** stopped\n\n\\> “The seizure has stopped. The patient remains postictal and sedated but is breathing spontaneously. I will continue close respiratory monitoring because of the risk of delayed respiratory depression after midazolam.”\n\n`/me withholds food, drink and oral medication until the patient is awake and can swallow safely`\n\n`/me checks for head injury, tongue trauma, aspiration, shoulder injury and urinary incontinence`\n\n---\n\n# Alternative branch: if the seizure does not stop\n\nIf the patient remains convulsing after two benzodiazepine doses:\n\n`/me calls the senior doctor, anaesthetic team and neurology team`\n\n\\> “This is ongoing convulsive status epilepticus despite two benzodiazepine doses. I need urgent anaesthetic and neurology support.”\n\n`/me ensures oxygen, suction, bag-valve-mask equipment and airway adjuncts are immediately available`\n\n`/me assists with IV or intraosseous access`\n\n`/me repeats capillary glucose and obtains blood samples`\n\n`/me prepares second-line antiseizure medication according to the local status epilepticus protocol`\n\nA commonly used hospital regimen is **levetiracetam 60 mg/kg IV, maximum 4.5 g**. For a 70 kg adult, this would calculate to **4.2 g IV**; the prescribing clinician must confirm the dose, preparation, dilution and infusion rate according to local policy.\n\n`/me continues ECG, blood-pressure, oxygen-saturation and respiratory monitoring`\n\n`/me prepares for possible rapid sequence induction, intubation, ventilation and transfer to critical care`\n\nNICE recommends IV levetiracetam, phenytoin or sodium valproate after failure of two benzodiazepine doses, with expert guidance for further treatment. [1]          &#x20;\n\n---\n\n# If the patient becomes apnoeic\n\n`/me recognises absent or inadequate breathing and calls for immediate airway assistance`\n\n\\> “The patient is apnoeic. I’m commencing airway and ventilation support.”\n\n`/me opens the airway, suctions visible secretions and begins bag-valve-mask ventilation with high-flow oxygen`\n\n`/me asks a colleague to confirm a pulse and prepare the defibrillator`\n\n`/me continues resuscitation according to the ALS algorithm and local status epilepticus protocol`\n\n---\n\n# Final handover\n\n`/me gives a structured handover to the senior clinician`\n\n\\> “This is an adult with known epilepsy who developed a generalised tonic–clonic seizure at 14:00. The seizure lasted 18 minutes in total. Initial observations were pulse 132, blood pressure 168/96, respiratory rate irregular at approximately 24, SpO₂ 86% on air and capillary glucose 6.4 mmol/L.\\\n\\> > Buccal midazolam 10 mg, 2 mL of the 5 mg/mL preparation, was administered at 14:06. The seizure continued, so a second 10 mg buccal dose was administered at 14:16. The seizure stopped at 14:18. Current observations are pulse 104, blood pressure 138/82, respiratory rate 18, SpO₂ 98% on oxygen, glucose 6.1 mmol/L and GCS 8/15. The patient is postictal but breathing spontaneously.”\n\n`/me documents the seizure onset and end time, observations, oxygen therapy, glucose, medication name, concentration, dose, route, exact administration times, response and escalation`\n\n`/me ensures an individualised emergency seizure plan and specialist follow-up are arranged before discharge`\n\n### References\n\n1. [7 Treating status epilepticus, repeated or cluster seizures ...](https://www.nice.org.uk/guidance/ng217/chapter/treating-status-epilepticus-repeated-or-cluster-seizures-and-prolonged-seizures)                                                                                                                         &#x20;\n\n   www\\.nice.org.uk › ...\n2. [\\[DOC\\] Buccal midazolam National PGD template V2 FINAL Feb 23](https://www.sps.nhs.uk/wp-content/uploads/2021/10/Buccal-midazolam-National-PGD-template-V2-FINAL-Feb-23.doc)                                                                                                                         &#x20;\n\n   www\\.sps.nhs.uk › ...",
+  "simulation_source": "User-supplied 'Pasted markdown.md' — used as the replacement simulation content without silently changing its clinical scenario or observations.",
   "source": {
-    "title": "NICE NG217 — Epilepsies in children, young people and adults: management of convulsive status epilepticus",
-    "url": "https://www.nice.org.uk/guidance/ng217",
-    "relevant_recommendations": "7.1.7–7.1.11",
-    "last_reviewed": "2026-09-29"
+    "title": "Supplied simulation source plus cited references",
+    "references": [
+      {
+        "title": "NICE — Treating status epilepticus, repeated or cluster seizures and prolonged seizures",
+        "url": "https://www.nice.org.uk/guidance/ng217/chapter/treating-status-epilepticus-repeated-or-cluster-seizures-and-prolonged-seizures"
+      },
+      {
+        "title": "Buccal midazolam National PGD template V2 FINAL Feb 23",
+        "url": "https://www.sps.nhs.uk/wp-content/uploads/2021/10/Buccal-midazolam-National-PGD-template-V2-FINAL-Feb-23.doc"
+      }
+    ]
   }
 }

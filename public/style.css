@@ -1900,3 +1900,101 @@ main > section[id] textarea:focus-visible{
   border-radius:8px;
   color:#c9d6e2 !important;
 }
+
+
+/* =========================================================
+   PATHWAYS — GLOBAL NESTED CARD CONTRAST FIX
+   Apply the clinical dark theme to every legacy/nested box
+   rendered inside the Pathways library, not just new cards.
+========================================================= */
+#pathways .diagnosis-pathway-detail,
+#pathways .diagnosis-pathway-detail .pathway-sub,
+#pathways .diagnosis-pathway-detail .card,
+#pathways .diagnosis-pathway-detail .info,
+#pathways .diagnosis-pathway-detail .list-card,
+#pathways .diagnosis-pathway-detail .obs,
+#pathways .diagnosis-pathway-detail .emergency,
+#pathways .diagnosis-pathway-detail .notice,
+#pathways .diagnosis-pathway-detail .warning,
+#pathways .diagnosis-pathway-detail details,
+#pathways .diagnosis-pathway-detail fieldset,
+#pathways .diagnosis-pathway-detail .diagnosis-example-case,
+#pathways .diagnosis-pathway-detail .diagnosis-med-card{
+  background:linear-gradient(180deg,#15283d,#102235) !important;
+  color:#dbe7f2 !important;
+  border-color:rgba(148,163,184,.22) !important;
+  box-sizing:border-box;
+}
+#pathways .diagnosis-pathway-detail h1,
+#pathways .diagnosis-pathway-detail h2,
+#pathways .diagnosis-pathway-detail h3,
+#pathways .diagnosis-pathway-detail h4,
+#pathways .diagnosis-pathway-detail strong,
+#pathways .diagnosis-pathway-detail summary{
+  color:#f3f7fb !important;
+}
+#pathways .diagnosis-pathway-detail p,
+#pathways .diagnosis-pathway-detail li,
+#pathways .diagnosis-pathway-detail span,
+#pathways .diagnosis-pathway-detail small,
+#pathways .diagnosis-pathway-detail label,
+#pathways .diagnosis-pathway-detail pre,
+#pathways .diagnosis-pathway-detail code{
+  color:#c9d6e2 !important;
+}
+#pathways .diagnosis-pathway-detail ul,
+#pathways .diagnosis-pathway-detail ol{
+  color:#c9d6e2 !important;
+}
+#pathways .diagnosis-pathway-detail input,
+#pathways .diagnosis-pathway-detail select,
+#pathways .diagnosis-pathway-detail textarea{
+  background:#091626 !important;
+  color:#e8eef7 !important;
+  border-color:rgba(148,163,184,.3) !important;
+}
+#pathways .diagnosis-pathway-detail a{
+  color:#6ed1f5 !important;
+}
+#pathways .diagnosis-pathway-detail hr{
+  border:0;
+  border-top:1px solid rgba(148,163,184,.18);
+  margin:1rem 0;
+}
+
+/* Supplied epilepsy simulation: keep /me actions and spoken lines distinct. */
+#pathways .diagnosis-simulation-document{
+  color:#c9d6e2 !important;
+}
+#pathways .diagnosis-simulation-document h3,
+#pathways .diagnosis-simulation-document h4{
+  margin:1rem 0 .6rem;
+}
+#pathways .diagnosis-simulation-document .simulation-action{
+  margin:.45rem 0;
+  padding:.65rem .8rem;
+  background:#0c1922 !important;
+  border:1px solid rgba(84,183,216,.18);
+  border-left:3px solid #54b7d8;
+  border-radius:8px;
+}
+#pathways .diagnosis-simulation-document .simulation-action code{
+  background:transparent !important;
+  font-family:inherit;
+  color:#cfe8f2 !important;
+  white-space:normal;
+}
+#pathways .diagnosis-simulation-document blockquote{
+  margin:.55rem 0;
+  padding:.7rem .9rem;
+  background:rgba(84,183,216,.07) !important;
+  border-left:3px solid #54b7d8;
+  border-radius:7px;
+  color:#f0f7fb !important;
+}
+#pathways .diagnosis-simulation-document blockquote *{
+  color:#f0f7fb !important;
+}
+#pathways .diagnosis-simulation-document ul{
+  margin:.5rem 0 .8rem 1.25rem;
+}
