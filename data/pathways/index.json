@@ -5,6 +5,9 @@
       "road-traffic-collision",
       "fall-from-height",
       "fractures-open-fractures"
+    ],
+    "neurology": [
+      "adult-convulsive-status-epilepticus"
     ]
   },
   "embedded_library": true

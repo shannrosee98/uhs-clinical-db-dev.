@@ -21,10 +21,11 @@
     "Fall from Height source pathway",
     "Fractures and Open Fractures educational pathway",
     "Object-shaped pathway section rendering for observations, reassessment, handover and primary survey",
-    "Shared medication references retained"
+    "Shared medication references retained",
+    "Adult convulsive status epilepticus epilepsy simulation pathway"
   ],
   "counts": {
-    "pathways": 41,
+    "pathways": 44,
     "medications": 3
   },
   "production_changed": false,
@@ -35,6 +36,7 @@
   "pathway_files": [
     "data/pathways/trauma/road-traffic-collision.json",
     "data/pathways/trauma/fall-from-height.json",
-    "data/pathways/trauma/fractures-open-fractures.json"
+    "data/pathways/trauma/fractures-open-fractures.json",
+    "data/pathways/neurology/adult-convulsive-status-epilepticus.json"
   ]
 }
