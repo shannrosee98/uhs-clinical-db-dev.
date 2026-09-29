@@ -11124,6 +11124,24 @@ function diagnosisOpenPathway(id){
  ];
  el.innerHTML=`<div class="diagnosis-pathway-disclaimer">FOR ROLE-PLAY ONLY. This pathway is fictionalised for FiveM gameplay and is not real-world medical advice. Adult scope: 16+.</div>${sections.map(([title,body])=>`<section class="diagnosis-pathway-section"><h4>${diagnosisEscape(title)}</h4>${body}</section>`).join('')}`;
 }
+function focusPathwayGuide(id){
+ const root=document.getElementById('pathways-library');
+ if(!root){showSection('pathways'); return;}
+ const search=document.getElementById('pathways-library-search');
+ if(search){
+   const p=diagnosisPathways[id];
+   search.value=p?.title||id.replace(/-/g,' ');
+   search.dispatchEvent(new Event('input',{bubbles:true}));
+ }
+ requestAnimationFrame(()=>{
+   const detail=document.getElementById(`pathway-detail-${id}`);
+   const card=detail?.closest('.diagnosis-pathway-card');
+   if(card){
+     card.scrollIntoView({behavior:'smooth',block:'start'});
+     if(detail?.hidden) card.querySelector('.diagnosis-pathway-actions button')?.click();
+   }
+ });
+}
 function renderPathwaysLibrary(){
  const root=document.getElementById('pathways-library');
  if(!root)return;

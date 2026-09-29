@@ -1740,3 +1740,102 @@ main > section[id] textarea:focus-visible{
 .pathway-example-observations{display:flex;flex-wrap:wrap;gap:.5rem;margin:.75rem 0}
 .pathway-example-observations span{padding:.35rem .5rem;border:1px solid var(--border,#d9dee7);border-radius:8px;font-size:.85rem}
 @media(max-width:700px){.pathway-library-toolbar{grid-template-columns:1fr}.diagnosis-pathway-grid{grid-template-columns:1fr}}
+
+
+/* =========================================================
+   PATHWAYS LIBRARY — RESPONSIVE LAYOUT FIX
+   Prevent narrow multi-column cards and stark white surfaces
+   in the Pathways tab. Keep detailed pathway content readable.
+========================================================= */
+#pathways.learning-hub{
+  width:100%;
+  max-width:1400px;
+  min-width:0;
+}
+#pathways .pathway-list{
+  width:100%;
+  max-width:none;
+}
+#pathways .pathway-card{
+  width:100%;
+  min-width:0;
+  background:linear-gradient(180deg,#122338,#0f1d2d) !important;
+  color:#e8eef7 !important;
+  border-color:rgba(148,163,184,.18) !important;
+}
+#pathways .pathway-card span{
+  color:#9eacbd !important;
+}
+#pathways-library{
+  width:100%;
+  max-width:none;
+  min-width:0;
+}
+#pathways .pathway-library-toolbar{
+  width:100%;
+  grid-template-columns:minmax(0,2fr) minmax(180px,1fr) minmax(180px,1fr);
+}
+#pathways .pathway-library-toolbar input,
+#pathways .pathway-library-toolbar select{
+  min-width:0;
+  background:#091626 !important;
+  color:#e8eef7 !important;
+  border-color:rgba(148,163,184,.28) !important;
+}
+#pathways .diagnosis-pathway-grid{
+  width:100%;
+  min-width:0;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) !important;
+  gap:16px;
+}
+#pathways .diagnosis-pathway-card{
+  width:100%;
+  min-width:0;
+  background:linear-gradient(180deg,#122338,#0f1d2d) !important;
+  color:#e8eef7 !important;
+  border-color:rgba(148,163,184,.22) !important;
+  box-shadow:0 12px 30px rgba(0,0,0,.2) !important;
+  overflow:hidden;
+}
+#pathways .diagnosis-pathway-card h3{
+  color:#f3f7fb !important;
+  margin:.35rem 0 .6rem;
+}
+#pathways .diagnosis-pathway-card p,
+#pathways .diagnosis-pathway-card li,
+#pathways .diagnosis-pathway-section,
+#pathways .diagnosis-pathway-section p{
+  color:#c3cfdb !important;
+}
+#pathways .diagnosis-pathway-top{
+  color:#9eacbd;
+}
+#pathways .diagnosis-pathway-category{
+  color:#54b7d8 !important;
+}
+#pathways .diagnosis-pathway-detail{
+  border-top-color:rgba(148,163,184,.18) !important;
+}
+#pathways .diagnosis-pathway-section{
+  border-bottom-color:rgba(148,163,184,.14) !important;
+}
+#pathways .pathway-sub{
+  background:rgba(84,183,216,.06) !important;
+  border-left-color:#54b7d8 !important;
+}
+#pathways .diagnosis-pathway-disclaimer{
+  background:rgba(180,83,9,.12) !important;
+  color:#f4d7a1 !important;
+  border-color:rgba(245,158,11,.28) !important;
+}
+#pathways .diagnosis-pathway-card .secondary{
+  color:#dff7ff !important;
+  background:#18313c !important;
+  border-color:#31535f !important;
+}
+@media(max-width:900px){
+  #pathways .pathway-library-toolbar{
+    grid-template-columns:1fr;
+  }
+}
