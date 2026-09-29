@@ -1998,3 +1998,131 @@ main > section[id] textarea:focus-visible{
 #pathways .diagnosis-simulation-document ul{
   margin:.5rem 0 .8rem 1.25rem;
 }
+
+
+/* =========================================================
+   PATHWAYS — FINAL CONTRAST / LEGACY SURFACE OVERRIDE
+   Some older pathway renderers use generic <pre>, warning,
+   table and handover styles that introduce white surfaces.
+   Keep every pathway surface consistent with the dark theme.
+========================================================= */
+#pathways .diagnosis-pathway-detail pre,
+#pathways .diagnosis-pathway-detail .emergency-reference-handover,
+#pathways .diagnosis-pathway-detail .diagnosis-handover,
+#pathways .diagnosis-pathway-detail .diagnosis-output,
+#pathways .diagnosis-pathway-detail .diagnosis-empty,
+#pathways .diagnosis-pathway-detail .diagnosis-muted{
+  display:block;
+  width:100%;
+  box-sizing:border-box;
+  background:#0c1922 !important;
+  color:#dbe7f2 !important;
+  border:1px solid rgba(148,163,184,.22) !important;
+  border-radius:8px;
+  padding:.8rem .9rem;
+  white-space:pre-wrap;
+}
+
+#pathways .diagnosis-pathway-detail pre{
+  margin:.55rem 0;
+  overflow:auto;
+  font:inherit;
+  line-height:1.55;
+}
+
+#pathways .diagnosis-pathway-detail .diagnosis-med-warning{
+  background:rgba(180,83,9,.12) !important;
+  color:#f4d7a1 !important;
+  border:1px solid rgba(245,158,11,.28) !important;
+  border-radius:7px;
+  padding:.55rem .7rem;
+}
+
+#pathways .diagnosis-pathway-detail details{
+  background:#102235 !important;
+  color:#dbe7f2 !important;
+  border:1px solid rgba(148,163,184,.20) !important;
+  border-radius:8px;
+  padding:.55rem .7rem;
+  margin:.6rem 0;
+}
+
+#pathways .diagnosis-pathway-detail details[open]{
+  background:#0f2030 !important;
+}
+
+#pathways .diagnosis-pathway-detail summary{
+  cursor:pointer;
+  color:#f3f7fb !important;
+}
+
+#pathways .diagnosis-pathway-detail table{
+  width:100%;
+  border-collapse:collapse;
+  background:#102235 !important;
+  color:#dbe7f2 !important;
+  border:1px solid rgba(148,163,184,.22) !important;
+  border-radius:8px;
+  overflow:hidden;
+}
+
+#pathways .diagnosis-pathway-detail th,
+#pathways .diagnosis-pathway-detail td{
+  background:#102235 !important;
+  color:#dbe7f2 !important;
+  border:1px solid rgba(148,163,184,.18) !important;
+  padding:.55rem .65rem;
+  text-align:left;
+}
+
+#pathways .diagnosis-pathway-detail th{
+  background:#18313c !important;
+  color:#f3f7fb !important;
+}
+
+#pathways .diagnosis-pathway-detail blockquote{
+  background:rgba(84,183,216,.07) !important;
+  color:#f0f7fb !important;
+  border-left:3px solid #54b7d8 !important;
+  border-radius:7px;
+}
+
+#pathways .diagnosis-pathway-detail .pathway-sub{
+  background:linear-gradient(180deg,#15283d,#102235) !important;
+  color:#c9d6e2 !important;
+}
+
+#pathways .diagnosis-pathway-detail .pathway-sub > div{
+  color:#c9d6e2 !important;
+}
+
+#pathways .diagnosis-pathway-detail .diagnosis-pathway-disclaimer{
+  background:rgba(180,83,9,.12) !important;
+  color:#f4d7a1 !important;
+  border:1px solid rgba(245,158,11,.28) !important;
+}
+
+/* Catch generic legacy "card/info/box" surfaces used by older
+   pathway content without changing the application elsewhere. */
+#pathways .diagnosis-pathway-detail .box,
+#pathways .diagnosis-pathway-detail .content-box,
+#pathways .diagnosis-pathway-detail .reference-box,
+#pathways .diagnosis-pathway-detail .handover-box,
+#pathways .diagnosis-pathway-detail .case-box,
+#pathways .diagnosis-pathway-detail .clinical-box,
+#pathways .diagnosis-pathway-detail .rp-box{
+  background:linear-gradient(180deg,#15283d,#102235) !important;
+  color:#dbe7f2 !important;
+  border-color:rgba(148,163,184,.22) !important;
+}
+
+/* Do not allow browser/legacy form defaults to create white
+   controls inside pathway detail panels. */
+#pathways .diagnosis-pathway-detail button{
+  color:#e8eef7;
+}
+#pathways .diagnosis-pathway-detail button.secondary{
+  background:#18313c !important;
+  color:#dff7ff !important;
+  border-color:#31535f !important;
+}
