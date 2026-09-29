@@ -11111,12 +11111,14 @@ function diagnosisOpenPathway(id){
  const focused=p.focused_examination||[];
  const likely=p.rp_diagnosis||p.likely_rp_diagnoses||[];
  const examples=p.example_cases||[];
+ const simulation=Array.isArray(p.simulation_sequence)?p.simulation_sequence:[];
  const sections=[
   ['1 · Scene & mechanism',`<strong>Scene safety</strong>${diagnosisTextList(scene)}<strong>Mechanism / context</strong>${diagnosisTextList(mechanism)}${p.initial_impression?`<strong>Initial impression</strong>${diagnosisTextList(p.initial_impression)}`:''}`],
   ['2 · Primary survey',diagnosisObjectSections(p.primary_survey)],
   ['3 · Observations & focused examination',`<strong>Observations</strong>${diagnosisObjectSections(p.observations)}<strong>Focused examination</strong>${diagnosisObjectSections(focused)}`],
   ['4 · Diagnostic reasoning',`<strong>Possible considerations</strong>${diagnosisTextList(differentials)}<strong>Likely RP diagnoses</strong>${diagnosisObjectSections(likely)}`],
   ['5 · Management & escalation',`<strong>Immediate management</strong>${diagnosisTextList(management)}<strong>Escalate for</strong>${diagnosisTextList(escalation)}<strong>Disposition</strong>${diagnosisObjectSections(p.disposition)}`],
+  ['5a · Simulation sequence',simulation.length?`<ol class="diagnosis-simulation-sequence">${simulation.map(x=>`<li>${diagnosisEscape(x)}</li>`).join('')}</ol>`:'<p>No simulation sequence supplied.</p>'],
   ['6 · Reassessment',diagnosisObjectSections(reassessment)],
   ['7 · Handover & documentation',diagnosisHandoverHtml(p.handover)+`<strong>Documentation</strong>${diagnosisTextList(docs)}`],
   ['8 · Medication / equipment reference',diagnosisMedicationRefHtml(p)+`<p>Use the existing UHS equipment reference and server-authorised RP procedures.</p>`],
@@ -11201,6 +11203,11 @@ function diagnosisAssessment(){const d=diagnosisIncidentData[diagnosisState.inci
 function diagnosisReasoning(){const d=diagnosisIncidentData[diagnosisState.incident]||{};const selected=diagnosisState.data.symptoms||[];let primary='Insufficient information — requires further assessment';let why=[];if(diagnosisState.incident==='stroke'&&selected.some(x=>/weakness|speech|facial/i.test(x))){primary='Findings are concerning for an acute neurological event such as stroke and require urgent specialist assessment.';why=selected.filter(x=>/weakness|speech|facial|visual|gaze|neglect/i.test(x));}else if(diagnosisState.incident==='chest-pain'&&selected.some(x=>/chest|radiat|sweat|nausea/i.test(x))){primary='Findings are concerning for acute coronary syndrome and require appropriate urgent assessment.';why=selected;}else if(selected.length){primary=`Findings are consistent with a ${diagnosisEscape(d.label||'clinical')} presentation; further focused assessment is required.`;why=selected.slice(0,6);}const diffs=(d.diff||[]).slice(0,6);return `<div class="diagnosis-section-title"><span>8</span><div><h2>Clinical Reasoning Guide</h2><p>Possible clinical considerations only — not a definitive diagnosis.</p></div></div><article class="diagnosis-result-primary"><span>PRIMARY CLINICAL CONSIDERATION</span><h2>${diagnosisEscape(primary)}</h2><h3>Why?</h3><ul>${(why.length?why:['No sufficiently specific supporting findings entered.']).map(x=>`<li>${diagnosisEscape(x)}</li>`).join('')}</ul></article><div class="diagnosis-differentials"><h2>Alternative possibilities</h2>${diffs.map((x,i)=>`<article><span>DIFFERENTIAL ${i+1}</span><h3>${diagnosisEscape(x)}</h3><p><strong>Support:</strong> assess whether the entered findings fit this possibility.</p><p><strong>Next:</strong> identify findings that would support or make it less likely.</p></article>`).join('')}</div><div class="diagnosis-redflags">${diagnosisConcernSummary()}</div><div class="diagnosis-actions"><button class="secondary" onclick="diagnosisStep(6)">Back</button><button class="primary" onclick="diagnosisStep(8)">View Management Guide</button></div>`;}
 function diagnosisMedicationRefHtml(pathway){
  const refs=Array.isArray(pathway?.medications)?pathway.medications:[];
+ if(!refs.length && pathway?.medication_reference){
+   const ref=pathway.medication_reference;
+   const checks=Array.isArray(ref.checks)?ref.checks.map(x=>`<li>${diagnosisEscape(x)}</li>`).join(''):'';
+   return `<article class="diagnosis-med-card"><div class="diagnosis-med-warning">RP-ONLY SIMULATION REFERENCE</div><h3>Simulation medication reference</h3><p><strong>Scenario:</strong> ${diagnosisEscape(ref.scenario||'')}</p><p><strong>Instruction:</strong> ${diagnosisEscape(ref.simulation_instruction||'')}</p>${checks?`<p><strong>Checks:</strong></p><ul>${checks}</ul>`:''}</article>`;
+ }
  if(!refs.length)return '<p>No medication is specified for this pathway.</p>';
  const records=refs.map(r=>diagnosisMedicationData.medications.find(m=>m.id===r.medication_id)).filter(Boolean);
  if(!records.length)return '<p>Medication reference requires source verification.</p>';

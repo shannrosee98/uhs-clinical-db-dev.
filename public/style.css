@@ -1839,3 +1839,64 @@ main > section[id] textarea:focus-visible{
     grid-template-columns:1fr;
   }
 }
+
+
+/* =========================================================
+   PATHWAYS — EXAMPLE CASE + MEDICATION REFERENCE CONTRAST
+   Ensure nested pathway content cannot fall back to the
+   legacy light-card palette.
+========================================================= */
+#pathways .diagnosis-example-case{
+  display:block;
+  width:100%;
+  box-sizing:border-box;
+  margin:.75rem 0;
+  padding:.9rem;
+  background:linear-gradient(180deg,#15283d,#102235) !important;
+  color:#dbe7f2 !important;
+  border:1px solid rgba(84,183,216,.30) !important;
+  border-left:3px solid #54b7d8 !important;
+  border-radius:8px;
+}
+#pathways .diagnosis-example-case strong{
+  color:#f3f7fb !important;
+}
+#pathways .diagnosis-example-case p,
+#pathways .diagnosis-example-case li{
+  color:#c9d6e2 !important;
+}
+#pathways .diagnosis-example-case ul{
+  margin:.5rem 0 0 1.1rem;
+}
+#pathways .pathway-example-observations span{
+  background:#102235 !important;
+  color:#dbe7f2 !important;
+  border-color:rgba(148,163,184,.30) !important;
+}
+#pathways .diagnosis-med-card{
+  background:linear-gradient(180deg,#15283d,#102235) !important;
+  color:#dbe7f2 !important;
+  border-color:rgba(148,163,184,.22) !important;
+}
+#pathways .diagnosis-med-card h3,
+#pathways .diagnosis-med-card strong{
+  color:#f3f7fb !important;
+}
+#pathways .diagnosis-med-card p,
+#pathways .diagnosis-med-card li,
+#pathways .diagnosis-med-card small{
+  color:#c9d6e2 !important;
+}
+#pathways .diagnosis-simulation-sequence{
+  margin:.75rem 0;
+  padding:0;
+  list-style:none;
+}
+#pathways .diagnosis-simulation-sequence li{
+  margin:.5rem 0;
+  padding:.7rem .8rem;
+  background:rgba(84,183,216,.06) !important;
+  border:1px solid rgba(148,163,184,.16);
+  border-radius:8px;
+  color:#c9d6e2 !important;
+}
