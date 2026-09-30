@@ -11383,8 +11383,16 @@ function openPathwayPage(id,tab='Overview',hospitalTab='On Ward',pushHistory=tru
 function renderPathwaysLibrary(){
  const root=document.getElementById('pathways-library');
  if(!root)return;
+ try {
+  window.uhsPathwayRegistry = diagnosisPathways;
+ } catch(e) {
+  root.innerHTML='<div class="diagnosis-empty">The pathway library could not be loaded.</div>';
+  console.error('Pathway library registry error',e);
+  return;
+ }
+ if(!root)return;
  const cats=[...new Set(Object.values(diagnosisPathways).map(p=>p.category||'Clinical'))].sort();
- root.innerHTML=`<div class="pathway-library-toolbar"><input id="pathways-library-search" type="search" placeholder="Search all pathway guides…" aria-label="Search all pathway guides"><select id="pathways-library-category" aria-label="Filter pathway category"><option value="">All categories</option>${cats.map(c=>`<option>${diagnosisEscape(c)}</option>`).join('')}</select><select id="pathways-library-severity" aria-label="Filter pathway severity"><option value="">All severities</option><option>Minor</option><option>Moderate</option><option>Serious</option><option>Critical</option></select></div><div id="pathways-library-results" class="diagnosis-pathway-grid"></div>`;
+ root.innerHTML=`<div class="pathway-library-toolbar"><div class="pathway-library-toolbar-title"><strong>Complete pathway library</strong><span>${Object.keys(diagnosisPathways).length} pathways</span></div><input id="pathways-library-search" type="search" placeholder="Search all pathway guides…" aria-label="Search all pathway guides"><select id="pathways-library-category" aria-label="Filter pathway category"><option value="">All categories</option>${cats.map(c=>`<option>${diagnosisEscape(c)}</option>`).join('')}</select><select id="pathways-library-severity" aria-label="Filter pathway severity"><option value="">All severities</option><option>Minor</option><option>Moderate</option><option>Serious</option><option>Critical</option></select></div><div id="pathways-library-results" class="diagnosis-pathway-grid"></div>`;
  const render=()=>{
    const q=(document.getElementById('pathways-library-search')?.value||'').toLowerCase();
    const cat=document.getElementById('pathways-library-category')?.value||'';
@@ -11491,4 +11499,16 @@ document.addEventListener('DOMContentLoaded',()=>{if(diagnosisLoad())diagnosisRe
 window.addEventListener('popstate',function(e){
  const state=e.state;
  if(state?.pathwayId){ openPathwayPage(state.pathwayId,state.tab||'Overview',state.hospitalTab||'On Ward',false); }
+});
+
+
+/* Pathway library boot: always render the complete embedded registry on page load. */
+document.addEventListener('DOMContentLoaded',function(){
+  try {
+    if(typeof renderPathwaysLibrary==='function') renderPathwaysLibrary();
+  } catch(e) {
+    console.error('Pathway library render failed',e);
+    const root=document.getElementById('pathways-library');
+    if(root) root.innerHTML='<div class="diagnosis-empty">Unable to render the pathway library. Check the browser console for details.</div>';
+  }
 });
