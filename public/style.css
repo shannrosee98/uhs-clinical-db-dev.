@@ -2126,3 +2126,176 @@ main > section[id] textarea:focus-visible{
   color:#dff7ff !important;
   border-color:#31535f !important;
 }
+
+
+/* =========================================================
+   PATHWAY INDIVIDUAL PAGES + ROLE TABS
+========================================================= */
+#pathways-library .pathway-page{
+  width:100%;
+  max-width:1400px;
+  margin:0 auto;
+  background:linear-gradient(180deg,#0d1c2d,#0a1726);
+  border:1px solid rgba(148,163,184,.18);
+  border-radius:16px;
+  overflow:hidden;
+  color:#e8eef7;
+  box-shadow:0 12px 36px rgba(0,0,0,.18);
+}
+#pathways-library .pathway-page-topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1rem;
+  padding:1rem 1.25rem;
+  background:#091625;
+  border-bottom:1px solid rgba(148,163,184,.16);
+}
+#pathways-library .pathway-page-kicker{
+  color:#6dd3ff;
+  font-size:.72rem;
+  font-weight:800;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+#pathways-library .pathway-page-tabs{
+  display:flex;
+  gap:.35rem;
+  flex-wrap:wrap;
+  padding:.75rem 1.25rem 0;
+  background:#0b1929;
+  border-bottom:1px solid rgba(148,163,184,.16);
+}
+#pathways-library .pathway-page-tab{
+  appearance:none;
+  border:1px solid rgba(148,163,184,.2);
+  border-bottom:0;
+  border-radius:9px 9px 0 0;
+  background:#101f31;
+  color:#b9c7d8;
+  padding:.72rem 1rem;
+  font-weight:750;
+  cursor:pointer;
+  transition:.15s ease;
+}
+#pathways-library .pathway-page-tab:hover{
+  background:#162a40;
+  color:#fff;
+}
+#pathways-library .pathway-page-tab.active{
+  background:#173a52;
+  color:#fff;
+  border-color:#32b8ee;
+  box-shadow:inset 0 -3px 0 #32b8ee;
+}
+#pathways-library .pathway-page-content{
+  padding:1.25rem;
+}
+#pathways-library .pathway-page-hero{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:1rem;
+  padding:1.25rem;
+  margin-bottom:1rem;
+  border:1px solid rgba(148,163,184,.16);
+  border-radius:12px;
+  background:linear-gradient(135deg,#13283d,#0e2033);
+}
+#pathways-library .pathway-page-hero h1{
+  margin:.25rem 0 .5rem;
+  color:#fff;
+}
+#pathways-library .pathway-page-hero p{
+  margin:0;
+  color:#c7d3e2;
+  max-width:900px;
+}
+#pathways-library .pathway-page-section{
+  padding:1rem 0 1.15rem;
+  border-bottom:1px solid rgba(148,163,184,.14);
+}
+#pathways-library .pathway-page-section:last-child{border-bottom:0}
+#pathways-library .pathway-page-section h3{
+  margin:0 0 .8rem;
+  color:#fff;
+  font-size:1.05rem;
+}
+#pathways-library .pathway-page-section p,
+#pathways-library .pathway-page-section li,
+#pathways-library .pathway-page-section span{
+  color:#d2dce8;
+}
+#pathways-library .pathway-info-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:.75rem;
+}
+#pathways-library .pathway-info-grid>div{
+  padding:.85rem;
+  border:1px solid rgba(148,163,184,.16);
+  border-radius:10px;
+  background:#102237;
+}
+#pathways-library .pathway-info-grid strong,
+#pathways-library .pathway-info-grid span{
+  display:block;
+}
+#pathways-library .pathway-info-grid strong{
+  color:#77d6ff;
+  font-size:.76rem;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  margin-bottom:.25rem;
+}
+#pathways-library .pathway-nested-tabs{
+  display:flex;
+  gap:.5rem;
+  margin-bottom:1rem;
+  padding-bottom:.75rem;
+  border-bottom:1px solid rgba(148,163,184,.16);
+}
+#pathways-library .pathway-nested-tabs .pathway-page-tab{
+  border:1px solid rgba(148,163,184,.2);
+  border-radius:8px;
+}
+#pathways-library .pathway-rp-notice{
+  margin-top:1rem;
+  padding:.9rem 1rem;
+  border-left:3px solid #32b8ee;
+  border-radius:7px;
+  background:#102237;
+  color:#cbd7e4;
+}
+#pathways-library .pathway-empty{
+  padding:.8rem 1rem;
+  border:1px dashed rgba(148,163,184,.25);
+  border-radius:8px;
+  color:#9fb0c3 !important;
+}
+#pathways-library .pathway-page .diagnosis-simulation-document{
+  background:#091624;
+  border:1px solid rgba(148,163,184,.15);
+  border-radius:10px;
+  padding:1rem;
+}
+#pathways-library .pathway-page .simulation-code-block{
+  background:#07111d !important;
+  border:1px solid rgba(148,163,184,.18) !important;
+  color:#dce8f5 !important;
+}
+#pathways-library .pathway-page .simulation-action code{
+  color:#8fe3ff !important;
+}
+#pathways-library .pathway-page blockquote{
+  background:#102237 !important;
+  color:#dbe7f3 !important;
+  border-left-color:#32b8ee !important;
+}
+@media(max-width:760px){
+  #pathways-library .pathway-page-tabs{overflow-x:auto;flex-wrap:nowrap}
+  #pathways-library .pathway-page-tab{white-space:nowrap}
+  #pathways-library .pathway-page-hero{flex-direction:column}
+  #pathways-library .pathway-info-grid{grid-template-columns:1fr}
+  #pathways-library .pathway-page-topbar{align-items:flex-start;flex-direction:column}
+}

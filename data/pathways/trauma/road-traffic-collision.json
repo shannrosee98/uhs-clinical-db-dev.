@@ -5,250 +5,23 @@
   "category": "Trauma",
   "age_group": "16+",
   "rp_only": true,
-  "disclaimer": "REAL MEDICATION INFORMATION — FIVEM ROLE-PLAY ONLY. This content is fictionalised for FiveM gameplay and must not be used to diagnose or treat a real person. In a real emergency, call 999 or 112.",
-  "last_reviewed": "2025-02-01",
+  "disclaimer": "FOR FIVE M ROLE-PLAY ONLY. This guide is fictionalised for FiveM gameplay and is not real-world medical advice. Use only the equipment, medications, doses and procedures authorised by your server.",
+  "last_reviewed": "2026-09-30",
   "severity": [
     "moderate",
     "serious",
     "critical"
   ],
   "incident_description": "A patient involved in a collision involving a car, van, lorry, motorcycle, bicycle or pedestrian. The mechanism may cause multiple injuries even when external injuries appear minor.",
-  "scene_safety": [
-    "Confirm that the road or scene is safe before approaching.",
-    "Look for moving traffic, leaking fuel, smoke, fire, unstable vehicles, broken glass, electrical hazards and aggressive persons.",
-    "Use appropriate personal protective equipment.",
-    "Request police, fire and additional medical resources if required.",
-    "Identify the number of patients.",
-    "Do not enter an unstable vehicle unless there is an immediate life threat or the scene is declared safe.",
-    "Consider entrapment and the need for extrication.",
-    "Note the estimated speed, direction of impact and visible vehicle damage."
-  ],
   "mechanism_questions": [
-    "What type of collision occurred?",
-    "Was the patient a driver, passenger, motorcyclist, cyclist or pedestrian?",
-    "Was the patient wearing a seatbelt or helmet?",
-    "Was there airbag deployment?",
-    "Was there intrusion into the passenger compartment?",
-    "Was the patient thrown from the vehicle?",
-    "Was there a rollover?",
-    "Was there a second impact?",
-    "Was there a death at the scene?",
+    "What happened and what was the patient's role?",
+    "Was a seatbelt or helmet worn?",
+    "Did an airbag deploy?",
+    "Was there vehicle intrusion, ejection, rollover, second impact or death at the scene?",
     "Was the patient trapped or crushed?",
-    "Did the patient lose consciousness?",
-    "Was there bleeding, vomiting, seizure or confusion?",
-    "What time did the collision occur?",
-    "What treatment has already been given?"
+    "Did the patient lose consciousness, vomit, seize or become confused?",
+    "When did the incident occur and what treatment has already been provided?"
   ],
-  "initial_impression": [
-    "Estimate whether this is minor trauma, significant trauma or major trauma.",
-    "Observe the patient's position, movement, speech, breathing effort, skin colour and apparent distress.",
-    "Look for catastrophic bleeding before beginning a detailed examination.",
-    "Assume spinal injury is possible when the mechanism is high energy or the patient has neck pain, neurological symptoms, reduced consciousness or distracting injuries.",
-    "Do not allow a patient with possible spinal injury to walk unless directed by a senior clinician or required for immediate scene safety."
-  ],
-  "primary_survey": {
-    "catastrophic_haemorrhage": {
-      "look_for": [
-        "Pulsatile or heavy external bleeding",
-        "Amputation or partial amputation",
-        "Large open wounds",
-        "Blood pooling in the vehicle",
-        "Bleeding from the scalp, chest, abdomen, pelvis or limbs",
-        "Clothing soaked with blood"
-      ],
-      "actions": [
-        "Apply firm direct pressure using a dressing.",
-        "Use a tourniquet in the RP system for life-threatening limb bleeding not controlled by direct pressure.",
-        "Record the time of tourniquet application.",
-        "Do not repeatedly remove dressings to inspect the wound.",
-        "Escalate immediately if bleeding remains uncontrolled.",
-        "Consider major haemorrhage activation for ongoing significant bleeding with abnormal physiology."
-      ]
-    },
-    "airway": {
-      "look_for": [
-        "Ability to speak in full sentences",
-        "Gurgling, snoring or stridor",
-        "Blood, vomit or foreign material in the mouth",
-        "Facial trauma",
-        "Reduced consciousness",
-        "Burns or swelling around the mouth"
-      ],
-      "actions": [
-        "Ask a conscious patient to speak.",
-        "Maintain manual in-line spinal protection if spinal injury is suspected.",
-        "Use basic airway manoeuvres and suction according to the server's permitted role-play procedures.",
-        "Escalate immediately for threatened or obstructed airway.",
-        "Do not give oral medication or fluids to a patient with reduced consciousness or a threatened airway."
-      ]
-    },
-    "breathing": {
-      "look_for": [
-        "Respiratory rate and effort",
-        "Chest asymmetry",
-        "Reduced air entry",
-        "Open chest wound",
-        "Cyanosis",
-        "Severe chest pain",
-        "Tracheal deviation-type presentation",
-        "Distended neck veins",
-        "Worsening hypoxia",
-        "Paradoxical chest movement"
-      ],
-      "actions": [
-        "Expose the chest sufficiently to assess movement and wounds while preventing heat loss.",
-        "Apply an occlusive dressing to an open chest wound according to the server's equipment system.",
-        "Escalate urgently for severe respiratory distress, worsening oxygen saturation or suspected tension-pneumothorax-type presentation.",
-        "Do not delay transport for a prolonged examination.",
-        "Record oxygen therapy if administered."
-      ]
-    },
-    "circulation": {
-      "look_for": [
-        "Heart rate",
-        "Blood pressure",
-        "Capillary refill",
-        "Skin colour and temperature",
-        "Weak or absent peripheral pulses",
-        "Pelvic pain or instability-type symptoms",
-        "Abdominal pain, distension or bruising",
-        "Thigh deformity or swelling",
-        "Ongoing blood loss",
-        "Confusion or agitation"
-      ],
-      "actions": [
-        "Control external haemorrhage.",
-        "Obtain intravenous access in the RP system if the character is authorised to do so.",
-        "Keep the patient warm.",
-        "Do not repeatedly rock or test the pelvis.",
-        "Apply a pelvic binder in the RP system only when a high-energy mechanism and suspected pelvic bleeding are present.",
-        "Escalate for shock, ongoing bleeding or deteriorating observations."
-      ]
-    },
-    "disability": {
-      "look_for": [
-        "Glasgow Coma Scale",
-        "Pupil size and reactivity",
-        "Confusion or agitation",
-        "Loss of consciousness",
-        "Seizure",
-        "Weakness",
-        "Numbness",
-        "Loss of movement",
-        "Severe headache",
-        "Vomiting",
-        "Blood glucose where clinically relevant"
-      ],
-      "actions": [
-        "Record GCS using eye, verbal and motor components where possible.",
-        "Repeat neurological observations if the patient has a head injury or abnormal consciousness.",
-        "Treat deteriorating consciousness as a time-critical problem.",
-        "Do not assume intoxication explains an abnormal mental state until significant injury has been considered.",
-        "Escalate for GCS below 15, new neurological deficit, seizure or deterioration."
-      ]
-    },
-    "exposure_and_environment": {
-      "look_for": [
-        "Front and back of the body where safe",
-        "Hidden bleeding",
-        "Deformity",
-        "Bruising from seatbelts",
-        "Penetrating injury",
-        "Burns",
-        "Cold exposure",
-        "Wet clothing"
-      ],
-      "actions": [
-        "Expose only as much as required to assess injuries.",
-        "Preserve dignity.",
-        "Prevent hypothermia using blankets or approved warming equipment.",
-        "Record all visible injuries before covering the patient."
-      ]
-    }
-  },
-  "observations": {
-    "stable_minor_pattern": {
-      "heart_rate": "78-100 bpm",
-      "respiratory_rate": "12-20/min",
-      "blood_pressure": "Normal for the patient",
-      "oxygen_saturation": "96-100% on air",
-      "gcs": "15",
-      "pain_score": "1-5/10",
-      "skin": "Warm, normal colour, capillary refill less than 2 seconds"
-    },
-    "concerning_pattern": {
-      "heart_rate": "100-120 bpm",
-      "respiratory_rate": "20-28/min",
-      "blood_pressure": "Normal or borderline low",
-      "oxygen_saturation": "92-95% on air or falling",
-      "gcs": "13-15 or confused",
-      "pain_score": "6-9/10",
-      "skin": "Pale, cool or sweaty; capillary refill may be delayed"
-    },
-    "critical_pattern": {
-      "heart_rate": "120 bpm or higher, or abnormally slow in a deteriorating patient",
-      "respiratory_rate": "Below 8, above 30 or visibly inadequate",
-      "blood_pressure": "Falling or markedly low for the patient",
-      "oxygen_saturation": "Below 92% or rapidly falling",
-      "gcs": "8 or less, or a clear downward trend",
-      "pain_score": "Severe or suddenly worsening",
-      "skin": "Mottled, grey, blue, cold or clammy"
-    },
-    "observation_rules": [
-      "A single normal observation set does not exclude serious injury.",
-      "Repeat observations after every major intervention and when symptoms change.",
-      "Record the trend rather than only the latest value.",
-      "Use the overall clinical picture, mechanism and examination findings."
-    ]
-  },
-  "focused_examination": {
-    "head_and_face": [
-      "Scalp wounds or swelling",
-      "Facial deformity",
-      "Bleeding from the nose or ears",
-      "Loose or missing teeth",
-      "Pupil abnormality",
-      "Loss of consciousness",
-      "Vomiting or seizure"
-    ],
-    "neck_and_spine": [
-      "Neck pain or midline tenderness",
-      "Weakness or altered sensation",
-      "Loss of movement",
-      "Spinal deformity",
-      "Tingling in the limbs",
-      "New bladder or bowel symptoms where relevant"
-    ],
-    "chest": [
-      "Chest pain",
-      "Chest-wall tenderness",
-      "Unequal movement",
-      "Open wound",
-      "Reduced air entry",
-      "Crepitus-type finding",
-      "Increasing respiratory effort"
-    ],
-    "abdomen_and_pelvis": [
-      "Abdominal pain",
-      "Distension",
-      "Guarding or rigidity-type presentation",
-      "Seatbelt bruising",
-      "Pelvic pain",
-      "Pain on movement",
-      "Blood at the urethral opening or genital injury"
-    ],
-    "limbs": [
-      "Deformity",
-      "Shortening or abnormal rotation",
-      "Swelling",
-      "Open wounds",
-      "Bleeding",
-      "Reduced movement",
-      "Altered sensation",
-      "Weak or absent distal pulse",
-      "Pale or cold limb"
-    ]
-  },
   "differential_diagnoses": [
     "Minor soft-tissue injury",
     "Closed fracture",
@@ -303,196 +76,26 @@
       "Tension-pneumothorax-type presentation"
     ]
   },
-  "immediate_management": [
-    "Use the &lt;C&gt;ABCDE sequence.",
-    "Control catastrophic haemorrhage first.",
-    "Maintain spinal protection when clinically indicated.",
-    "Administer oxygen only according to the server's oxygen-treatment rules and documented indication.",
-    "Establish monitoring and repeat observations.",
-    "Treat immediately life-threatening problems before minor injuries.",
-    "Immobilise suspected fractures in the position found unless the server's authorised protocol permits otherwise.",
-    "Do not repeatedly manipulate suspected spinal, pelvic or limb injuries.",
-    "Keep the patient warm.",
-    "Minimise time at scene once immediate life-saving interventions are complete.",
-    "Pre-alert the receiving hospital for serious or critical trauma.",
-    "Transport major trauma to the server's designated major trauma centre."
-  ],
-  "medications": [
-    {
-      "medication_id": "morphine-sulfate-iv-adult",
-      "when_to_consider": "Severe traumatic pain after the primary survey",
-      "requires_senior_authorisation": true
-    },
-    {
-      "medication_id": "tranexamic-acid-iv-trauma-adult",
-      "when_to_consider": "Major trauma with active or suspected significant haemorrhage",
-      "requires_senior_authorisation": true
-    }
-  ],
-  "reassessment": {
-    "after_initial_assessment": [
-      "Repeat the full primary survey.",
-      "Repeat observations.",
-      "Repeat pain score.",
-      "Repeat GCS and pupils if head injury is possible.",
-      "Repeat distal circulation, sensation and movement for limb injuries."
-    ],
-    "after_medication": [
-      "Reassess within the server's configured medication interval.",
-      "Document response and adverse effects.",
-      "Do not administer further opioid if respiratory rate falls, consciousness deteriorates or oxygen saturation falls."
-    ],
-    "during_transport": [
-      "Repeat observations at regular intervals.",
-      "Repeat immediately after deterioration.",
-      "Record the trend in the patient record.",
-      "Update the receiving hospital if the patient's condition changes."
-    ]
-  },
   "escalation_criteria": [
     "Catastrophic bleeding",
-    "Ongoing bleeding despite direct pressure or tourniquet",
+    "Ongoing bleeding despite treatment",
     "Suspected major haemorrhage",
-    "Abnormal or deteriorating vital signs",
+    "Abnormal or deteriorating observations",
     "GCS below 15 or falling GCS",
     "Seizure",
     "New weakness, numbness or paralysis",
     "Severe chest pain or respiratory distress",
-    "Oxygen saturation falling despite appropriate support",
+    "Falling oxygen saturation",
     "Suspected pelvic fracture with shock",
     "Open fracture",
     "Absent distal pulse",
     "Gross deformity",
     "Suspected spinal injury",
     "Suspected internal bleeding",
-    "Patient trapped or crushed",
-    "Death or serious injury at the scene",
-    "High-speed, rollover or ejection mechanism"
+    "Entrapment or crush injury",
+    "High-speed, rollover or ejection mechanism",
+    "Serious injury or death at the scene"
   ],
-  "disposition": {
-    "minor": [
-      "Only consider minor disposition if the patient has a reassuring examination, normal observations, no red flags and no significant mechanism.",
-      "Provide a clear RP safety-netting instruction and documentation."
-    ],
-    "moderate": [
-      "Transport to the designated emergency department for further assessment and imaging.",
-      "Repeat observations during transport."
-    ],
-    "serious_or_critical": [
-      "Pre-alert the designated major trauma centre.",
-      "Use the shortest safe route.",
-      "Provide only immediate life-saving interventions at scene.",
-      "Request senior clinician or specialist backup."
-    ]
-  },
-  "handover": {
-    "format": "ATMIST",
-    "template": "This is a [age]-year-old [sex] involved in a [type of collision] at [time]. The mechanism was [mechanism]. Suspected injuries are [injuries]. Initial observations were HR [value], RR [value], BP [value], SpO2 [value], GCS [value] and pain [value]/10. Findings include [key positives] and [key negatives]. Treatment given was [treatment and medication]. The response was [response]. Estimated arrival is [time]. Additional requirements are [requirements].",
-    "example": "This is a 32-year-old following a high-speed car collision at 14:20. The patient was the restrained driver and required extrication. Suspected injuries are chest trauma and a left femur fracture. Initial observations are pulse 118, respiratory rate 26, blood pressure 102/68, oxygen saturation 95% on air, GCS 15 and pain 9/10. There is left thigh deformity and controlled bleeding, with no obvious airway obstruction. Morphine was administered under the RP medication protocol and the patient remains borderline but responsive. ETA is 10 minutes. Major-trauma reception is requested."
-  },
-  "documentation": [
-    "Time of incident",
-    "Time of first patient contact",
-    "Mechanism and collision details",
-    "Patient position and need for extrication",
-    "Scene hazards",
-    "Primary survey findings",
-    "Initial and repeat observations",
-    "GCS and pupil findings",
-    "All injuries identified",
-    "Bleeding-control methods and times",
-    "Spinal or pelvic precautions",
-    "Medication name, dose, route, time and response",
-    "Allergies and relevant medical history",
-    "Pre-alert time and recipient",
-    "Destination",
-    "Final handover"
-  ],
-  "complications": [
-    "Occult internal haemorrhage",
-    "Traumatic shock",
-    "Airway obstruction",
-    "Respiratory failure",
-    "Pneumothorax-type presentation",
-    "Intracranial bleeding",
-    "Spinal cord injury",
-    "Compartment-syndrome-type deterioration",
-    "Hypothermia",
-    "Medication-induced respiratory depression"
-  ],
-  "example_cases": [
-    {
-      "id": "rtc-mild",
-      "description": "Low-speed rear-end collision. Patient is alert, walking, has neck stiffness and superficial bruising only.",
-      "observations": {
-        "heart_rate": 92,
-        "respiratory_rate": 16,
-        "blood_pressure": "136/82",
-        "oxygen_saturation": 99,
-        "gcs": 15,
-        "pain_score": 4
-      },
-      "likely_diagnosis": "Minor soft-tissue injury with possible neck strain",
-      "red_flags": [
-        "Midline cervical tenderness",
-        "Neurological symptoms",
-        "Loss of consciousness",
-        "Worsening headache",
-        "Vomiting"
-      ]
-    },
-    {
-      "id": "rtc-moderate",
-      "description": "Side-impact collision. Patient has left forearm deformity, severe pain and bruising but remains alert.",
-      "observations": {
-        "heart_rate": 108,
-        "respiratory_rate": 22,
-        "blood_pressure": "118/74",
-        "oxygen_saturation": 97,
-        "gcs": 15,
-        "pain_score": 8
-      },
-      "likely_diagnosis": "Suspected closed forearm fracture",
-      "red_flags": [
-        "Open wound",
-        "Absent distal pulse",
-        "Altered sensation",
-        "Increasing pain after immobilisation"
-      ]
-    },
-    {
-      "id": "rtc-critical",
-      "description": "High-speed rollover with prolonged extrication. Patient is pale, confused, tachycardic and has abdominal tenderness with ongoing external bleeding.",
-      "observations": {
-        "heart_rate": 132,
-        "respiratory_rate": 30,
-        "blood_pressure": "84/52",
-        "oxygen_saturation": 92,
-        "gcs": 12,
-        "pain_score": 10
-      },
-      "likely_diagnosis": "Major trauma with suspected haemorrhagic shock and multiple injuries",
-      "red_flags": [
-        "Falling blood pressure",
-        "Altered mental state",
-        "Ongoing bleeding",
-        "Abdominal tenderness",
-        "High-energy mechanism"
-      ]
-    }
-  ],
-  "sources": [
-    {
-      "title": "NICE: Major trauma: assessment and initial management",
-      "url": "https://www.nice.org.uk/guidance/ng39/chapter/recommendations"
-    },
-    {
-      "title": "Morphine sulfate 1 mg in 1 ml solution for injection — MHRA Summary of Product Characteristics",
-      "url": "https://mhraproducts4853.blob.core.windows.net/docs/4bae43d632c68ff32aa2f8ad18092dbd4b119716"
-    },
-    {
-      "title": "NICE: Major trauma: service delivery",
-      "url": "https://www.nice.org.uk/guidance/ng40/chapter/recommendations"
-    }
-  ]
+  "full_markdown_guide": true,
+  "simulation_markdown": "# Respiratory Emergencies & Trauma Pathway Guide\n\n\\> **FOR FIVE M ROLE-PLAY ONLY.**\\\n\\> This guide is fictionalised for FiveM gameplay and is not real-world medical advice. Use only the equipment, medications, doses and procedures authorised by your server.\n\n---\n\n# PATHWAY GUIDE LIBRARY\n\n## Categories\n\n- Trauma\n- Respiratory emergency\n- Neurological emergency\n- Moderate / serious / critical\n- Road traffic collision\n- Convulsive status epilepticus\n\n---\n\n# 1 · Scene and mechanism\n\n## Scene safety\n\n```\n/me parks the response vehicle in a safe position and activates the emergency lights.\n/me exits the vehicle wearing appropriate PPE and scans the area for hazards.\n/me looks for moving traffic, leaking fuel, smoke, fire, unstable vehicles, broken glass, electrical hazards and aggressive persons.\n/do Is the scene safe to approach?\n/me confirms the scene is safe before approaching the patient.\n/me checks the number of patients and requests police, fire, additional medical resources or specialist support if required.\n/me identifies whether the patient is trapped, crushed or inside an unstable vehicle.\n/me does not enter an unsafe vehicle unless there is an immediate life threat.\n\n```\n\n## Mechanism and context\n\n```\n/me approaches the patient and observes their position, movement, speech, breathing effort, skin colour and apparent distress.\n/me asks what happened and whether the patient was a driver, passenger, motorcyclist, cyclist or pedestrian.\n/me asks whether a seatbelt or helmet was being worn and whether an airbag deployed.\n/me checks for vehicle intrusion, ejection, rollover, second impact or death at the scene.\n/me asks whether the patient lost consciousness, vomited, seized or became confused.\n/me confirms the estimated time of the incident and any treatment already provided.\n\n```\n\n## Initial impression\n\n```\n/me performs a rapid visual assessment for catastrophic bleeding and immediately life-threatening problems.\n/me identifies whether the patient appears stable, concerning or critical.\n/me asks the patient not to move while the initial assessment is completed.\n/me considers possible spinal injury if there was a high-energy mechanism, neck pain, neurological symptoms, reduced consciousness or distracting injury.\n\n```\n\n---\n\n# 2 · Primary survey — \\<C>ABCDE\n\n## Catastrophic haemorrhage\n\n### Look for\n\n- Pulsatile or heavy external bleeding\n- Amputation or partial amputation\n- Large open wounds\n- Blood pooling in the vehicle\n- Blood-soaked clothing\n- Bleeding from the scalp, chest, abdomen, pelvis or limbs\n\n### Actions\n\n```\n/me rapidly scans the patient for severe external bleeding.\n/do Is there any catastrophic bleeding?\n/me applies firm direct pressure to the most significant bleeding point using a trauma dressing.\n/me maintains continuous pressure without repeatedly lifting the dressing.\n/me checks whether the bleeding is controlled.\n/do Is the bleeding controlled?\n\n```\n\nIf permitted by the server:\n\n```\n/me applies a tourniquet above the life-threatening limb wound according to the server equipment system.\n/me tightens the tourniquet until the bleeding is controlled.\n/me records the time of tourniquet application.\n/me reassesses the wound and distal circulation.\n/me informs the team leader that the bleeding requires urgent escalation.\n\n```\n\n```\n/me does not repeatedly remove dressings to inspect the wound.\n/me requests major haemorrhage support if bleeding remains uncontrolled or the patient shows signs of shock.\n\n```\n\n---\n\n## Airway\n\n### Look for\n\n- Ability to speak\n- Gurgling, snoring or stridor\n- Blood, vomit or foreign material\n- Facial trauma\n- Reduced consciousness\n- Burns or swelling around the mouth\n\n### Actions\n\n```\n/me stabilises the patient's head and neck if spinal injury is suspected.\n/me asks the patient to speak and listens for changes in their voice.\n/do Can the patient speak clearly and is the airway unobstructed?\n/me visually checks the mouth for blood, vomit, loose teeth or visible obstruction.\n/me uses basic airway manoeuvres and suction only according to the server's permitted procedures.\n/me reports any gurgling, snoring, stridor or inability to speak clearly.\n/me does not give oral medication, food or fluids to a patient with reduced consciousness or a threatened airway.\n/me immediately requests senior airway support if the airway appears obstructed or threatened.\n\n```\n\n---\n\n## Breathing\n\n### Look for\n\n- Respiratory rate and effort\n- Chest asymmetry\n- Reduced or absent air entry\n- Open chest wound\n- Cyanosis\n- Severe chest pain\n- Tracheal-deviation-type presentation\n- Distended neck veins\n- Worsening oxygen saturation\n- Paradoxical chest movement\n\n### Actions\n\n```\n/me exposes the chest sufficiently to assess movement while preserving the patient's dignity and warmth.\n/me observes the respiratory rate, depth, pattern and work of breathing.\n/me compares movement on both sides of the chest.\n/me looks for open wounds, bruising, paradoxical movement and signs of severe distress.\n/me listens for unequal or absent breath sounds if permitted by the server system.\n/me attaches the pulse oximeter and records the displayed oxygen saturation.\n/me administers oxygen only in accordance with the server's RP rules.\n/me applies an approved occlusive dressing to an open chest wound if required by the server protocol.\n/me reassesses breathing, chest movement and oxygen saturation.\n/me immediately requests senior support for severe respiratory distress or a suspected tension-pneumothorax-type presentation.\n/me does not delay transport for a prolonged examination.\n\n```\n\n---\n\n## Circulation\n\n### Look for\n\n- Heart rate\n- Blood pressure\n- Capillary refill\n- Skin colour and temperature\n- Weak or absent peripheral pulses\n- Pelvic pain or instability-type symptoms\n- Abdominal pain, distension or bruising\n- Thigh deformity or swelling\n- Ongoing blood loss\n- Confusion or agitation\n\n### Actions\n\n```\n/me checks the patient's pulse, skin colour, temperature and capillary refill.\n/me obtains blood pressure and heart rate using the available RP equipment.\n/me checks for concealed bleeding around the chest, abdomen, pelvis and limbs.\n/me checks for deformity, swelling or abnormal movement of the limbs.\n/me controls any external haemorrhage.\n/me requests IV access if authorised under the server protocol.\n/me keeps the patient warm using an approved blanket or warming device.\n/me avoids repeatedly rocking or testing the pelvis.\n/me applies a pelvic binder only if authorised by the server system and clinically indicated within the RP scenario.\n/me reports signs of shock, ongoing bleeding or deteriorating observations.\n\n```\n\n---\n\n## Disability\n\n### Look for\n\n- Glasgow Coma Scale\n- Pupil size and reactivity\n- Confusion or agitation\n- Loss of consciousness\n- Seizure\n- Weakness or numbness\n- Loss of movement\n- Severe headache\n- Vomiting\n- Abnormal blood glucose\n\n### Actions\n\n```\n/me asks the patient their name, location, date and what happened.\n/me assesses and records the patient's eye, verbal and motor responses.\n/me checks pupil size and reaction to light if appropriate.\n/me asks about loss of consciousness, headache, vomiting, weakness, numbness and seizure activity.\n/me checks blood glucose if clinically relevant and permitted by the server system.\n/me repeats neurological observations if the patient is confused, injured or deteriorating.\n/me treats falling consciousness, new neurological deficit or seizure activity as an emergency.\n/me does not assume that intoxication explains an abnormal mental state.\n\n```\n\n---\n\n## Exposure and environment\n\n### Look for\n\n- Hidden bleeding\n- Deformity\n- Bruising\n- Seatbelt marks\n- Penetrating injury\n- Burns\n- Cold exposure\n- Wet clothing\n\n### Actions\n\n```\n/me exposes only the areas required to assess the patient properly.\n/me preserves the patient's dignity throughout the examination.\n/me checks the front and back of the body where safe to do so.\n/me looks for hidden bleeding, deformity, bruising, burns and penetrating injury.\n/me records visible injuries before covering the patient.\n/me covers the patient with a blanket to reduce heat loss.\n\n```\n\n---\n\n# 3 · Observations\n\n## Stable pattern\n\n- Heart rate: 78–100 bpm\n- Respiratory rate: 12–20/min\n- Blood pressure: normal for the patient\n- Oxygen saturation: 96–100% on air\n- GCS: 15\n- Pain: 1–5/10\n- Skin: warm, normal colour, capillary refill under 2 seconds\n\n## Concerning pattern\n\n- Heart rate: 100–120 bpm\n- Respiratory rate: 20–28/min\n- Blood pressure: normal or borderline low\n- Oxygen saturation: 92–95% on air or falling\n- GCS: 13–15 or confused\n- Pain: 6–9/10\n- Skin: pale, cool or sweaty\n\n## Critical pattern\n\n- Heart rate: 120 bpm or higher, or abnormally slow in a deteriorating patient\n- Respiratory rate: below 8, above 30 or visibly inadequate\n- Blood pressure: falling or markedly low\n- Oxygen saturation: below 92% or rapidly falling\n- GCS: 8 or less, or a clear downward trend\n- Pain: severe or rapidly worsening\n- Skin: mottled, grey, blue, cold or clammy\n\n## Observation actions\n\n```\n/me attaches the available monitoring equipment.\n/me records the initial heart rate, respiratory rate, blood pressure, oxygen saturation, GCS, pupils, pain score and skin findings.\n/me compares the observations with the patient's general appearance and mechanism of injury.\n/me repeats observations after every major intervention and whenever the patient's condition changes.\n/me records the trend rather than only the latest readings.\n/me informs the senior clinician of any abnormal or deteriorating observation.\n\n```\n\n\\> A single normal observation set does not exclude serious injury.\n\n---\n\n# 4 · Focused examination\n\n## Head and face\n\n```\n/me checks the scalp and face for wounds, swelling, deformity and bruising.\n/me looks for bleeding from the nose or ears and loose or missing teeth.\n/me checks pupil size and reaction if appropriate.\n/me asks about loss of consciousness, vomiting, headache or seizure activity.\n\n```\n\n## Neck and spine\n\n```\n/me asks about neck pain, midline tenderness, tingling, weakness or altered sensation.\n/me checks for spinal deformity without repeatedly moving the patient.\n/me maintains spinal protection if clinically indicated within the RP scenario.\n/me asks about loss of movement or new bladder or bowel symptoms where relevant.\n\n```\n\n## Chest\n\n```\n/me checks for chest pain, tenderness, bruising and open wounds.\n/me observes whether both sides of the chest are moving equally.\n/me listens for reduced or absent air entry if permitted by the server system.\n/me checks for increasing respiratory effort, cyanosis and paradoxical movement.\n\n```\n\n## Abdomen and pelvis\n\n```\n/me inspects the abdomen for bruising, distension and seatbelt marks.\n/me asks about abdominal pain and checks for guarding-type discomfort within the server's RP system.\n/me asks about pelvic pain without repeatedly rocking or testing the pelvis.\n/me looks for genital injury or blood at the urethral opening where relevant.\n\n```\n\n## Limbs\n\n```\n/me checks each limb for deformity, shortening, abnormal rotation, swelling and open wounds.\n/me checks for bleeding and reduced movement.\n/me assesses distal pulse, sensation and movement below each suspected injury.\n/me compares the injured limb with the unaffected side.\n/me covers the limb after examination and avoids unnecessary manipulation.\n\n```\n\n---\n\n# 5 · Respiratory emergencies\n\n## Initial approach\n\n```\n/me approaches the patient and observes their position, colour, breathing effort and ability to speak.\n/me introduces themselves and asks the patient to describe what is wrong.\n/do Can the patient speak in full sentences?\n/me asks when the breathing difficulty started and whether it is getting worse.\n/me asks about chest pain, wheeze, cough, fever, choking, allergies and previous respiratory problems.\n\n```\n\n## Respiratory assessment\n\n```\n/me counts the patient's respiratory rate and observes the depth and pattern of breathing.\n/me checks for use of accessory muscles, cyanosis, exhaustion and altered consciousness.\n/me attaches the pulse oximeter and records the oxygen saturation.\n/me checks the patient's pulse and blood pressure.\n/me listens for wheeze, stridor, reduced air entry or absent breath sounds if permitted.\n/me checks the chest for equal movement, injury and visible abnormalities.\n/do Is the patient stable, deteriorating or in immediate respiratory failure?\n\n```\n\n## Initial RP management\n\n```\n/me positions the patient upright or in the position of greatest comfort unless contraindicated.\n/me reassures the patient and encourages them to remain calm and avoid unnecessary exertion.\n/me administers oxygen only in accordance with the server's RP treatment rules.\n/me prepares the appropriate respiratory equipment available in the server system.\n/me assists with the patient's prescribed inhaler or nebulised treatment only if authorised by the RP protocol.\n/me records the treatment, time and observed response.\n/me continues monitoring respiratory effort, oxygen saturation and consciousness.\n\n```\n\n## Deterioration\n\n```\n/me notices that the patient's breathing has become more laboured.\n/me immediately informs the senior clinician and requests additional support.\n/me reassesses the airway and confirms whether the patient can still speak.\n/me checks for worsening cyanosis, exhaustion, reduced consciousness and falling oxygen saturation.\n/me requests advanced airway support and immediate transport.\n/me prepares the patient for rapid movement while continuing authorised RP treatment.\n/me gives an urgent pre-alert to the receiving hospital.\n/me reassesses the patient after movement and throughout transport.\n\n```\n\n## Respiratory arrest or cardiac arrest\n\n```\n/me checks the patient for responsiveness and normal breathing.\n/me calls for immediate assistance and requests the resuscitation equipment.\n/me begins the server-approved resuscitation sequence.\n/me attaches the monitor or defibrillator if available in the RP system.\n/me follows the server's cardiac-arrest protocol and records each intervention.\n/me gives the receiving team an arrest pre-alert.\n/me documents the time of deterioration, interventions performed and the patient's response.\n\n```\n\n---\n\n# 6 · Diagnostic reasoning\n\n## Possible trauma diagnoses\n\n- Minor soft-tissue injury\n- Closed fracture\n- Open fracture\n- Dislocation\n- Head injury or concussion\n- Intracranial bleeding\n- Cervical spine injury\n- Chest injury\n- Pneumothorax-type presentation\n- Haemothorax-type presentation\n- Cardiac or major-vessel injury\n- Abdominal organ injury\n- Pelvic fracture\n- Internal haemorrhage\n- Traumatic shock\n- Spinal cord injury\n- Crush injury\n- Drug or alcohol intoxication complicating trauma\n\n## Likely RP classification\n\n### Minor\n\n- Superficial cuts or grazes\n- Bruising\n- Minor soft-tissue injury\n- Low-grade sprain\n\n### Moderate\n\n- Closed limb fracture\n- Dislocation\n- Concussion with normal GCS\n- Moderate chest-wall injury\n- Deep laceration without shock\n\n### Serious\n\n- Open fracture\n- Multiple fractures\n- Significant head injury\n- Chest injury with respiratory compromise\n- Suspected internal bleeding\n- Pelvic injury\n- Spinal injury\n\n### Critical\n\n- Uncontrolled catastrophic haemorrhage\n- Severe traumatic shock\n- Airway obstruction\n- Severe respiratory failure\n- Cardiac arrest\n- GCS 8 or less\n- Suspected major internal haemorrhage\n- Tension-pneumothorax-type presentation\n\n---\n\n# 7 · Management and escalation\n\n## Immediate management\n\n```\n/me repeats the &lt;C&gt;ABCDE assessment after completing the initial examination.\n/me treats the most immediately life-threatening problem first.\n/me maintains spinal protection where clinically indicated.\n/me administers oxygen only according to the server's RP rules.\n/me establishes monitoring and records repeat observations.\n/me immobilises suspected fractures in the position found unless the server protocol permits otherwise.\n/me avoids repeatedly manipulating spinal, pelvic or limb injuries.\n/me keeps the patient warm.\n/me requests senior or specialist support for serious and critical findings.\n/me prepares the patient for transport once immediate life-saving RP actions are complete.\n/me provides a pre-alert to the designated receiving hospital.\n\n```\n\n## Escalate immediately for\n\n- Catastrophic bleeding\n- Ongoing bleeding despite treatment\n- Suspected major haemorrhage\n- Abnormal or deteriorating observations\n- GCS below 15 or falling GCS\n- Seizure\n- New weakness, numbness or paralysis\n- Severe chest pain or respiratory distress\n- Falling oxygen saturation\n- Suspected pelvic fracture with shock\n- Open fracture\n- Absent distal pulse\n- Gross deformity\n- Suspected spinal injury\n- Suspected internal bleeding\n- Entrapment or crush injury\n- High-speed, rollover or ejection mechanism\n- Serious injury or death at the scene\n\n---\n\n# 8 · Convulsive status epilepticus\n\n## Recognition and safety\n\n```\n/me observes the patient having ongoing generalised convulsive activity.\n/me checks the time and asks witnesses when the seizure started.\n/me clears nearby objects and protects the patient's head from impact.\n/me asks bystanders to move away and requests additional medical support.\n/me does not restrain the patient's limbs or place anything in their mouth.\n/me looks for medical-alert jewellery, medication information or evidence of injury.\n/do Has the seizure continued beyond the server's status-epilepticus threshold, or have seizures recurred without recovery?\n\n```\n\n## ABCDE assessment\n\n```\n/me checks whether the patient responds while maintaining a safe position.\n/me assesses the airway for visible obstruction, blood or vomit.\n/me observes breathing, chest movement, colour and oxygen saturation.\n/me checks the pulse and attaches monitoring equipment if available.\n/me checks blood glucose if authorised by the server protocol.\n/me checks for trauma, fever, pregnancy indicators, drug exposure or other relevant causes.\n/me records the seizure duration and initial observations.\n\n```\n\n## Buccal midazolam — RP action\n\n\\> Use the medication, dose and timing configured by your server. Do not add real-world dosing to the RP guide.\n\n```\n/me confirms the patient's identity and checks the RP medication record.\n/me checks for recorded allergies, contraindications and previous rescue medication.\n/me retrieves the approved buccal midazolam item from the emergency kit.\n/me confirms the medication, route and server-authorised dose with the team leader.\n/me positions the patient safely and exposes the side of the mouth without forcing the jaw open.\n/me administers the RP buccal medication according to the server protocol.\n/me records the medication name, dose, route and time of administration.\n/me maintains airway observation and prepares suction and oxygen equipment if permitted.\n/me does not place fingers or objects inside the patient's mouth.\n\n```\n\n## Reassessment\n\n```\n/me reassesses the patient after the server-configured medication interval.\n/me checks whether the convulsions have stopped or reduced.\n/me reassesses airway patency, breathing, oxygen saturation, pulse, blood pressure and consciousness.\n/me checks for continued seizure activity or a second seizure.\n/do Has the seizure stopped and is the patient breathing adequately?\n\n```\n\n### If the seizure stops\n\n```\n/me places the patient in the server-approved recovery position if safe to do so.\n/me maintains airway observation and continues monitoring breathing and oxygen saturation.\n/me checks for injuries, tongue trauma, incontinence and signs of aspiration.\n/me reassesses blood glucose if indicated and permitted.\n/me repeats neurological observations and records the patient's recovery.\n/me arranges urgent transport and gives a structured handover.\n\n```\n\n### If the seizure continues or recurs\n\n```\n/me announces that the seizure is ongoing despite the initial RP treatment.\n/me requests senior clinical support and immediate advanced airway assistance.\n/me rechecks the airway, breathing, oxygen saturation and blood glucose where authorised.\n/me prepares further treatment only under the server's approved escalation protocol.\n/me informs the receiving hospital that this is ongoing or recurrent convulsive status.\n/me prepares the patient for immediate transport while continuing airway and seizure monitoring.\n/me documents the seizure duration, treatment times, response and escalation.\n\n```\n\n---\n\n# 9 · Reassessment\n\n## After the initial assessment\n\n```\n/me repeats the complete primary survey.\n/me repeats the full set of observations.\n/me repeats the pain score.\n/me repeats GCS and pupil assessment if head injury is possible.\n/me repeats distal circulation, sensation and movement for limb injuries.\n/me compares the findings with the initial assessment.\n\n```\n\n## After medication\n\n```\n/me reassesses the patient within the server-configured medication interval.\n/me checks for clinical response and adverse effects.\n/me records the medication, dose, route, time and response.\n/me does not administer further opioid treatment if the server protocol identifies respiratory depression, falling consciousness or worsening oxygen saturation.\n\n```\n\n## During transport\n\n```\n/me repeats observations at regular intervals during transport.\n/me reassesses immediately after any deterioration or new symptom.\n/me monitors airway, breathing, circulation and consciousness continuously where possible.\n/me records the trend in the patient record.\n/me updates the receiving hospital if the patient's condition changes.\n\n```\n\n---\n\n# 10 · Disposition\n\n## Minor\n\n```\n/me confirms that the patient has a reassuring examination, stable observations, no red flags and no significant mechanism.\n/me provides the server-approved RP safety-netting advice.\n/me documents the assessment, advice and final disposition.\n\n```\n\n## Moderate\n\n```\n/me prepares the patient for transport to the designated emergency department.\n/me repeats observations during transport.\n/me provides the receiving team with the mechanism, injuries, observations and treatment given.\n\n```\n\n## Serious or critical\n\n```\n/me declares the patient serious or critical and requests senior or specialist support.\n/me gives a pre-alert to the designated major trauma or receiving centre.\n/me uses the shortest safe route to hospital.\n/me continues immediate life-saving RP interventions during transport.\n/me repeats the primary survey and observations before handover.\n\n```\n\n---\n\n# 11 · Handover — ATMIST\n\n## Template\n\n```\n/me gives an ATMIST handover to the receiving team.\n\n```\n\n```\nThis is a [age]-year-old [sex] involved in a [type of collision or emergency] at [time]. The mechanism or presenting complaint was [details]. Suspected injuries or diagnosis are [injuries/diagnosis]. Initial observations were HR [value], RR [value], BP [value], SpO2 [value], GCS [value] and pain [value]/10. Findings include [key positives] and [key negatives]. Treatment given was [treatment, medication, dose, route and time]. The response was [response]. Current observations are [values]. ETA is [time]. Additional requirements are [requirements].\n\n```\n\n## Trauma example\n\n```\nThis is a 32-year-old following a high-speed car collision at 14:20. The patient was the restrained driver and required extrication. Suspected injuries are chest trauma and a left femur fracture. Initial observations were pulse 118, respiratory rate 26, blood pressure 102/68, oxygen saturation 95% on air, GCS 15 and pain 9/10. There is left thigh deformity and controlled bleeding, with no obvious airway obstruction. RP-approved analgesia was administered according to the server protocol and the patient remains responsive. ETA is 10 minutes. Major-trauma reception is requested.\n\n```\n\n## Seizure example\n\n```\nThis is a [age]-year-old patient with ongoing generalised convulsive activity beginning at [time]. The patient has [known/unknown] epilepsy and did/did not regain consciousness between seizures. Initial airway was [finding], breathing was [finding], oxygen saturation was [value], pulse was [value], blood pressure was [value], GCS was [value] and glucose was [value] if obtained. Buccal midazolam was administered under the server RP protocol at [time], with [no/partial/full] response. The seizure is currently [ongoing/stopped/recurrent]. There is [presence/absence] of trauma or aspiration. ETA is [time].\n\n```\n\n---\n\n# 12 · Documentation\n\n```\n/me documents the time of the incident and first patient contact.\n/me records the mechanism, scene hazards and patient position.\n/me records all primary survey findings.\n/me documents the initial and repeat observations.\n/me records GCS, pupil findings and neurological changes.\n/me documents every identified injury or suspected diagnosis.\n/me records bleeding-control methods and tourniquet times if used.\n/me documents spinal, pelvic or limb precautions.\n/me records every medication, dose, route, time and response according to the server system.\n/me records allergies and relevant medical history if available.\n/me documents the pre-alert recipient and time.\n/me records the destination and estimated arrival time.\n/me completes the final handover and closes the patient record.\n\n```\n\n---\n\n# 13 · Medication and equipment reference\n\n\\> All medication names, doses, routes and treatment intervals must follow the server’s approved RP medication system.\n\n## Morphine or other RP analgesia\n\n```\n/me confirms the patient's identity and checks the RP medication record.\n/me checks for recorded allergies, contraindications and relevant cautions.\n/me confirms the medication, dose and route with the authorised clinician.\n/me administers the approved RP analgesia according to the server protocol.\n/me records the medication name, dose, route and time.\n/me reassesses pain, respiratory rate, consciousness and oxygen saturation.\n/me documents the patient's response and any adverse effects.\n\n```\n\n## Equipment actions\n\n```\n/me prepares the monitor and pulse oximeter.\n/me applies the blood-pressure cuff and records the reading.\n/me prepares oxygen equipment if authorised by the server protocol.\n/me prepares suction and airway equipment for a patient with reduced consciousness.\n/me prepares trauma dressings and haemorrhage-control equipment.\n/me checks that the equipment is secured before transport.\n/me confirms that all used equipment is documented and returned after handover.\n\n```\n\n---\n\n## RP safety notice\n\n```\n/me confirms that all actions, medications, doses and procedures are being performed under the server's fictional role-play protocol and are not real-world medical treatment.\n\n```"
 }
