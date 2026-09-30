@@ -11285,7 +11285,18 @@ function pathwayPageSection(title,body){
 }
 function pathwaySafeArray(v){ return Array.isArray(v)?v:(v==null?[]:[v]); }
 
+function renderPathwayMarkdownTab(markdown){
+  if(!markdown) return '<p class="pathway-empty">No pathway-specific content supplied.</p>';
+  return `<div class="diagnosis-simulation-document pathway-tab-markdown">${diagnosisSimulationMarkdownHtml(markdown)}</div>`;
+}
+function renderPathwayTabContent(p,key,fallback=''){
+  const content=p.tab_content && p.tab_content[key];
+  return renderPathwayMarkdownTab(content || fallback);
+}
+
 function renderPathwayOverview(p){
+ const tab=p.tab_content?.overview;
+ if(tab) return renderPathwayMarkdownTab(tab);
  const summary=p.incident_description||p.short_title||'Clinical pathway guide.';
  const severity=diagnosisSeverityLabel(p);
  const differentials=p.differentials||p.differential_diagnoses||[];
@@ -11297,6 +11308,8 @@ function renderPathwayOverview(p){
 }
 
 function renderPathwayAbout(p){
+ const tab=p.tab_content?.about;
+ if(tab) return renderPathwayMarkdownTab(tab);
  const scene=p.scene_safety||[], mechanism=p.mechanism||p.mechanism_questions||[], impression=p.initial_impression;
  return `
  ${pathwayPageSection('About this pathway',`<p>${diagnosisEscape(p.about||p.incident_description||'This page contains the pathway-specific learning material available in the library.')}</p>`)}
@@ -11307,6 +11320,8 @@ function renderPathwayAbout(p){
 }
 
 function renderParamedicGuide(p){
+ const tab=p.tab_content?.paramedic;
+ if(tab) return renderPathwayMarkdownTab(tab);
  const primary=p.primary_survey, focused=p.focused_examination||[], management=p.management||p.immediate_management||[], escalation=p.escalation_criteria||[], reassessment=p.reassessment||[], disposition=p.disposition;
  const simulation=p.simulation_markdown;
  return `
@@ -11320,6 +11335,8 @@ function renderParamedicGuide(p){
 }
 
 function renderHospitalWard(p){
+ const tab=p.tab_content?.hospital_ward;
+ if(tab) return renderPathwayMarkdownTab(tab);
  const observations=p.observations, reassessment=p.reassessment||[], handover=p.handover, docs=p.documentation||[], management=p.management||p.immediate_management||[];
  return `
  ${pathwayPageSection('On Ward',`<p>Ward-facing pathway material supplied for this guide.</p>`)}
@@ -11331,6 +11348,8 @@ function renderHospitalWard(p){
 }
 
 function renderHospitalSurgery(p){
+ const tab=p.tab_content?.hospital_surgery;
+ if(tab) return renderPathwayMarkdownTab(tab);
  const candidates=[p.surgery,p.in_surgery,p.surgical_management,p.operation,p.operating_theatre,p.theatre,p.surgical_plan].filter(Boolean);
  return `
  ${pathwayPageSection('In Surgery',candidates.length?diagnosisObjectSections(candidates.length===1?candidates[0]:{pathway_specific_surgical_content:candidates}):'<p class="pathway-empty">No pathway-specific surgery content has been supplied for this guide.</p>')}
@@ -11349,7 +11368,7 @@ function openPathwayPage(id,tab='Overview',hospitalTab='On Ward',pushHistory=tru
  if(active==='Overview') body=renderPathwayOverview(p);
  else if(active==='About') body=renderPathwayAbout(p);
  else if(active==='Paramedic Side guide') body=renderParamedicGuide(p);
- else body=`<div class="pathway-nested-tabs">${pathwayPageButton(p.id,'On Ward',hospitalActive==='On Ward')}${pathwayPageButton(p.id,'In Surgery',hospitalActive==='In Surgery')}</div>${hospitalActive==='In Surgery'?renderHospitalSurgery(p):renderHospitalWard(p)}`;
+ else body=`<div class="pathway-hospital-intro"><h2>Hospital Staff Guide</h2><p>Use the nested tabs to view the ward and surgical role-play guidance for this pathway.</p></div><div class="pathway-nested-tabs">${pathwayPageButton(p.id,'On Ward',hospitalActive==='On Ward')}${pathwayPageButton(p.id,'In Surgery',hospitalActive==='In Surgery')}</div>${hospitalActive==='In Surgery'?renderHospitalSurgery(p):renderHospitalWard(p)}`;
  root.innerHTML=`<div class="pathway-page">
    <div class="pathway-page-topbar"><button type="button" class="secondary" onclick="renderPathwaysLibrary()">← Back to pathway library</button><span class="pathway-page-kicker">PATHWAY GUIDE</span></div>
    <div class="pathway-page-tabs" role="tablist">
