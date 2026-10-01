@@ -4,7 +4,8 @@
     "trauma": [
       "road-traffic-collision",
       "fall-from-height",
-      "fractures-open-fractures"
+      "fractures-open-fractures",
+      "pedestrian-struck-by-vehicle"
     ],
     "neurology": [
       "adult-convulsive-status-epilepticus"

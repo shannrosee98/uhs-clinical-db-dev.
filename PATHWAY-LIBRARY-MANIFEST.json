@@ -22,7 +22,8 @@
     "Fractures and Open Fractures educational pathway",
     "Object-shaped pathway section rendering for observations, reassessment, handover and primary survey",
     "Shared medication references retained",
-    "Adult convulsive status epilepticus epilepsy simulation pathway"
+    "Adult convulsive status epilepticus epilepsy simulation pathway",
+    "Pedestrian Struck by Vehicle source pathway imported from supplied DOCUMENT 03"
   ],
   "counts": {
     "pathways": 44,
@@ -37,6 +38,7 @@
     "data/pathways/trauma/road-traffic-collision.json",
     "data/pathways/trauma/fall-from-height.json",
     "data/pathways/trauma/fractures-open-fractures.json",
-    "data/pathways/neurology/adult-convulsive-status-epilepticus.json"
+    "data/pathways/neurology/adult-convulsive-status-epilepticus.json",
+    "data/pathways/trauma/pedestrian-struck-by-vehicle.json"
   ]
 }
